@@ -21,7 +21,7 @@
         }
     ],
     "require": {
-        "silverstripe/framework": "~3.6",
+        "silverstripe/framework": "~3.6"
     },
     "extra": {
         "installer-name": "dataobject-generator"
