@@ -1,7 +1,7 @@
 {
     "name": "sunnysideup/dataobject-generator",
     "type": "silverstripe-module",
-    "description": "adds tax options to the Silverstripe e-commerce application",
+    "description": "Generate DataObjects using a form.",
     "keywords": [
         "Silverstripe-CMS",
         "CMS",
