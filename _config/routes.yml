@@ -1,0 +1,7 @@
+---
+Name: build_data_object
+After: '#rootroutes'
+---
+Director:
+  rules:
+    'build-data-object//$Action/$ID/$OtherID': 'SunnySideUp\BuildDataObject\BuildController'
