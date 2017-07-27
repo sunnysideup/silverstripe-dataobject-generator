@@ -42,6 +42,14 @@ div.mykey {
 div.myvalue {
     float: right;
 }
+div.myvalue:before {
+    content: '=> ';
+    font-family: monospace;
+    color: #777;
+    float: left;
+    margin-left: -28px;
+    margin-top: 0.5em;
+}
 input, select {
     width: calc( 100% - 2px - 1em);
     color: #555;
@@ -100,7 +108,19 @@ fieldset > h2:first-child {
     <script type="text/javascript">
         jQuery('document').ready(
             function() {
-                jQuery('.InnerComposite').hide();
+                jQuery('.InnerComposite')
+                    .hide()
+                    .each(
+                        function(i, el) {
+                            var keyVal = jQuery(el).find('div.mykey select, input').first().val();
+                            var valVal = jQuery(el).find('div.myvalue select, input').first().val();
+                            if(keyVal.length > 0 && valVal.length > 0) {
+                                jQuery(el).show();
+                            }
+                        }
+
+                    );
+
                 jQuery('.add-and-remove .add')
                     .show()
                     .on(

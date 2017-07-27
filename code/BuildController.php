@@ -7,6 +7,26 @@ class BuildController extends \Controller {
 
     private static $form_data_session_variable = 'SunnySideUp\BuildDataObject\BuildController';
 
+    private static $excluded_data_objects = [
+        'Image_Cached',
+        'PermissionRoleCode',
+        'LoginAttempt',
+        'MemberPassword',
+        'MemberPassword',
+        'SiteConfig'
+    ];
+
+    private static $excluded_db_fields_types = [
+        'DBField',
+        'Field',
+        'DBLocale',
+        'Locale',
+        'StringField',
+        'CompositeField',
+        'PrimaryKey',
+        'ForeignKey'
+    ];
+
     private static $allowed_actions = [
         'primaryformstart' => true,
         'PrimaryForm' => true,
@@ -156,7 +176,7 @@ class BuildController extends \Controller {
         } else {
             $str = 'Permission::check(\''.$value.'\', \'any\', $member);';
         }
-        
+
         return \DBField::create_field('Varchar', $str);
     }
 
@@ -210,7 +230,7 @@ class BuildController extends \Controller {
             $finalFields->push(\HeaderField::create('Name your DataObject'));
             $finalFields->push(\TextField::create('Name', ''));
             $finalFields->push(\HeaderField::create('Model Admin Used'));
-            $finalFields->push(\DropdownField::create('ModelAdmin', '', $this->modelAdminOptions()));
+            $finalFields->push(\DropdownField::create('ModelAdmin', '', $this->prependNullOption($this->modelAdminOptions())));
         } else {
             $toBuild = $this->secondaryThingsToBuild();
         }
@@ -356,7 +376,7 @@ class BuildController extends \Controller {
                         }
                         if(isset($fieldDetailsInner[2])) {
                             $source = $fieldDetailsInner[2];
-                            $source = ['' => '--- Please Select ---'] + $source;
+                            $source = $this->prependNullOption( $source );
                             $tempField = $fieldType::create($fieldName, '', $source);
                         } else {
                             $tempField = $fieldType::create($fieldName, '');
@@ -373,7 +393,7 @@ class BuildController extends \Controller {
                     $fieldType = $fieldDetails[1];
                     if($fieldType === 'DropdownField') {
                         $source = $fieldDetails[2];
-                        $source = ['' => '--- Please Select ---'] + $source;
+                        $source = $this->prependNullOption($source);
                         $compositeField->push($fieldType::create($fieldName, '', $source));
                     } elseif($fieldType === 'HeaderField') {
                         $title = str_replace('_', ' ', $fieldDetails[2]);
@@ -399,46 +419,47 @@ class BuildController extends \Controller {
         return $form;
     }
 
-
+    private $_dbfieldCache = [];
 
     function dbFields()
     {
-        $ar = [
-            'Bigint',
-            'Boolean',
-            'CompositeDBField',
-            'Currency',
-            'Date',
-            'DBField',
-            'Datetime',
-            'Float',
-            'Int',
-            'DBLocale',
-            'Decimal',
-            'Double',
-            'Enum(tba)',
-            'ForeignKey',
-            'HTMLText',
-            'HTMLVarchar(25)',
-            'HTMLVarchar(50)',
-            'HTMLVarchar(150)',
-            'HTMLVarchar(250)',
-            'Money',
-            'MultiEnum',
-            'Percentage',
-            'PolymorphicForeignKey',
-            'PrimaryKey',
-            'StringField',
-            'Text',
-            'Time',
-            'Varchar(25)',
-            'Varchar(50)',
-            'Varchar(150)',
-            'Varchar(250)',
-            'Year'
-        ];
+        if(count($this->_dbfieldCache) === 0) {
+            $list = \ClassInfo::subclassesFor('DbField');
+            $newList = [];
+            foreach($list as $class) {
+                if(substr($class, 0, 2) == 'DB') {
+                    $class = substr($class, 2, strlen($class));
+                }
+                if(substr($class, 0, 3) == 'SS_') {
+                    $class = substr($class, 3, strlen($class));
+                }
+                if('Varchar' === $class) {
+                    $class = 'Varchar(n)';
+                }
+                if('HTMLVarchar' === $class) {
+                    $class = 'HTMLVarchar(n)';
+                }
+                if('Enum' === $class) {
+                    $class = 'Enum(\\\'Foo,Bar\\\', \\\'FOO\\\')';
+                }
+                if('MultiEnum' === $class) {
+                    $class = 'MultiEnum(\\\'Foo,Bar\\\', \\\'FOO\\\')';
+                }
+                if(
+                    $class == 'DbField' ||
+                    is_subclass_of($class, 'TestOnly') ||
+                    in_array($class, $this->Config()->get('excluded_db_fields_types'))
+                ) {
+                    //do nothing
+                } else {
+                    $newList[$class] = $class;
+                }
+            }
+            ksort($newList);
+            $this->_dbfieldCache = $newList;
+        }
 
-        return array_combine($ar, $ar);
+        return $this->_dbfieldCache;
     }
 
     protected function myDbFields()
@@ -452,13 +473,28 @@ class BuildController extends \Controller {
         $list = $this->retrieveDBFields('db');
         foreach($list as $key => $value) {
             $ar[$key] = $key;
-            $ar[$key.'.Nice'] = $key.'.Nice';
+            $shortValue = explode('(',$value);
+            $shortValue = $shortValue[0];
+            switch($shortValue) {
+                case 'Varchar':
+                case 'HTMLTextField':
+                case 'HTMLVarchar':
+                case 'Text':
+                    $ar[$key.'.LimitCharacters'] = $key.'.LimitCharacters';
+                    break;
+                default:
+                    $ar[$key.'.Nice'] = $key.'.Nice';
+            }
         }
         $list =
             $this->retrieveDBFields('belongs_to') +
             $this->retrieveDBFields('has_one');;
         foreach($list as $key => $value) {
-            $ar[$key.'.Title'] = $key.'.Title';
+            if($value === 'Image' || is_subclass_of($value, 'Image')) {
+                $ar[$key.'.Thumbnail'] = $key.'.Thumbnail';
+            } else {
+                $ar[$key.'.Title'] = $key.'.Title';
+            }
         }
         $list =
             $this->retrieveDBFields('has_many') +
@@ -525,7 +561,13 @@ class BuildController extends \Controller {
             $list = \ClassInfo::subclassesFor('DataObject');
             $newList = [];
             foreach($list as $class) {
-                if($class !== 'DataObject') {
+                if(
+                    $class == 'DataObject' ||
+                    is_subclass_of($class, 'TestOnly') ||
+                    in_array($class, $this->Config()->get('excluded_data_objects'))
+                ) {
+                    //do nothing
+                } else {
                     $newList[$class] = $class;
                     $name = \Injector::inst()->get($class)->singular_name();
                     if($name !== $class) {
@@ -565,10 +607,16 @@ class BuildController extends \Controller {
             $list = \ClassInfo::subclassesFor('ModelAdmin');
             $newList = [];
             foreach($list as $class) {
-                if($class !== 'ModelAdmin') {
+                if(
+                    $class == 'ModelAdmin' ||
+                    is_subclass_of($class, 'TestOnly')
+                ) {
+                    //do nothing
+                } else {
                     $newList[$class] = $class;
                 }
             }
+            $newList['tba'] = 'tba';
             $this->_modelAdmins = $newList;
         }
 
@@ -667,18 +715,20 @@ class BuildController extends \Controller {
                 $alInner = \ArrayList::create();
                 if(is_array($values)) {
                     foreach($values as $key => $valuePairs) {
-                        if($valuePairs['VALUE'] == 'true') {
-                            $valuePairArray = [
-                                'Key' => $valuePairs['KEY'],
-                                'UnquotedValue' => $valuePairs['VALUE'],
-                            ];
-                        } else {
-                            $valuePairArray = [
-                                'Key' => $valuePairs['KEY'],
-                                'Value' => $valuePairs['VALUE'],
-                            ];
+                        if(isset($valuePairs['KEY']) && isset($valuePairs['VALUE'])) {
+                            if($valuePairs['VALUE'] == 'true') {
+                                $valuePairArray = [
+                                    'Key' => $valuePairs['KEY'],
+                                    'UnquotedValue' => $valuePairs['VALUE'],
+                                ];
+                            } else {
+                                $valuePairArray = [
+                                    'Key' => $valuePairs['KEY'],
+                                    'Value' => $valuePairs['VALUE'],
+                                ];
+                            }
+                            $alInner->push(\ArrayData::create($valuePairArray));
                         }
-                        $alInner->push(\ArrayData::create($valuePairArray));
                     }
                     $array[$field] = $alInner;
                 } else {
@@ -692,5 +742,11 @@ class BuildController extends \Controller {
     }
 
 
+    protected function prependNullOption($source)
+    {
+        $source = ['' => '--- Please Select ---'] + $source;
+
+        return $source;
+    }
 
 }

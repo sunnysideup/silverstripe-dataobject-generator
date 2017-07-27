@@ -88,6 +88,12 @@ class $Name extends DataObject {
 
         return \$controller->Link().\$this->ClassName."/EditForm/field/".\$this->ClassName."/item/".\$this->ID."/edit";
     }
+
+    public function CMSAddLink() {
+        \$controller = singleton("$ModelAdmin");
+
+        return \$controller->Link().\$this->ClassName."/EditForm/field/".\$this->ClassName."/item/new";
+    }
     <% end_if %>
 
     public function getCMSFields()
@@ -99,7 +105,8 @@ class $Name extends DataObject {
 
     public function getExportFields()
     {
-
+        //..
+        return parent::getExportFields();
     }
 
     <% if $canCreate %>
@@ -140,7 +147,12 @@ class $Name extends DataObject {
         parent::requireDefaultRecords();
         //...
     }
-
+    <% if $casting %><% loop $casting %>
+    public function get{$Key}()
+    {
+        return DBField::create_field('$Value', 'FooBar To Be Completed');
+    }
+    ><% end_loop %><% end_if %>
 }
 
 
