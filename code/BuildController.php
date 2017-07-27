@@ -41,7 +41,7 @@ class BuildController extends \Controller {
 
     function Title()
     {
-        return 'Build Data Object';
+        return 'Build Data Object - Step '.$this->step.' of 2';
     }
 
     function jQueryLink()
@@ -55,6 +55,12 @@ class BuildController extends \Controller {
         $this->saveData('_SecondaryForm', null);
         return $this->redirect($this->link('primaryformstart'));
     }
+
+    /**
+     *
+     * @var Form
+     */
+    protected $step = 1;
 
     /**
      *
@@ -84,7 +90,7 @@ class BuildController extends \Controller {
 
     function index()
     {
-        return $this->redirect('primaryformstart');
+        return $this->redirect($this->Link('primaryformstart'));
     }
 
     function primaryformstart()
@@ -113,6 +119,7 @@ class BuildController extends \Controller {
 
     function secondaryformstart()
     {
+        $this->step = 2;
         $this->SecondaryForm();
         $this->prevLink = $this->Link('primaryformstart');
 

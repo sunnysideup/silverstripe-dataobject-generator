@@ -19,37 +19,35 @@ body {
     border-radius: 10px;
     background-color: #fff;
 }
+
+h1, h2, h3, h4 {color: #838080; clear: both;}
+form { position: relative;}
 a {color: green;}
+header {}
+header  p.back-home {margin-top: -20px; float: left;}
+header  p.start-over {margin-top: -20px; float: right;}
+header  h1 {border-bottom: 1px solid #FFCC1A; background-color: #FFCC1A; text-align: center; padding: 0.2em; border-radius: 3px;}
 a.remove, a.clear {color: red;}
 div.add-and-remove {padding-top: 0.5em;}
 a.add {float: right;}
-a.add.first-add {float: left;}
-a.remove {float: left;}
+a.add.first-add,
+a.remove {
+    float: left;
+    margin-top: -2.2em;
+    margin-left: -1.7em;
+}
 h2 {
-    font-family: serif;
-    padding-top: 1em;
+    padding-top: 1.7em;
     padding-bottom: 0.3em;
     margin: 0;
     clear: both;
+    font-size: 16px;
 }
 div.field.dropdown,
 div.field.text {
     width: calc((600px / 2) - 2em);
 }
-div.mykey {
-    float: left;
-}
-div.myvalue {
-    float: right;
-}
-div.myvalue:before {
-    content: '=> ';
-    font-family: monospace;
-    color: #777;
-    float: left;
-    margin-left: -28px;
-    margin-top: 0.5em;
-}
+
 input, select {
     width: calc( 100% - 2px - 1em);
     color: #555;
@@ -76,7 +74,7 @@ div.CompositeField {
 div.Actions {
     padding-top: 2em;
 }
-div.Actions input {width: 100%;}
+div.Actions input {width: 100%; font-weight: bold;}
 fieldset, form {
     outline: 0;
     border: 0;
@@ -87,7 +85,6 @@ fieldset {
     outline: 0;
     border: 0;
 }
-.start-over {text-align: right;float: right; width: 20px; padding-top: 0; margin-top: 0}
 
 .InnerComposite {padding: 0.5em 0;}
 
@@ -96,13 +93,34 @@ fieldset > h2:first-child {
     margin-top: 0;
 }
 
+@media only screen and (min-width: 700px) {
+    div.myvalue:before {
+        content: '=> ';
+        font-family: monospace;
+        color: #777;
+        float: left;
+        margin-left: -28px;
+        margin-top: 0.5em;
+    }
+    div.mykey {
+        float: left;
+    }
+    div.myvalue {
+        float: right;
+    }    
+}
+
     </style>
 </head>
 <body>
-    <% if $PrevLink %>
-    <p class="start-over"><a href="$PrevLink" class="clear"><i class="material-icons">clear</i></a></p>
-    <% end_if %>
+    <header>
+        <% if $PrevLink %>
+        <p class="back-home"><a href="/" class="back"><i class="material-icons">home</i></a></p>
+        <p class="start-over"><a href="$PrevLink" class="clear"><i class="material-icons">clear</i></a></p>
+        <% end_if %>
 
+        <h1>$Title</h1>
+    </header>
     $Form
 
     <script type="text/javascript">
