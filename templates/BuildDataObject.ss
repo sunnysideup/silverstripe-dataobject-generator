@@ -143,7 +143,7 @@ footer p a {
         <h1>$Title</h1>
     </header>
     $Form
-    <footer><p>This site has been provided by <a href="http://www.sunnysideup.co.nz">sunny side up</a>. Feedback welcome.</p></footer>
+    <footer><p>This tool has been provided by <a href="http://www.sunnysideup.co.nz">sunny side up</a>. Feedback welcome.</p></footer>
     <script type="text/javascript">
         jQuery('document').ready(
             function() {
