@@ -11,7 +11,7 @@
     <style type="text/css">
 html {background-color: #eee;}
 body {
-    font-family: 'Roboto', sans-serif;
+    font-family: sans-serif;
     color: #333;
     margin: 50px auto 500px auto;
     max-width: 600px;
