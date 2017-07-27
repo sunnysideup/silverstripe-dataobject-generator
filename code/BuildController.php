@@ -41,7 +41,7 @@ class BuildController extends \Controller {
 
     function Title()
     {
-        return 'Build Data Object - Step '.$this->step.' of 2';
+        return 'Build a Data Object - Step '.$this->step.' of 2';
     }
 
     function jQueryLink()

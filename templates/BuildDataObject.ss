@@ -6,11 +6,12 @@
     <title>$Title</title>
 
     <script src="$jQueryLink"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
     <style type="text/css">
 html {background-color: #eee;}
 body {
-    font-family: sans-serif;
+    font-family: 'Roboto', sans-serif;
     color: #333;
     margin: 50px auto 500px auto;
     max-width: 600px;
@@ -20,13 +21,21 @@ body {
     background-color: #fff;
 }
 
-h1, h2, h3, h4 {color: #838080; clear: both;}
+h1, h2, h3, h4 {color: #838080; clear: both; }
 form { position: relative;}
 a {color: green;}
 header {}
-header  p.back-home {margin-top: -20px; float: left;}
+header  p.back-home {margin-top: -20px; float: right; margin-right: 20px;}
 header  p.start-over {margin-top: -20px; float: right;}
-header  h1 {border-bottom: 1px solid #FFCC1A; background-color: #FFCC1A; text-align: center; padding: 0.2em; border-radius: 3px;}
+header  h1 {
+    border-bottom: 1px solid #FFCC1A;
+    background-color: #FFCC1A;
+    text-align: center;
+    padding: 0.2em;
+    border-radius: 3px;
+    font-size: 23px;
+    margin-bottom: 2em;
+}
 a.remove, a.clear {color: red;}
 div.add-and-remove {padding-top: 0.5em;}
 a.add {float: right;}
@@ -92,7 +101,10 @@ fieldset > h2:first-child {
     padding-top: 0;
     margin-top: 0;
 }
-
+footer {
+    clear: both;
+    padding-top: 3em;
+}
 @media only screen and (min-width: 700px) {
     div.myvalue:before {
         content: '=> ';
@@ -107,22 +119,20 @@ fieldset > h2:first-child {
     }
     div.myvalue {
         float: right;
-    }    
+    }
 }
 
     </style>
 </head>
 <body>
     <header>
-        <% if $PrevLink %>
-        <p class="back-home"><a href="/" class="back"><i class="material-icons">home</i></a></p>
         <p class="start-over"><a href="$PrevLink" class="clear"><i class="material-icons">clear</i></a></p>
-        <% end_if %>
-
+        <p class="back-home"><a href="/" class="back"><i class="material-icons">home</i></a></p>
         <h1>$Title</h1>
     </header>
     $Form
-
+    <hr />
+    <footer><p>This site has been provided by <a href="http://www.sunnysideup.co.nz">sunny side up</a>. Feedback welcome.</p></footer>
     <script type="text/javascript">
         jQuery('document').ready(
             function() {
