@@ -9,7 +9,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
     <style type="text/css">
-html {background-color: #eee;}
+html {
+    background-color: #eee;
+}
 body {
     font-family: sans-serif;
     color: #333;
@@ -29,7 +31,7 @@ header  p.back-home {margin-top: -20px; float: right; margin-right: 20px;}
 header  p.start-over {margin-top: -20px; float: right;}
 header  h1 {
     border-bottom: 1px solid #FFCC1A;
-    background-color: #ddd;
+    background-color: #efefef;
     text-align: center;
     padding: 0.9em 0.2em 0.2em 0.2em;
     border-radius: 3px;
@@ -67,7 +69,7 @@ input, select {
     margin: 0 0.5em 0 0;
     font-family: monospace;
 }
-select {width: calc( 100% );}
+select {width: calc( 100% );background-color: #efefef;}
 
 input:focus,
 select:focus {
