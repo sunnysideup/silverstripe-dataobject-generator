@@ -16,7 +16,7 @@ body {
     margin: 50px auto 500px auto;
     max-width: 600px;
     padding: 40px;
-    border: 1px solid #ccc;
+    border: 1px solid #FFCC1A;
     border-radius: 10px;
     background-color: #fff;
 }
@@ -29,9 +29,9 @@ header  p.back-home {margin-top: -20px; float: right; margin-right: 20px;}
 header  p.start-over {margin-top: -20px; float: right;}
 header  h1 {
     border-bottom: 1px solid #FFCC1A;
-    background-color: #FFCC1A;
+    background-color: #ddd;
     text-align: center;
-    padding: 0.2em;
+    padding: 0.9em 0.2em 0.2em 0.2em;
     border-radius: 3px;
     font-size: 23px;
     margin-bottom: 2em;
@@ -105,6 +105,18 @@ footer {
     clear: both;
     padding-top: 3em;
 }
+footer p  {
+    text-align: center;
+    padding: 0;
+    margin: 0;
+    color: #777;
+
+}
+footer p a {
+    border-bottom: 1px solid #FFCC1A;
+    text-decoration: none;
+    color: #777;
+}
 @media only screen and (min-width: 700px) {
     div.myvalue:before {
         content: '=> ';
@@ -131,7 +143,6 @@ footer {
         <h1>$Title</h1>
     </header>
     $Form
-    <hr />
     <footer><p>This site has been provided by <a href="http://www.sunnysideup.co.nz">sunny side up</a>. Feedback welcome.</p></footer>
     <script type="text/javascript">
         jQuery('document').ready(
