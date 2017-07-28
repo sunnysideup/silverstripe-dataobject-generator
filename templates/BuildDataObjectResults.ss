@@ -4,14 +4,14 @@
 
 class $Name extends DataObject {
     <% if $singular_name %>
-    private static \$singular_name = $singular_name;
+    private static \$singular_name = '$singular_name';
 
     function i18n_singular_name()
     {
         return _t('{$Name}.SINGULAR_NAME', '$singular_name');
     }
     <% end_if %><% if $plural_name %>
-    private static \$plural_name;
+    private static \$plural_name = '$plural_name';
 
     function i18n_plural_name()
     {
