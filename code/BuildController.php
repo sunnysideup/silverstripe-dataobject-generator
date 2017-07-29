@@ -204,17 +204,19 @@ class BuildController extends \Controller {
     protected function secondaryThingsToBuild()
     {
         return [
-            ['defaults',            'myDbFields',             'text'],
-            ['default_sort',        'myDbFields',             'sortOptions'],
-            ['indexes',             'myDbFieldsPlusIndexes',  'indexOptions'],
-            ['field_labels',        'myAllFields',            'text'],
-            ['searchable_fields',   'myDbFields',             'possibleSearchFilters'],
-            ['summary_fields',      'myDbFieldsFancy',        'text'],
-            ['casting',             'text',                   'dbFields'],
-            ['canCreate',           'canOptions',             'ignore'],
-            ['canView',             'canOptions',             'ignore'],
-            ['canEdit',             'canOptions',             'ignore'],
-            ['canDelete',           'canOptions',             'ignore']
+            ['defaults',            'myDbFields',                  'text'],
+            ['default_sort',        'myDbFields',                  'sortOptions'],
+            ['indexes',             'myDbFieldsAndIndexes',        'indexOptions'],
+            ['required_fields',     'myDbFieldsAndHasOnesWithIDs', 'requiredOptions'],
+            ['field_labels',        'myAllFieldsWithoutBelongs',   'text'],
+            ['field_labels_right',  'myAllFieldsWithoutBelongs',   'text'],
+            ['searchable_fields',   'myDbFieldsAndHasOnesWithIDs', 'possibleSearchFilters'],
+            ['summary_fields',      'myDbFieldsFancyWithBelongs',  'text'],
+            ['casting',             'text',                        'dbFields'],
+            ['canCreate',           'canOptions',                  'ignore'],
+            ['canView',             'canOptions',                  'ignore'],
+            ['canEdit',             'canOptions',                  'ignore'],
+            ['canDelete',           'canOptions',                  'ignore']
         ];
     }
 
@@ -474,7 +476,12 @@ class BuildController extends \Controller {
         return $this->retrieveDBFields('db');
     }
 
-    protected function myDbFieldsFancy()
+    protected function myDbFieldsFancyWithBelongs()
+    {
+        return $this->myDbFieldsFancyWithoutBelongs(true);
+    }
+
+    protected function myDbFieldsFancyWithoutBelongs($includeBelongs = false)
     {
         $ar = [];
         $list = $this->retrieveDBFields('db');
@@ -493,9 +500,11 @@ class BuildController extends \Controller {
                     $ar[$key.'.Nice'] = $key.'.Nice';
             }
         }
-        $list =
-            $this->retrieveDBFields('belongs_to') +
-            $this->retrieveDBFields('has_one');;
+        $list = [];
+        if($includeBelongs) {
+            $list += $this->retrieveDBFields('belongs_to');
+        }
+        $list += $this->retrieveDBFields('has_one');
         foreach($list as $key => $value) {
             if($value === 'Image' || is_subclass_of($value, 'Image')) {
                 $ar[$key.'.Thumbnail'] = $key.'.Thumbnail';
@@ -505,8 +514,10 @@ class BuildController extends \Controller {
         }
         $list =
             $this->retrieveDBFields('has_many') +
-            $this->retrieveDBFields('many_many') +
-            $this->retrieveDBFields('belongs_many_many');
+            $this->retrieveDBFields('many_many');
+        if($includeBelongs) {
+            $list += $this->retrieveDBFields('belongs_many_many');
+        }
         foreach($list as $key => $value) {
             $ar[$key.'.Count'] = $key.'.Count';
         }
@@ -514,7 +525,26 @@ class BuildController extends \Controller {
         return $ar;
     }
 
-    protected function myDbFieldsPlusIndexes()
+    protected function myDbFieldsAndHasOnes()
+    {
+        return
+            $this->retrieveDBFields('db') +
+            $this->retrieveDBFields('has_one');
+    }
+
+    protected function myDbFieldsAndHasOnesWithIDs()
+    {
+        $list = $this->retrieveDBFields('db');
+        $hasOnes = $this->retrieveDBFields('has_one');
+        foreach($hasOnes as $field => $type) {
+            $fieldWithID = $field . 'ID';
+            $list[$fieldWithID] = $fieldWithID;
+        }
+
+        return $list;
+    }
+
+    protected function myDbFieldsAndIndexes()
     {
         return
             $this->retrieveDBFields('db') +
@@ -525,15 +555,26 @@ class BuildController extends \Controller {
             ['index5' => 'index5'];
     }
 
-    protected function myAllFields()
+    protected function myAllFieldsWithBelongs()
     {
-        return
-            $this->retrieveDBFields('db') +
-            $this->retrieveDBFields('belongs_to') +
+        return $this->myAllFieldsWithoutBelongs(true);
+    }
+
+    protected function myAllFieldsWithoutBelongs($includeBelongs = false)
+    {
+        $list = $this->retrieveDBFields('db');
+        if($includeBelongs) {
+            $list += $this->retrieveDBFields('belongs_to');
+        }
+        $list +=
             $this->retrieveDBFields('has_one') +
             $this->retrieveDBFields('has_many') +
-            $this->retrieveDBFields('many_many') +
-            $this->retrieveDBFields('belongs_many_many');
+            $this->retrieveDBFields('many_many');
+        if($includeBelongs) {
+            $list += $this->retrieveDBFields('belongs_many_many');
+        }
+
+        return $list;
     }
 
     protected function retrieveDBFields($name)
@@ -557,6 +598,14 @@ class BuildController extends \Controller {
             'true' => 'true',
             'unique("<column-name>")' => 'unique',
             '[\'type\' => \'<type>\', \'value\' => \'"<column-name>"\']' => 'other'
+        ];
+    }
+
+    protected function requiredOptions()
+    {
+        return [
+            'true' => 'true',
+            'unique' => 'unique'
         ];
     }
 

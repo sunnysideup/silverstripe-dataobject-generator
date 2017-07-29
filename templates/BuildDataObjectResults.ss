@@ -72,6 +72,11 @@ class $Name extends DataObject {
         <% loop $field_labels %>'$Key' => <% if $UnquotedValue %>$UnquotedValue<% else %>'$Value'<% end_if %><% if $Last %><% else %>,
         <% end_if %><% end_loop %>
     ];
+<% end_if %><% if $field_labels_right %>
+    private static \$field_labels = [
+        <% loop $field_labels_right %>'$Key' => <% if $UnquotedValue %>$UnquotedValue<% else %>'$Value'<% end_if %><% if $Last %><% else %>,
+        <% end_if %><% end_loop %>
+    ];
     <% end_if %><% if $searchable_fields %>
     private static \$searchable_fields = [
         <% loop $searchable_fields %>'$Key' => <% if $UnquotedValue %>$UnquotedValue<% else %>'$Value'<% end_if %><% if $Last %><% else %>,
@@ -99,6 +104,17 @@ class $Name extends DataObject {
     public function getCMSFields()
     {
         \$fields = parent::getCMSFields();
+        <% if $field_labels_right %>
+        //do first
+        \$rightFieldDescriptions = \$this->Config()->get('field_labels_right');
+        foreach(\$rightFieldDescriptions as \$field => \$desc) {
+            \$field = \$fields->getDataFieldByName(\$field);
+            if(\$field) {
+                \$field->setDescription(\$desc);
+            }
+        }
+        <% end_if %>
+        //...
 
         return \$fields;
     }
@@ -153,6 +169,42 @@ class $Name extends DataObject {
         return DBField::create_field('$Value', 'FooBar To Be Completed');
     }
     ><% end_loop %><% end_if %>
+    <% if $required_fields %>
+    protected function validate() {
+        \$result = parent::validate();
+        \$fieldLabels = \$this->FieldLabels();
+        <% loop $required_fields %>// testing $Key
+        \$value = \$this->$Key;
+        if(! \$value)
+            \$myName = \$fieldLabels[$Key];
+            \$result->error(
+                _t(
+                    '{$Up.Name}.{$Key}_REQUIRED',
+                    \$myName.' is required')
+                ),
+                'REQUIRED_{$Up.Name}_$Key'
+            );
+        }
+            <% if $Value == 'unique' %>
+        \$id = (empty(\$this->ID) ? 0 : \$this->ID);
+        \$count = $Name::get()
+            ->filter(array('$Key' => \$value))
+            ->exclude(array('ID' => \$id))
+            ->count();
+        if(\$count > 0) {
+            \$myName = \$fieldLabels[$Key];
+            \$result->error(
+                _t(
+                    '{$Up.Name}.{$Key}_UNIQUE',
+                    \$myName.' needs to be unique')
+                ),
+                'UNIQUE_{$Up.Name}_$Key'
+            );
+        }
+        <% end_if %><% end_loop %>
+        return \$result;
+    }
+    <% end_if %>
 }
 
 
