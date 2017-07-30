@@ -3,29 +3,13 @@
 
 namespace SunnySideUp\BuildDataObject;
 
-class BuildController extends \Controller {
 
-    private static $form_data_session_variable = 'SunnySideUp\BuildDataObject\BuildController';
 
-    private static $excluded_data_objects = [
-        'Image_Cached',
-        'PermissionRoleCode',
-        'LoginAttempt',
-        'MemberPassword',
-        'MemberPassword',
-        'SiteConfig'
-    ];
+abstract class BuildController extends \Controller {
 
-    private static $excluded_db_fields_types = [
-        'DBField',
-        'Field',
-        'DBLocale',
-        'Locale',
-        'StringField',
-        'CompositeField',
-        'PrimaryKey',
-        'ForeignKey'
-    ];
+    private static $form_data_session_variable = 'SunnySideUp\BuildDataObject\DataObjectBuildController';
+
+    private static $url_segment = 'build';
 
     private static $allowed_actions = [
         'primaryformstart' => true,
@@ -39,17 +23,37 @@ class BuildController extends \Controller {
         'debug' => true
     ];
 
-    function Title()
+    protected $myBaseClass = 'DataObject';
+
+    protected $apiProvider = 'SunnySideUp\BuildDataObject\API';
+
+    abstract protected function primaryThingsToBuild();
+
+    abstract protected function secondaryThingsToBuild();
+
+    public function Link($action = null)
     {
-        return 'Build a Data Object - Step '.$this->step.' of 2';
+        if($action) {
+            $action .= '/';
+        }
+        return
+            '/'.$this->Config()->get('url_segment').
+            '/'.strtolower($this->myBaseClass).
+            '/'.$action;
     }
 
-    function jQueryLink()
+    public function Title()
+    {
+        return 'Build a '.$this->myBaseClass.' - Step '.$this->step.' of 2';
+    }
+
+
+    public function jQueryLink()
     {
         return \Director::absoluteURL('/framework/thirdparty/jquery/jquery.js');
     }
 
-    function startover()
+    public function startover()
     {
         $this->saveData('_PrimaryForm', null);
         $this->saveData('_SecondaryForm', null);
@@ -79,14 +83,6 @@ class BuildController extends \Controller {
      * @var ArrayList
      */
     protected $finalData = null;
-
-    function Link($action = null)
-    {
-        if($action) {
-            $action .= '/';
-        }
-        return '/build-data-object/'.$action;
-    }
 
     function index()
     {
@@ -187,38 +183,6 @@ class BuildController extends \Controller {
         return \DBField::create_field('Varchar', $str);
     }
 
-    protected function primaryThingsToBuild()
-    {
-        return [
-            ['singular_name',     'text',          ''],
-            ['plural_name',       'text',          ''],
-            ['db',                'array',         'dbFields'],
-            ['belongs_to',        'array',         'possibleRelations'],
-            ['has_one',           'array',         'possibleRelations'],
-            ['has_many',          'array',         'possibleRelations'],
-            ['many_many',         'array',         'possibleRelations'],
-            ['belongs_many_many', 'array',         'possibleRelations']
-        ];
-    }
-
-    protected function secondaryThingsToBuild()
-    {
-        return [
-            ['defaults',            'myDbFields',                  'text'],
-            ['default_sort',        'myDbFields',                  'sortOptions'],
-            ['indexes',             'myDbFieldsAndIndexes',        'indexOptions'],
-            ['required_fields',     'myDbFieldsAndHasOnesWithIDs', 'requiredOptions'],
-            ['field_labels',        'myAllFieldsWithoutBelongs',   'text'],
-            ['field_labels_right',  'myAllFieldsWithoutBelongs',   'text'],
-            ['searchable_fields',   'myDbFieldsAndHasOnesWithIDs', 'possibleSearchFilters'],
-            ['summary_fields',      'myDbFieldsFancyWithBelongs',  'text'],
-            ['casting',             'text',                        'dbFields'],
-            ['canCreate',           'canOptions',                  'ignore'],
-            ['canView',             'canOptions',                  'ignore'],
-            ['canEdit',             'canOptions',                  'ignore'],
-            ['canDelete',           'canOptions',                  'ignore']
-        ];
-    }
 
     protected function createForm($formName, $actionTitle)
     {
@@ -236,10 +200,21 @@ class BuildController extends \Controller {
 
         if($isPrimary) {
             $toBuild = $this->primaryThingsToBuild();
-            $finalFields->push(\HeaderField::create('Name your DataObject'));
+            $finalFields->push(\HeaderField::create('Name your '.$this->myBaseClass));
             $finalFields->push(\TextField::create('Name', ''));
+            $finalFields->push(\HeaderField::create('Extends'));
+            $finalFields->push(\DropdownField::create(
+                'Extends',
+                '',
+                $this->myAPI()->PossibleRelationsWithBaseClass()
+
+            ));
             $finalFields->push(\HeaderField::create('Model Admin Used'));
-            $finalFields->push(\DropdownField::create('ModelAdmin', '', $this->prependNullOption($this->modelAdminOptions())));
+            $finalFields->push(\DropdownField::create(
+                'ModelAdmin',
+                '',
+                $this->prependNullOption($this->myAPI()->modelAdminOptions()))
+            );
         } else {
             $toBuild = $this->secondaryThingsToBuild();
         }
@@ -272,18 +247,18 @@ class BuildController extends \Controller {
                         if($sourceMethod1 === 'text') {
                             $source1 = null;
                         } else {
-                            $source1 = $this->$sourceMethod1();
+                            $source1 = $this->myAPI()->$sourceMethod1();
                         }
                         //value source
                         $sourceMethod2 = $item[2];
                         if($sourceMethod2 === 'text') {
                             $source2 = null;
                         } else {
-                            $source2 = $this->$sourceMethod2();
+                            $source2 = $this->myAPI()->$sourceMethod2();
                         }
                     } else {
                         $sourceMethod = $item[2];
-                        $source = $this->$sourceMethod();
+                        $source = $this->myAPI()->$sourceMethod();
                     }
                     for($i = 1; $i < 13; $i++) {
                         if($isSecond) {
@@ -346,7 +321,7 @@ class BuildController extends \Controller {
                     $formFields[$count][1] = [
                         $name,
                         'DropdownField',
-                        $this->canOptions()
+                        $this->myAPI()->canOptions()
                     ];
                     break;
                 case 'text':
@@ -428,284 +403,6 @@ class BuildController extends \Controller {
         return $form;
     }
 
-    private $_dbfieldCache = [];
-
-    function dbFields()
-    {
-        if(count($this->_dbfieldCache) === 0) {
-            $list = \ClassInfo::subclassesFor('DbField');
-            $newList = [];
-            foreach($list as $class) {
-                if(substr($class, 0, 2) == 'DB') {
-                    $class = substr($class, 2, strlen($class));
-                }
-                if(substr($class, 0, 3) == 'SS_') {
-                    $class = substr($class, 3, strlen($class));
-                }
-                if('Varchar' === $class) {
-                    $class = 'Varchar(n)';
-                }
-                if('HTMLVarchar' === $class) {
-                    $class = 'HTMLVarchar(n)';
-                }
-                if('Enum' === $class) {
-                    $class = 'Enum(\\\'Foo,Bar\\\', \\\'FOO\\\')';
-                }
-                if('MultiEnum' === $class) {
-                    $class = 'MultiEnum(\\\'Foo,Bar\\\', \\\'FOO\\\')';
-                }
-                if(
-                    $class == 'DbField' ||
-                    is_subclass_of($class, 'TestOnly') ||
-                    in_array($class, $this->Config()->get('excluded_db_fields_types'))
-                ) {
-                    //do nothing
-                } else {
-                    $newList[$class] = $class;
-                }
-            }
-            ksort($newList);
-            $this->_dbfieldCache = $newList;
-        }
-
-        return $this->_dbfieldCache;
-    }
-
-    protected function myDbFields()
-    {
-        return $this->retrieveDBFields('db');
-    }
-
-    protected function myDbFieldsFancyWithBelongs()
-    {
-        return $this->myDbFieldsFancyWithoutBelongs(true);
-    }
-
-    protected function myDbFieldsFancyWithoutBelongs($includeBelongs = false)
-    {
-        $ar = [];
-        $list = $this->retrieveDBFields('db');
-        foreach($list as $key => $value) {
-            $ar[$key] = $key;
-            $shortValue = explode('(',$value);
-            $shortValue = $shortValue[0];
-            switch($shortValue) {
-                case 'Varchar':
-                case 'HTMLTextField':
-                case 'HTMLVarchar':
-                case 'Text':
-                    $ar[$key.'.LimitCharacters'] = $key.'.LimitCharacters';
-                    break;
-                default:
-                    $ar[$key.'.Nice'] = $key.'.Nice';
-            }
-        }
-        $list = [];
-        if($includeBelongs) {
-            $list += $this->retrieveDBFields('belongs_to');
-        }
-        $list += $this->retrieveDBFields('has_one');
-        foreach($list as $key => $value) {
-            if($value === 'Image' || is_subclass_of($value, 'Image')) {
-                $ar[$key.'.Thumbnail'] = $key.'.Thumbnail';
-            } else {
-                $ar[$key.'.Title'] = $key.'.Title';
-            }
-        }
-        $list =
-            $this->retrieveDBFields('has_many') +
-            $this->retrieveDBFields('many_many');
-        if($includeBelongs) {
-            $list += $this->retrieveDBFields('belongs_many_many');
-        }
-        foreach($list as $key => $value) {
-            $ar[$key.'.Count'] = $key.'.Count';
-        }
-
-        return $ar;
-    }
-
-    protected function myDbFieldsAndHasOnes()
-    {
-        return
-            $this->retrieveDBFields('db') +
-            $this->retrieveDBFields('has_one');
-    }
-
-    protected function myDbFieldsAndHasOnesWithIDs()
-    {
-        $list = $this->retrieveDBFields('db');
-        $hasOnes = $this->retrieveDBFields('has_one');
-        foreach($hasOnes as $field => $type) {
-            $fieldWithID = $field . 'ID';
-            $list[$fieldWithID] = $fieldWithID;
-        }
-
-        return $list;
-    }
-
-    protected function myDbFieldsAndIndexes()
-    {
-        return
-            $this->retrieveDBFields('db') +
-            ['index1' => 'index1'] +
-            ['index2' => 'index2'] +
-            ['index3' => 'index3'] +
-            ['index4' => 'index4'] +
-            ['index5' => 'index5'];
-    }
-
-    protected function myAllFieldsWithBelongs()
-    {
-        return $this->myAllFieldsWithoutBelongs(true);
-    }
-
-    protected function myAllFieldsWithoutBelongs($includeBelongs = false)
-    {
-        $list = $this->retrieveDBFields('db');
-        if($includeBelongs) {
-            $list += $this->retrieveDBFields('belongs_to');
-        }
-        $list +=
-            $this->retrieveDBFields('has_one') +
-            $this->retrieveDBFields('has_many') +
-            $this->retrieveDBFields('many_many');
-        if($includeBelongs) {
-            $list += $this->retrieveDBFields('belongs_many_many');
-        }
-
-        return $list;
-    }
-
-    protected function retrieveDBFields($name)
-    {
-        $data = $this->processedFormData();
-        $ar = [];
-        if(isset($data->$name)) {
-            foreach($data->$name as $data) {
-                if($data->Key && $data->Value) {
-                    $ar[$data->Key] = $data->Key;
-                }
-            }
-        }
-
-        return $ar;
-    }
-
-    protected function indexOptions()
-    {
-        return [
-            'true' => 'true',
-            'unique("<column-name>")' => 'unique',
-            '[\'type\' => \'<type>\', \'value\' => \'"<column-name>"\']' => 'other'
-        ];
-    }
-
-    protected function requiredOptions()
-    {
-        return [
-            'true' => 'true',
-            'unique' => 'unique'
-        ];
-    }
-
-    private $_classesCache = [];
-
-    protected function possibleRelations()
-    {
-        if(count($this->_classesCache) === 0) {
-            $list = \ClassInfo::subclassesFor('DataObject');
-            $newList = [];
-            foreach($list as $class) {
-                if(
-                    $class == 'DataObject' ||
-                    is_subclass_of($class, 'TestOnly') ||
-                    in_array($class, $this->Config()->get('excluded_data_objects'))
-                ) {
-                    //do nothing
-                } else {
-                    $newList[$class] = $class;
-                    $name = \Injector::inst()->get($class)->singular_name();
-                    if($name !== $class) {
-                        $newList[$class] .= ' ('.$name.')';
-                    }
-                }
-            }
-            $this->_classesCache = $newList;
-        }
-
-        return $this->_classesCache;
-    }
-
-    private $_filtersCache = [];
-
-    protected function possibleSearchFilters()
-    {
-        if(count($this->_filtersCache) === 0) {
-            $list = \ClassInfo::subclassesFor('SearchFilter');
-            $newList = [];
-            foreach($list as $class) {
-                if($class !== 'SearchFilter') {
-                    $newList[$class] = $class;
-                }
-            }
-            $this->_filtersCache = $newList;
-        }
-
-        return $this->_filtersCache;
-    }
-
-    private $_modelAdmins = [];
-
-    protected function modelAdminOptions()
-    {
-        if(count($this->_modelAdmins) === 0) {
-            $list = \ClassInfo::subclassesFor('ModelAdmin');
-            $newList = [];
-            foreach($list as $class) {
-                if(
-                    $class == 'ModelAdmin' ||
-                    is_subclass_of($class, 'TestOnly')
-                ) {
-                    //do nothing
-                } else {
-                    $newList[$class] = $class;
-                }
-            }
-            $newList['tba'] = 'tba';
-            $this->_modelAdmins = $newList;
-        }
-
-        return $this->_modelAdmins;
-    }
-
-
-    protected function sortOptions()
-    {
-        return [
-            'ASC' => 'ASC',
-            'DESC' => 'DESC'
-        ];
-    }
-
-    private $_canOptions = null;
-
-    protected function canOptions()
-    {
-        if(! $this->_canOptions) {
-            $ar = [
-                'true' => 'always',
-                'false' => 'never',
-                'parent' => 'use parent class',
-            ];
-            $permissions = \Permission::get()->column('Code');
-            $ar = $ar + array_combine($permissions, $permissions);
-
-            $this->_canOptions = $ar;
-        }
-
-        return $this->_canOptions;
-    }
 
     protected function saveData($name, $data)
     {
@@ -804,5 +501,14 @@ class BuildController extends \Controller {
 
         return $source;
     }
+
+
+    protected function myAPI()
+    {
+        $class = $this->apiProvider;
+
+        return $class::inst($this->myBaseClass, $this->processedFormData());
+    }
+
 
 }

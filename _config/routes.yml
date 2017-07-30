@@ -4,4 +4,5 @@ After: '#rootroutes'
 ---
 Director:
   rules:
-    'build-data-object//$Action/$ID/$OtherID': 'SunnySideUp\BuildDataObject\BuildController'
+    'build/dataobject//$Action/$ID/$OtherID': 'SunnySideUp\BuildDataObject\DataObjectBuildController'
+    'build/page//$Action/$ID/$OtherID': 'SunnySideUp\BuildDataObject\PageBuildController'

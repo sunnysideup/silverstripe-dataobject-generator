@@ -2,7 +2,7 @@
 
 <% with FinalData %>
 
-class $Name extends DataObject {
+class $Name extends $Extends {
     <% if $singular_name %>
     private static \$singular_name = '$singular_name';
 
