@@ -199,7 +199,7 @@ class $Name extends $Extends {
                     \$result->error(
                         _t(
                             '{$Up.Name}.'.\$field.'_UNIQUE',
-                            \$myName.' needs to be unique')
+                            \$myName.' needs to be unique'
                         ),
                         'UNIQUE_{$Up.Name}_'.\$field
                     );
