@@ -1,0 +1,40 @@
+language: php
+
+sudo: false
+
+addons:
+  apt:
+    packages:
+      - tidy
+
+#before_install:
+  #- pip install --user codecov
+
+env:
+  global:
+    - DB=MYSQL CORE_RELEASE=3.5.1
+    # Turn coverage off by default, as it's expensive time wise
+    - COVERAGE=0
+
+matrix:
+  include:
+    - php: 5.6
+      env: DB=MYSQL
+
+before_script:
+  - phpenv rehash
+  - composer self-update || true
+  - git clone git://github.com/silverstripe-labs/silverstripe-travis-support.git ~/travis-support
+  - php ~/travis-support/travis_setup.php --source `pwd` --target ~/builds/ss
+  - cd ~/builds/ss
+  
+#Execute tests
+script:
+  # Execute tests with no coverage.  This is the fastest option
+ - vendor/bin/phpunit dataobject-generator/tests/
+ #- php framework/cli-script.php dev/build
+
+
+# configure notifications (email, IRC, campfire etc)
+notifications:
+  email: ssuerrors@gmail.com
