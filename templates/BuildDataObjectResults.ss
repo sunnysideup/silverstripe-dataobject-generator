@@ -188,7 +188,7 @@ class $Name extends $Extends {
                     'REQUIRED_{$Up.Name}_'.\$field
                 );
             }
-            if($type === 'unique') {
+            if(\$type === 'unique') {
                 \$id = (empty(\$this->ID) ? 0 : \$this->ID);
                 \$count = $Name::get()
                     ->filter(array(\$field => \$value))
@@ -206,7 +206,7 @@ class $Name extends $Extends {
                 }
             }
         }
-        
+
         return \$result;
     }
     <% end_if %>
