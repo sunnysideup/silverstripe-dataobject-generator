@@ -88,13 +88,15 @@ class $Name extends $Extends {
         <% end_if %><% end_loop %>
     ];
     <% end_if %><% if $ModelAdmin %>
-    public function CMSEditLink() {
+    public function CMSEditLink()
+    {
         \$controller = singleton("$ModelAdmin");
 
         return \$controller->Link().\$this->ClassName."/EditForm/field/".\$this->ClassName."/item/".\$this->ID."/edit";
     }
 
-    public function CMSAddLink() {
+    public function CMSAddLink()
+    {
         \$controller = singleton("$ModelAdmin");
 
         return \$controller->Link().\$this->ClassName."/EditForm/field/".\$this->ClassName."/item/new";
@@ -170,38 +172,41 @@ class $Name extends $Extends {
     }
     ><% end_loop %><% end_if %>
     <% if $required_fields %>
-    protected function validate() {
+    protected function validate()
+    {
         \$result = parent::validate();
         \$fieldLabels = \$this->FieldLabels();
-        <% loop $required_fields %>// testing $Key
-        \$value = \$this->$Key;
-        if(! \$value)
-            \$myName = \$fieldLabels[$Key];
-            \$result->error(
-                _t(
-                    '{$Up.Name}.{$Key}_REQUIRED',
-                    \$myName.' is required')
-                ),
-                'REQUIRED_{$Up.Name}_$Key'
-            );
+        foreach(\$this->Config()->get('required_fields') as \$field => \$type) {
+            \$value = \$this->\$field;
+            if(! \$value)
+                \$myName = \$fieldLabels['\$field'];
+                \$result->error(
+                    _t(
+                        '{$Up.Name}.'.\$field.'_REQUIRED',
+                        \$myName.' is required'
+                    ),
+                    'REQUIRED_{$Up.Name}_'.\$field
+                );
+            }
+            if(\$type === 'unique') {
+                \$id = (empty(\$this->ID) ? 0 : \$this->ID);
+                \$count = $Name::get()
+                    ->filter(array(\$field => \$value))
+                    ->exclude(array('ID' => \$id))
+                    ->count();
+                if(\$count > 0) {
+                    \$myName = \$fieldLabels['\$field'];
+                    \$result->error(
+                        _t(
+                            '{$Up.Name}.'.\$field.'_UNIQUE',
+                            \$myName.' needs to be unique'
+                        ),
+                        'UNIQUE_{$Up.Name}_'.\$field
+                    );
+                }
+            }
         }
-            <% if $Value == 'unique' %>
-        \$id = (empty(\$this->ID) ? 0 : \$this->ID);
-        \$count = $Name::get()
-            ->filter(array('$Key' => \$value))
-            ->exclude(array('ID' => \$id))
-            ->count();
-        if(\$count > 0) {
-            \$myName = \$fieldLabels[$Key];
-            \$result->error(
-                _t(
-                    '{$Up.Name}.{$Key}_UNIQUE',
-                    \$myName.' needs to be unique')
-                ),
-                'UNIQUE_{$Up.Name}_$Key'
-            );
-        }
-        <% end_if %><% end_loop %>
+
         return \$result;
     }
     <% end_if %>
