@@ -5,7 +5,6 @@ namespace SunnySideUp\BuildDataObject;
 class API extends \Object
 {
 
-
     private static $excluded_data_objects = [
         'Image_Cached',
         'PermissionRoleCode',
@@ -24,6 +23,13 @@ class API extends \Object
         'CompositeField',
         'PrimaryKey',
         'ForeignKey'
+    ];
+
+    private static $additional_db_fields = [
+        'ID',
+        'Created',
+        'LastEdited',
+        'ClassName'
     ];
 
 
@@ -113,6 +119,15 @@ class API extends \Object
         return $this->retrieveDBFields('db');
     }
 
+    public function MyDbFieldsWithDefaults()
+    {
+        $list = $this->retrieveDBFields('db');
+        $toAdd = $this->Config()->get('additional_db_fields')
+        $toAdd = array_combine($toAdd, $toAdd);
+
+        return $toAdd + $list;
+    }
+
     public function MyDbFieldsFancyWithBelongs()
     {
         return $this->myDbFieldsFancyWithoutBelongs(true);
@@ -184,7 +199,7 @@ class API extends \Object
     public function MyDbFieldsAndIndexes()
     {
         return
-            $this->retrieveDBFields('db') +
+            $this->MyDbFieldsWithDefaults() +
             ['index1' => 'index1'] +
             ['index2' => 'index2'] +
             ['index3' => 'index3'] +
@@ -199,7 +214,7 @@ class API extends \Object
 
     public function MyAllFieldsWithoutBelongs($includeBelongs = false)
     {
-        $list = $this->retrieveDBFields('db');
+        $list = $this->MyDbFieldsWithDefaults();
         if($includeBelongs) {
             $list += $this->retrieveDBFields('belongs_to');
         }

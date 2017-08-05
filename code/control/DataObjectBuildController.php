@@ -27,7 +27,7 @@ class DataObjectBuildController extends BuildController {
     {
         return [
             ['defaults',            'myDbFields',                  'text'],
-            ['default_sort',        'myDbFields',                  'sortOptions'],
+            ['default_sort',        'MyDbFieldsWithDefaults',      'sortOptions'],
             ['indexes',             'myDbFieldsAndIndexes',        'indexOptions'],
             ['required_fields',     'myDbFieldsAndHasOnesWithIDs', 'requiredOptions'],
             ['field_labels',        'myAllFieldsWithoutBelongs',   'text'],

@@ -110,7 +110,7 @@ class $Name extends $Extends {
         //do first
         \$rightFieldDescriptions = \$this->Config()->get('field_labels_right');
         foreach(\$rightFieldDescriptions as \$field => \$desc) {
-            \$field = \$fields->getDataFieldByName(\$field);
+            \$field = \$fields->DataFieldByName(\$field);
             if(\$field) {
                 \$field->setDescription(\$desc);
             }
