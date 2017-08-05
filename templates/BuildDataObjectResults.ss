@@ -73,7 +73,7 @@ class $Name extends $Extends {
         <% end_if %><% end_loop %>
     ];
 <% end_if %><% if $field_labels_right %>
-    private static \$field_labels = [
+    private static \$field_labels_right = [
         <% loop $field_labels_right %>'$Key' => <% if $UnquotedValue %>$UnquotedValue<% else %>'$Value'<% end_if %><% if $Last %><% else %>,
         <% end_if %><% end_loop %>
     ];
