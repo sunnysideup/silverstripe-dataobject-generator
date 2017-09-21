@@ -122,7 +122,7 @@ class API extends \Object
     public function MyDbFieldsWithDefaults()
     {
         $list = $this->retrieveDBFields('db');
-        $toAdd = $this->Config()->get('additional_db_fields')
+        $toAdd = $this->Config()->get('additional_db_fields');
         $toAdd = array_combine($toAdd, $toAdd);
 
         return $toAdd + $list;

@@ -2,7 +2,8 @@
 
 <% with FinalData %>
 
-class $Name extends $Extends {
+class $Name extends $Extends
+{
     <% if $singular_name %>
     private static \$singular_name = '$singular_name';
 
@@ -148,7 +149,7 @@ class $Name extends $Extends {
         return $canDelete.RAW
     }
     <% end_if %>
-    public function onBeforWrite()
+    public function onBeforeWrite()
     {
         parent::onBeforeWrite();
         //...
@@ -172,13 +173,14 @@ class $Name extends $Extends {
     }
     ><% end_loop %><% end_if %>
     <% if $required_fields %>
-    protected function validate()
+    public function validate()
     {
         \$result = parent::validate();
-        \$fieldLabels = \$this->FieldLabels();
-        foreach(\$this->Config()->get('required_fields') as \$field => \$type) {
+        \$fieldLabels = $this->FieldLabels();
+        \$indexes = $this->Config()->get('indexes');
+        foreach (\$this->Config()->get('required_fields') as \$field) {
             \$value = \$this->\$field;
-            if(! \$value)
+            if(! \$value) {
                 \$myName = \$fieldLabels['\$field'];
                 \$result->error(
                     _t(
@@ -188,7 +190,7 @@ class $Name extends $Extends {
                     'REQUIRED_{$Up.Name}_'.\$field
                 );
             }
-            if(\$type === 'unique') {
+            if (isset(\$indexes[$field]) && isset(\$indexes[$field]['type']) && \$indexes[$field]['type'] === 'unique') {
                 \$id = (empty(\$this->ID) ? 0 : \$this->ID);
                 \$count = $Name::get()
                     ->filter(array(\$field => \$value))
