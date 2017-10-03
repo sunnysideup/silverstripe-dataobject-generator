@@ -4,7 +4,6 @@ namespace SunnySideUp\BuildDataObject;
 
 class API extends \Object
 {
-
     private static $excluded_data_objects = [
         'Image_Cached',
         'PermissionRoleCode',
@@ -41,7 +40,7 @@ class API extends \Object
 
     public static function inst($myBaseClass = 'DataObject', $data)
     {
-        if(! isset(self::$_my_singleton[$myBaseClass])) {
+        if (! isset(self::$_my_singleton[$myBaseClass])) {
             self::$_my_singleton[$myBaseClass] = \Injector::inst()->get('SunnySideUp\BuildDataObject\API');
         }
         self::$_my_singleton[$myBaseClass]->_data = $data;
@@ -60,9 +59,9 @@ class API extends \Object
     {
         $data = $this->_data;
         $ar = [];
-        if(isset($data->$name)) {
-            foreach($data->$name as $data) {
-                if($data->Key && $data->Value) {
+        if (isset($data->$name)) {
+            foreach ($data->$name as $data) {
+                if ($data->Key && $data->Value) {
                     $ar[$data->Key] = $data->Key;
                 }
             }
@@ -75,29 +74,29 @@ class API extends \Object
 
     public function DbFields()
     {
-        if(count($this->_dbfieldCache) === 0) {
+        if (count($this->_dbfieldCache) === 0) {
             $list = \ClassInfo::subclassesFor('DbField');
             $newList = [];
-            foreach($list as $class) {
-                if(substr($class, 0, 2) == 'DB') {
+            foreach ($list as $class) {
+                if (substr($class, 0, 2) == 'DB') {
                     $class = substr($class, 2, strlen($class));
                 }
-                if(substr($class, 0, 3) == 'SS_') {
+                if (substr($class, 0, 3) == 'SS_') {
                     $class = substr($class, 3, strlen($class));
                 }
-                if('Varchar' === $class) {
+                if ('Varchar' === $class) {
                     $class = 'Varchar(n)';
                 }
-                if('HTMLVarchar' === $class) {
+                if ('HTMLVarchar' === $class) {
                     $class = 'HTMLVarchar(n)';
                 }
-                if('Enum' === $class) {
+                if ('Enum' === $class) {
                     $class = 'Enum(\\\'Foo,Bar\\\', \\\'FOO\\\')';
                 }
-                if('MultiEnum' === $class) {
+                if ('MultiEnum' === $class) {
                     $class = 'MultiEnum(\\\'Foo,Bar\\\', \\\'FOO\\\')';
                 }
-                if(
+                if (
                     $class == 'DbField' ||
                     is_subclass_of($class, 'TestOnly') ||
                     in_array($class, $this->Config()->get('excluded_db_fields_types'))
@@ -137,11 +136,11 @@ class API extends \Object
     {
         $ar = [];
         $list = $this->retrieveDBFields('db');
-        foreach($list as $key => $value) {
+        foreach ($list as $key => $value) {
             $ar[$key] = $key;
-            $shortValue = explode('(',$value);
+            $shortValue = explode('(', $value);
             $shortValue = $shortValue[0];
-            switch($shortValue) {
+            switch ($shortValue) {
                 case 'Varchar':
                 case 'HTMLTextField':
                 case 'HTMLVarchar':
@@ -153,12 +152,12 @@ class API extends \Object
             }
         }
         $list = [];
-        if($includeBelongs) {
+        if ($includeBelongs) {
             $list += $this->retrieveDBFields('belongs_to');
         }
         $list += $this->retrieveDBFields('has_one');
-        foreach($list as $key => $value) {
-            if($value === 'Image' || is_subclass_of($value, 'Image')) {
+        foreach ($list as $key => $value) {
+            if ($value === 'Image' || is_subclass_of($value, 'Image')) {
                 $ar[$key.'.Thumbnail'] = $key.'.Thumbnail';
             } else {
                 $ar[$key.'.Title'] = $key.'.Title';
@@ -167,10 +166,10 @@ class API extends \Object
         $list =
             $this->retrieveDBFields('has_many') +
             $this->retrieveDBFields('many_many');
-        if($includeBelongs) {
+        if ($includeBelongs) {
             $list += $this->retrieveDBFields('belongs_many_many');
         }
-        foreach($list as $key => $value) {
+        foreach ($list as $key => $value) {
             $ar[$key.'.Count'] = $key.'.Count';
         }
 
@@ -188,7 +187,7 @@ class API extends \Object
     {
         $list = $this->retrieveDBFields('db');
         $hasOnes = $this->retrieveDBFields('has_one');
-        foreach($hasOnes as $field => $type) {
+        foreach ($hasOnes as $field => $type) {
             $fieldWithID = $field . 'ID';
             $list[$fieldWithID] = $fieldWithID;
         }
@@ -215,14 +214,14 @@ class API extends \Object
     public function MyAllFieldsWithoutBelongs($includeBelongs = false)
     {
         $list = $this->MyDbFieldsWithDefaults();
-        if($includeBelongs) {
+        if ($includeBelongs) {
             $list += $this->retrieveDBFields('belongs_to');
         }
         $list +=
             $this->retrieveDBFields('has_one') +
             $this->retrieveDBFields('has_many') +
             $this->retrieveDBFields('many_many');
-        if($includeBelongs) {
+        if ($includeBelongs) {
             $list += $this->retrieveDBFields('belongs_many_many');
         }
 
@@ -248,7 +247,8 @@ class API extends \Object
     }
 
 
-    public function PossibleRelationsWithBaseClass() {
+    public function PossibleRelationsWithBaseClass()
+    {
         return
             [$this->myBaseClass => $this->myBaseClass] +
             $this->possibleRelations();
@@ -258,12 +258,12 @@ class API extends \Object
 
     public function PossibleRelations()
     {
-        if(count($this->_classesCache) === 0) {
+        if (count($this->_classesCache) === 0) {
             $list = \ClassInfo::subclassesFor($this->myBaseClass);
             $newList = [];
             $newList = [];
-            foreach($list as $class) {
-                if(
+            foreach ($list as $class) {
+                if (
                     $class == $this->myBaseClass ||
                     is_subclass_of($class, 'TestOnly') ||
                     in_array($class, $this->Config()->get('excluded_data_objects'))
@@ -272,7 +272,7 @@ class API extends \Object
                 } else {
                     $newList[$class] = $class;
                     $name = \Injector::inst()->get($class)->singular_name();
-                    if($name !== $class) {
+                    if ($name !== $class) {
                         $newList[$class] .= ' ('.$name.')';
                     }
                 }
@@ -287,11 +287,11 @@ class API extends \Object
 
     public function PossibleSearchFilters()
     {
-        if(count($this->_filtersCache) === 0) {
+        if (count($this->_filtersCache) === 0) {
             $list = \ClassInfo::subclassesFor('SearchFilter');
             $newList = [];
-            foreach($list as $class) {
-                if($class !== 'SearchFilter') {
+            foreach ($list as $class) {
+                if ($class !== 'SearchFilter') {
                     $newList[$class] = $class;
                 }
             }
@@ -305,11 +305,11 @@ class API extends \Object
 
     public function ModelAdminOptions()
     {
-        if(count($this->_modelAdmins) === 0) {
+        if (count($this->_modelAdmins) === 0) {
             $list = \ClassInfo::subclassesFor('ModelAdmin');
             $newList = [];
-            foreach($list as $class) {
-                if(
+            foreach ($list as $class) {
+                if (
                     $class == 'ModelAdmin' ||
                     is_subclass_of($class, 'TestOnly')
                 ) {
@@ -338,7 +338,7 @@ class API extends \Object
 
     public function CanOptions()
     {
-        if(! $this->_canOptions) {
+        if (! $this->_canOptions) {
             $ar = [
                 'true' => 'always',
                 'false' => 'never',
@@ -352,6 +352,4 @@ class API extends \Object
 
         return $this->_canOptions;
     }
-
-
 }
