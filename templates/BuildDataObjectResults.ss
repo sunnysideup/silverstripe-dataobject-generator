@@ -171,7 +171,7 @@ class $Name extends $Extends
     {
         return DBField::create_field('$Value', 'FooBar To Be Completed');
     }
-    ><% end_loop %><% end_if %>
+    <% end_loop %><% end_if %>
     <% if $required_fields %>
     public function validate()
     {
