@@ -31,6 +31,7 @@ class API extends \Object
         'ClassName'
     ];
 
+    protected $rootBaseClass = 'DataObject';
 
     protected $myBaseClass = '';
 
@@ -127,6 +128,11 @@ class API extends \Object
         return $toAdd + $list;
     }
 
+    public function mydbfieldsfancywithbelongswithbasicfields()
+    {
+        return $this->MyDbFieldsFancyWithBelongs();
+    }
+    
     public function MyDbFieldsFancyWithBelongs()
     {
         return $this->myDbFieldsFancyWithoutBelongs(true);
@@ -247,24 +253,37 @@ class API extends \Object
     }
 
 
-    public function PossibleRelationsWithBaseClass()
+    public function PossibleRelationsWithBaseClass($rootClass = '')
     {
+        if($rootClass) {
+            //
+        } else {
+            $rootClass = $this->rootBaseClass;
+        }
         return
-            [$this->myBaseClass => $this->myBaseClass] +
+            [$rootClass => $rootClass] +
             $this->possibleRelations();
     }
 
     protected $_classesCache = [];
 
-    public function PossibleRelations()
+    /**
+     *
+     * @return array
+     */
+    public function PossibleRelations($rootClass = '')
     {
-        if (count($this->_classesCache) === 0) {
-            $list = \ClassInfo::subclassesFor($this->myBaseClass);
-            $newList = [];
+        if($rootClass) {
+            //
+        } else {
+            $rootClass = $this->rootBaseClass;
+        }
+        if (!isset($this->_classesCache[$rootClass])) {
+            $list = \ClassInfo::subclassesFor($rootClass);
             $newList = [];
             foreach ($list as $class) {
                 if (
-                    $class == $this->myBaseClass ||
+                    $class == $rootClass ||
                     is_subclass_of($class, 'TestOnly') ||
                     in_array($class, $this->Config()->get('excluded_data_objects'))
                 ) {
@@ -277,10 +296,10 @@ class API extends \Object
                     }
                 }
             }
-            $this->_classesCache = $newList;
+            $this->_classesCache[$rootClass] = $newList;
         }
 
-        return $this->_classesCache;
+        return $this->_classesCache[$rootClass];
     }
 
     protected $_filtersCache = [];
@@ -352,4 +371,67 @@ class API extends \Object
 
         return $this->_canOptions;
     }
+
+
+
+    /**
+     *
+     * @return array
+     */
+    public function SiteTreeList($rootClass = 'SiteTree')
+    {
+        $list = \ClassInfo::subclassesFor($rootClass);
+        foreach ($list as $class) {
+            if (
+                $class == $rootClass ||
+                is_subclass_of($class, 'TestOnly') ||
+                in_array($class, $this->Config()->get('excluded_data_objects'))
+            ) {
+                //do nothing
+            } else {
+                $newList[$class] = $class;
+                $name = \Injector::inst()->get($class)->singular_name();
+                if ($name !== $class) {
+                    $newList[$class] .= ' ('.$name.')';
+                }
+            }
+        }
+
+        return $newList;
+    }
+
+
+    /**
+     *
+     * @return array
+     */
+    public function AllowedChildrenOptions($rootClass = 'SiteTree')
+    {
+        return ['none' => 'none'] + $this->SiteTreeList($rootClass);
+    }
+
+    /**
+     *
+     * @return array
+     */
+    public function TrueOrFalseListWithIgnore()
+    {
+        return [
+            '' => '-- ignore --'
+        ] +
+        $this->TrueOrFalseList();
+    }
+
+    /**
+     *
+     * @return array
+     */
+    public function TrueOrFalseList()
+    {
+        return [
+            'true' => 'YES',
+            'false' => 'NO'
+        ];
+    }
+
 }

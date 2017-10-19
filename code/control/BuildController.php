@@ -7,6 +7,7 @@ namespace SunnySideUp\BuildDataObject;
 
 abstract class BuildController extends \Controller {
 
+
     private static $form_data_session_variable = 'SunnySideUp\BuildDataObject\DataObjectBuildController';
 
     private static $url_segment = 'build';
@@ -94,9 +95,8 @@ abstract class BuildController extends \Controller {
         $this->PrimaryForm();
         $this->prevLink = $this->Link('startover');
 
-        return $this->renderWith('BuildDataObject');
+        return $this->renderWith('BuildControllerForm');
     }
-
 
     function PrimaryForm()
     {
@@ -119,7 +119,7 @@ abstract class BuildController extends \Controller {
         $this->SecondaryForm();
         $this->prevLink = $this->Link('primaryformstart');
 
-        return $this->renderWith('BuildDataObject');
+        return $this->renderWith('BuildControllerForm');
     }
 
     function SecondaryForm()
@@ -141,7 +141,7 @@ abstract class BuildController extends \Controller {
     {
         $this->finalData = $this->processedFormData($this->retrieveData());
         return \SS_HTTPRequest::send_file(
-            $this->renderWith('BuildDataObjectResults'),
+            $this->renderWith($this->resultsTemplateForBuilder()),
             $this->finalData->Name.'.php'
         );
     }
@@ -206,15 +206,13 @@ abstract class BuildController extends \Controller {
             $finalFields->push(\DropdownField::create(
                 'Extends',
                 '',
-                $this->myAPI()->PossibleRelationsWithBaseClass()
+                $this->myAPI()->PossibleRelationsWithBaseClass($this->myBaseClass)
 
             ));
-            $finalFields->push(\HeaderField::create('Model Admin Used'));
-            $finalFields->push(\DropdownField::create(
-                'ModelAdmin',
-                '',
-                $this->prependNullOption($this->myAPI()->modelAdminOptions()))
-            );
+            $additionalFields = $this->additionalPrimaryFields();
+            foreach($additionalFields as $additionalField) {
+                $finalFields->push($additionalField);
+            }
         } else {
             $toBuild = $this->secondaryThingsToBuild();
         }
@@ -224,14 +222,14 @@ abstract class BuildController extends \Controller {
         //build fields ...
         foreach($toBuild as $item) {
             $name = $item[0];
-            if($isPrimary) {
-                $type = $item[1];
-            } else {
-                if(substr($name, 0, 3) === 'can') {
-                    $type = 'options';
-                } else {
-                    $type = 'array';
-                }
+            $sourceMethod1 = $item[1];
+            $sourceMethod2 = $item[2];
+            $isMultiple = $item[3];
+
+            //work out style
+            $hasKeyAndValue = false;
+            if($sourceMethod1 && $sourceMethod2) {
+                $hasKeyAndValue = true;
             }
             $formFields[$count] = [];
             $formFields[$count][0] = [
@@ -239,105 +237,97 @@ abstract class BuildController extends \Controller {
                 'HeaderField',
                 $name
             ];
-            switch ($type) {
-                case 'array':
-                    if($isSecond) {
-                        //key source
-                        $sourceMethod1 = $item[1];
-                        if($sourceMethod1 === 'text') {
-                            $source1 = null;
-                        } else {
-                            $source1 = $this->myAPI()->$sourceMethod1();
-                        }
-                        //value source
-                        $sourceMethod2 = $item[2];
-                        if($sourceMethod2 === 'text') {
-                            $source2 = null;
-                        } else {
-                            $source2 = $this->myAPI()->$sourceMethod2();
-                        }
+            if($isMultiple) {
+                $max = 12;
+            } else {
+                $max = 1;
+            }
+
+            //work out sources
+            if($sourceMethod1 && $this->myAPI()->hasMethod($sourceMethod1)) {
+                $source1 = $this->myAPI()->$sourceMethod1();
+            } else {
+                $source1 = null;
+            }
+            if($sourceMethod2 && $this->myAPI()->hasMethod($sourceMethod2)) {
+                $source2 = $this->myAPI()->$sourceMethod2();
+            } elseif($sourceMethod2) {
+                $source2 = null;
+            } else {
+                $source2 = 'ignore';
+            }
+
+            //work out field names
+
+            for($i = 1; $i <= $max; $i++) {
+                if($hasKeyAndValue) {
+                    $nameKey = $name.'__KEY__'.$i;
+                    $nameValue = $name.'__VALUE__'.$i;
+                } else {
+                    $nameKey = $name;
+                    $nameValue = '';
+                }
+                if($hasKeyAndValue) {
+                    //key field
+                    if($source1) {
+                        $formFields[$count][$i]['KEY'] = [
+                            $nameKey,
+                            'DropdownField',
+                            $source1
+                        ];
                     } else {
-                        $sourceMethod = $item[2];
-                        $source = $this->myAPI()->$sourceMethod();
+                        $formFields[$count][$i]['KEY'] = [
+                            $nameKey,
+                            'TextField'
+                        ];
                     }
-                    for($i = 1; $i < 13; $i++) {
-                        if($isSecond) {
-                            if($source1 === 'ignore') {
-                                $formFields[$count][$i]['KEY'] = [
-                                    $name,
-                                    'DropdownField',
-                                    $source1
-                                ];
-                            } elseif($source1) {
-                                $formFields[$count][$i]['KEY'] = [
-                                    $name.'__KEY__'.$i,
-                                    'DropdownField',
-                                    $source1
-                                ];
-                            } else {
-                                $formFields[$count][$i]['KEY'] = [
-                                    $name.'__KEY__'.$i,
-                                    'TextField'
-                                ];
-                            }
-                            if($source2 === 'ignore') {
-                                //do nothing ...
-                            } elseif($source2) {
-                                $formFields[$count][$i]['VALUE'] = [
-                                    $name.'__VALUE__'.$i,
-                                    'DropdownField',
-                                    $source2
-                                ];
-                            } else {
-                                $formFields[$count][$i]['VALUE'] = [
-                                    $name.'__VALUE__'.$i,
-                                    'TextField'
-                                ];
-                            }
-                        } else {
-                            $formFields[$count][$i]['KEY'] = [
-                                $name.'__KEY__'.$i,
-                                'TextField'
-                            ];
-                            $formFields[$count][$i]['VALUE'] = [
-                                $name.'__VALUE__'.$i,
-                                'DropdownField',
-                                $source
-                            ];
-                        }
+
+                    //value field
+                    if($source2) {
+                        $formFields[$count][$i]['VALUE'] = [
+                            $nameValue,
+                            'DropdownField',
+                            $source2
+                        ];
+                    } else {
+                        $formFields[$count][$i]['VALUE'] = [
+                            $nameValue,
+                            'TextField'
+                        ];
                     }
-                    $formFields[$count][13] = [
-                        $name.'_ADD_'.$i,
-                        'LiteralField',
-                        '
-                        <div class="CompositeField add-and-remove">
-                            <a href="#" class="add first-add"><i class="material-icons">add_circle_outline</i></a>
-                            <a href="#" class="remove"><i class="material-icons">remove_circle_outline</i></a>
-                        </div>
-                        '
-                    ];
-                    break;
-                case 'options':
-                    $formFields[$count][1] = [
-                        $name,
-                        'DropdownField',
-                        $this->myAPI()->canOptions()
-                    ];
-                    break;
-                case 'text':
-                default:
-                    $formFields[$count][1] = [
-                        $name,
-                        'TextField'
-                    ];
-                    break;
-                    //do nothing
+                } else {
+                    //keys only!
+                    if($source1) {
+                        $formFields[$count][1] = [
+                            $nameKey,
+                            'DropdownField',
+                            $source1
+                        ];
+                    } else {
+                        $formFields[$count][1] = [
+                            $nameKey,
+                            'TextField'
+                        ];
+                    }
+                }
+            }
+            if($i > 2) {
+                $formFields[$count][$i + 1] = [
+                    $name.'_ADD_'.$i,
+                    'LiteralField',
+                    '
+                    <div class="CompositeField add-and-remove">
+                        <a href="#" class="add first-add"><i class="material-icons">add_circle_outline</i></a>
+                        <a href="#" class="remove"><i class="material-icons">remove_circle_outline</i></a>
+                    </div>
+                    '
+                ];
             }
             $count++;
         }
         //create fields ...
         $count = 0;
-        foreach($formFields as $subFieldList) {
+        foreach($formFields as $outerCount => $subFieldList) {
             $count++;
             $compositeField = \CompositeField::create();
             $compositeField->addExtraClass('OuterComposite pos'.$count);
@@ -403,6 +393,14 @@ abstract class BuildController extends \Controller {
         return $form;
     }
 
+    /**
+     * returns an array of fields
+     * @return array
+     */
+    protected function additionalPrimaryFields()
+    {
+        return [];
+    }
 
     protected function saveData($name, $data)
     {
@@ -492,6 +490,12 @@ abstract class BuildController extends \Controller {
         }
 
         return $this->_processed_data;
+    }
+
+
+    protected function resultsTemplateForBuilder()
+    {
+        return str_replace(__NAMESPACE__ .'\\', '', $this->class).'Results';
     }
 
 

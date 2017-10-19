@@ -7,36 +7,50 @@ class DataObjectBuildController extends BuildController
 {
     protected $myBaseClass = 'DataObject';
 
-    protected function primaryThingsToBuild()
+    protected function additionalPrimaryFields()
     {
         return [
-            ['singular_name',     'text',          ''],
-            ['plural_name',       'text',          ''],
-            ['db',                'array',         'dbFields'],
-            ['belongs_to',        'array',         'possibleRelations'],
-            ['has_one',           'array',         'possibleRelations'],
-            ['has_many',          'array',         'possibleRelations'],
-            ['many_many',         'array',         'possibleRelations'],
-            ['belongs_many_many', 'array',         'possibleRelations']
+            \HeaderField::create('Model Admin Used'),
+            \DropdownField::create(
+                'ModelAdmin',
+                '',
+                $this->prependNullOption($this->myAPI()->modelAdminOptions())
+            )
         ];
+
     }
 
-    protected function secondaryThingsToBuild()
-    {
-        return [
-            ['defaults',            'myDbFields',                                'text'],
-            ['default_sort',        'MyDbFieldsWithDefaults',                    'sortOptions'],
-            ['indexes',             'myDbFieldsAndIndexes',                      'indexOptions'],
-            ['required_fields',     'myDbFieldsAndHasOnesWithIDs',               'requiredOptions'],
-            ['field_labels',        'myAllFieldsWithoutBelongs',                 'text'],
-            ['field_labels_right',  'myAllFieldsWithoutBelongs',                 'text'],
-            ['searchable_fields',   'myDbFieldsAndHasOnesWithIDs',               'possibleSearchFilters'],
-            ['summary_fields',      'myDbFieldsFancyWithBelongsWithBasicFields', 'text'],
-            ['casting',             'text',                                      'dbFields'],
-            ['canCreate',           'canOptions',                                'ignore'],
-            ['canView',             'canOptions',                                'ignore'],
-            ['canEdit',             'canOptions',                                'ignore'],
-            ['canDelete',           'canOptions',                                'ignore']
-        ];
-    }
+
+        protected function primaryThingsToBuild()
+        {
+            return [
+                ['singular_name',       'text',                                      '',                       false],
+                ['plural_name',         'text',                                      '',                       false],
+                ['db',                  'text',                                     'dbFields',                true],
+                ['belongs_to',          'text',                                     'possibleRelations',       true],
+                ['has_one',             'text',                                     'possibleRelations',       true],
+                ['has_many',            'text',                                     'possibleRelations',       true],
+                ['many_many',           'text',                                     'possibleRelations',       true],
+                ['belongs_many_many',   'text',                                     'possibleRelations',       true]
+            ];
+        }
+
+        protected function secondaryThingsToBuild()
+        {
+            return [
+                ['defaults',            'myDbFields',                                'text',                   true],
+                ['default_sort',        'MyDbFieldsWithDefaults',                    'sortOptions',            true],
+                ['indexes',             'myDbFieldsAndIndexes',                      'indexOptions',           true],
+                ['required_fields',     'myDbFieldsAndHasOnesWithIDs',               'requiredOptions',        true],
+                ['field_labels',        'myAllFieldsWithoutBelongs',                 'text',                   true],
+                ['field_labels_right',  'myAllFieldsWithoutBelongs',                 'text',                   true],
+                ['searchable_fields',   'myDbFieldsAndHasOnesWithIDs',               'possibleSearchFilters',  true],
+                ['summary_fields',      'myDbFieldsFancyWithBelongsWithBasicFields', 'text',                   true],
+                ['casting',             'text',                                      'dbFields',               true],
+                ['canCreate',           'canOptions',                                '',                       false],
+                ['canView',             'canOptions',                                '',                       false],
+                ['canEdit',             'canOptions',                                '',                       false],
+                ['canDelete',           'canOptions',                                '',                       false]
+            ];
+        }
 }
