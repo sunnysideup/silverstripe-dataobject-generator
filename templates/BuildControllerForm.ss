@@ -153,9 +153,23 @@ footer p a {
                     .hide()
                     .each(
                         function(i, el) {
-                            var keyVal = jQuery(el).find('div.mykey select, input').first().val();
-                            var valVal = jQuery(el).find('div.myvalue select, input').first().val();
-                            if(keyVal.length > 0 && valVal.length > 0) {
+                            var show = false;
+                            var keyInput = jQuery(el).find('div.mykey select, input').first();
+                            var valInput = jQuery(el).find('div.myvalue select, input').first();
+                            if(keyInput && keyInput.length > 0 && valInput && valInput.length > 0) {
+                                var keyVal = jQuery(el).find('div.mykey select, input').first().val();
+                                var valVal = jQuery(el).find('div.myvalue select, input').first().val();
+                                if(keyVal.length > 0 && valVal.length > 0) {
+                                    show = true;
+                                }
+                            }
+                            else if(keyInput && keyInput.length > 0) {
+                                var keyVal = jQuery(el).find('div.mykey select, input').first().val();
+                                if(keyVal.length) {
+                                    show = true;
+                                }
+                            }
+                            if(show) {
                                 jQuery(el).show();
                             }
                         }

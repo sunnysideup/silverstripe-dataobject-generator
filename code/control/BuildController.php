@@ -172,6 +172,8 @@ abstract class BuildController extends \Controller {
     function MyCanMethodBuilder($type, $value) {
         if($value === 'parent') {
             return null;
+        } elseif($value === 'one') {
+            $str = 'self::get()->count() ? false : true;';
         } elseif($value === 'true') {
             $str = 'true;';
         } elseif($value === 'false') {
@@ -203,12 +205,15 @@ abstract class BuildController extends \Controller {
             $finalFields->push(\HeaderField::create('Name your '.$this->myBaseClass));
             $finalFields->push(\TextField::create('Name', ''));
             $finalFields->push(\HeaderField::create('Extends'));
-            $finalFields->push(\DropdownField::create(
-                'Extends',
-                '',
-                $this->myAPI()->PossibleRelationsWithBaseClass($this->myBaseClass)
-
-            ));
+            $possibleExtensions = $this->myAPI()->PossibleRelationsWithBaseClass($this->myBaseClass);
+            asort($possibleExtensions);
+            $finalFields->push(
+                \DropdownField::create(
+                    'Extends',
+                    '',
+                    $possibleExtensions
+                )
+            );
             $additionalFields = $this->additionalPrimaryFields();
             foreach($additionalFields as $additionalField) {
                 $finalFields->push($additionalField);
@@ -217,6 +222,7 @@ abstract class BuildController extends \Controller {
             $toBuild = $this->secondaryThingsToBuild();
         }
         $formFields = [];
+        $formFieldsWithMultiple = [];
 
         $count = 0;
         //build fields ...
@@ -226,22 +232,24 @@ abstract class BuildController extends \Controller {
             $sourceMethod2 = $item[2];
             $isMultiple = $item[3];
 
+
             //work out style
             $hasKeyAndValue = false;
             if($sourceMethod1 && $sourceMethod2) {
                 $hasKeyAndValue = true;
             }
             $formFields[$count] = [];
-            $formFields[$count][0] = [
-                $name.'_HEADER',
-                'HeaderField',
-                $name
-            ];
             if($isMultiple) {
                 $max = 12;
             } else {
                 $max = 1;
             }
+            $formFields[$count][0] = [
+                $name.'_HEADER',
+                'HeaderField',
+                $name
+            ];
+
 
             //work out sources
             if($sourceMethod1 && $this->myAPI()->hasMethod($sourceMethod1)) {
@@ -261,11 +269,23 @@ abstract class BuildController extends \Controller {
 
             for($i = 1; $i <= $max; $i++) {
                 if($hasKeyAndValue) {
-                    $nameKey = $name.'__KEY__'.$i;
-                    $nameValue = $name.'__VALUE__'.$i;
+                    if($isMultiple) {
+                        $nameKey = $name.'__KEY__'.$i;
+                        $nameValue = $name.'__VALUE__'.$i;
+                        $formFieldsWithMultiple[$nameKey] = $nameKey;
+                    } else {
+                        $nameKey = $name.'__KEY__';
+                        $nameValue = $name.'__VALUE__';
+                    }
                 } else {
-                    $nameKey = $name;
-                    $nameValue = '';
+                    if($isMultiple) {
+                        $nameKey = $name.$i;
+                        $nameValue = '';
+                        $formFieldsWithMultiple[$nameKey] = $nameKey;
+                    } else {
+                        $nameKey = $name;
+                        $nameValue = '';
+                    }
                 }
                 if($hasKeyAndValue) {
                     //key field
@@ -298,13 +318,13 @@ abstract class BuildController extends \Controller {
                 } else {
                     //keys only!
                     if($source1) {
-                        $formFields[$count][1] = [
+                        $formFields[$count][$i] = [
                             $nameKey,
                             'DropdownField',
                             $source1
                         ];
                     } else {
-                        $formFields[$count][1] = [
+                        $formFields[$count][$i] = [
                             $nameKey,
                             'TextField'
                         ];
@@ -332,12 +352,11 @@ abstract class BuildController extends \Controller {
             $compositeField = \CompositeField::create();
             $compositeField->addExtraClass('OuterComposite pos'.$count);
             $innerCount = 0;
-            foreach($subFieldList as $fieldDetails) {
+            foreach($subFieldList as $innerCount => $fieldDetails) {
                 $innerCount++;
                 if(isset($fieldDetails['KEY']) && isset($fieldDetails['VALUE'])) {
                     $subCompositeField = \CompositeField::create();
                     $subCompositeField->addExtraClass('InnerComposite pos'.$innerCount);
-                    $innerInnerCount = 0;
                     foreach($fieldDetails as $fieldDetailsInner) {
                         $fieldName = $fieldDetailsInner[0];
                         $fieldType = $fieldDetailsInner[1];
@@ -350,6 +369,7 @@ abstract class BuildController extends \Controller {
                         }
                         if(isset($fieldDetailsInner[2])) {
                             $source = $fieldDetailsInner[2];
+                            asort($source);
                             $source = $this->prependNullOption( $source );
                             $tempField = $fieldType::create($fieldName, '', $source);
                         } else {
@@ -364,19 +384,32 @@ abstract class BuildController extends \Controller {
                     $compositeField->push($subCompositeField);
                 } else {
                     $fieldName = $fieldDetails[0];
+                    if(isset($formFieldsWithMultiple[$fieldName])) {
+                        $subCompositeField = \CompositeField::create();
+                        $subCompositeField->addExtraClass('InnerComposite pos'.$innerCount);
+                    } else {
+                        $subCompositeField = null;
+                    }
                     $fieldType = $fieldDetails[1];
                     if($fieldType === 'DropdownField') {
                         $source = $fieldDetails[2];
+                        asort($source);
                         $source = $this->prependNullOption($source);
-                        $compositeField->push($fieldType::create($fieldName, '', $source));
+                        $myTempfield = $fieldType::create($fieldName, '', $source);
                     } elseif($fieldType === 'HeaderField') {
                         $title = str_replace('_', ' ', $fieldDetails[2]);
-                        $compositeField->push($fieldType::create($fieldName, $title));
+                        $myTempfield = $fieldType::create($fieldName, $title);
                     } elseif($fieldType === 'LiteralField') {
                         $title = $fieldDetails[2];
-                        $compositeField->push($fieldType::create($fieldName, $title));
+                        $myTempfield = $fieldType::create($fieldName, $title);
                     } else {
-                        $compositeField->push($fieldType::create($fieldName, ''));
+                        $myTempfield = $fieldType::create($fieldName, '');
+                    }
+                    if($subCompositeField) {
+                        $subCompositeField->push($myTempfield);
+                        $compositeField->push($subCompositeField);
+                    } else {
+                        $compositeField->push($myTempfield);
                     }
                 }
             }

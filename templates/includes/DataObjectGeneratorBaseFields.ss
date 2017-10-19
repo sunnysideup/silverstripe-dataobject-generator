@@ -152,12 +152,12 @@
     public function validate()
     {
         \$result = parent::validate();
-        \$fieldLabels = $this->FieldLabels();
-        \$indexes = $this->Config()->get('indexes');
+        \$fieldLabels = \$this->FieldLabels();
+        \$indexes = \$this->Config()->get('indexes');
         foreach (\$this->Config()->get('required_fields') as \$field) {
             \$value = \$this->\$field;
             if(! \$value) {
-                \$myName = \$fieldLabels['\$field'];
+                \$myName = \$fieldLabels[\$field];
                 \$result->error(
                     _t(
                         '{$Name}.'.\$field.'_REQUIRED',
@@ -166,7 +166,7 @@
                     'REQUIRED_{$Name}_'.\$field
                 );
             }
-            if (isset(\$indexes[$field]) && isset(\$indexes[$field]['type']) && \$indexes[$field]['type'] === 'unique') {
+            if (isset(\$indexes[\$field]) && isset(\$indexes[\$field]['type']) && \$indexes[\$field]['type'] === 'unique') {
                 \$id = (empty(\$this->ID) ? 0 : \$this->ID);
                 \$count = $Name::get()
                     ->filter(array(\$field => \$value))

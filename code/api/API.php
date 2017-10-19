@@ -107,7 +107,6 @@ class API extends \Object
                     $newList[$class] = $class;
                 }
             }
-            ksort($newList);
             $this->_dbfieldCache = $newList;
         }
 
@@ -132,7 +131,7 @@ class API extends \Object
     {
         return $this->MyDbFieldsFancyWithBelongs();
     }
-    
+
     public function MyDbFieldsFancyWithBelongs()
     {
         return $this->myDbFieldsFancyWithoutBelongs(true);
@@ -359,6 +358,7 @@ class API extends \Object
     {
         if (! $this->_canOptions) {
             $ar = [
+                'one' => 'only one (useful for can create)',
                 'true' => 'always',
                 'false' => 'never',
                 'parent' => 'use parent class',
