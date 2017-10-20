@@ -70,7 +70,7 @@
     ];
     <% end_if %><% if $required_fields %>
     private static \$required_fields = [
-        <% loop $required_fields %>'$Key' => <% if $UnquotedValue %>$UnquotedValue<% else %>'$Value'<% end_if %><% if $Last %><% else %>,
+        <% loop $required_fields %>'$Key'<% if $Last %><% else %>,
         <% end_if %><% end_loop %>
     ];
     <% end_if %><% if $searchable_fields %>
@@ -157,7 +157,11 @@
         foreach (\$this->Config()->get('required_fields') as \$field) {
             \$value = \$this->\$field;
             if(! \$value) {
-                \$myName = \$fieldLabels[\$field];
+                \$fieldWithoutID = \$field;
+                if(substr(\$fieldWithoutID, -2) === 'ID') {
+                    \$fieldWithoutID = substr(\$fieldWithoutID, 0, -2);
+                }
+                \$myName = isset(\$fieldLabels[\$fieldWithoutID]) ? \$fieldLabels[\$fieldWithoutID] : \$fieldWithoutID;
                 \$result->error(
                     _t(
                         '{$Name}.'.\$field.'_REQUIRED',
