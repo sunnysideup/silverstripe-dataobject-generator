@@ -1,16 +1,18 @@
     public function getCMSFields()
     {
         \$fields = parent::getCMSFields();
-        <% if $field_labels_right %>
-        //do first
+
+        //do first??
         \$rightFieldDescriptions = \$this->Config()->get('field_labels_right');
         foreach(\$rightFieldDescriptions as \$field => \$desc) {
-           \$field = \$fields->DataFieldByName(\$field);
-           if(\$field) {
-               \$field->setDescription(\$desc);
+           \$formField = \$fields->DataFieldByName(\$field);
+           if(! \$formField) {
+            \$formField = \$fields->DataFieldByName(\$field.'ID');
+           }
+           if(\$formField) {
+               \$formField->setDescription(\$desc);
            }
         }
-        <% end_if %>
         //...
 
         return \$fields;
