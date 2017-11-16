@@ -94,6 +94,7 @@ abstract class BuildController extends \Controller {
     {
         $this->PrimaryForm();
         $this->prevLink = $this->Link('startover');
+        \SSViewer::set_source_file_comments(false);
 
         return $this->renderWith('BuildControllerForm');
     }
@@ -118,6 +119,7 @@ abstract class BuildController extends \Controller {
         $this->step = 2;
         $this->SecondaryForm();
         $this->prevLink = $this->Link('primaryformstart');
+        \SSViewer::set_source_file_comments(false);
 
         return $this->renderWith('BuildControllerForm');
     }
@@ -140,6 +142,8 @@ abstract class BuildController extends \Controller {
     function results()
     {
         $this->finalData = $this->processedFormData($this->retrieveData());
+        \SSViewer::set_source_file_comments(false);
+
         return \SS_HTTPRequest::send_file(
             $this->renderWith($this->resultsTemplateForBuilder()),
             $this->finalData->Name.'.php'

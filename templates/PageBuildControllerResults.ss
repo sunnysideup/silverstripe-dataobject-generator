@@ -35,7 +35,7 @@ class $Name extends $Extends
     #######################
     ### CMS Edit Section
     #######################
-    
+
     public function CMSAddLink()
     {
         return '/admin/pages/add/';
