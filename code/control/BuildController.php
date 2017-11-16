@@ -173,11 +173,20 @@ abstract class BuildController extends \Controller {
         return $this->prevLink;
     }
 
+    protected function ClassNameForObject()
+    {
+        if(isset($this->finalData->Name)) {
+            return $this->finalData->Name;
+        } else {
+            return 'self::$class';
+        }
+    }
+
     function MyCanMethodBuilder($type, $value) {
         if($value === 'parent') {
             return null;
         } elseif($value === 'one') {
-            $str = 'self::get()->count() ? false : true;';
+            $str = 'DataObject::get_one($this->class) ? false : true;';
         } elseif($value === 'true') {
             $str = 'true;';
         } elseif($value === 'false') {
