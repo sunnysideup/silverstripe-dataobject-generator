@@ -21,6 +21,7 @@ abstract class BuildController extends \Controller {
         'dosecondaryform' => true,
         'results' => true,
         'startover' => true,
+        'loadtemplate' => true,
         'debug' => true
     ];
 
@@ -43,6 +44,11 @@ abstract class BuildController extends \Controller {
             '/'.$action;
     }
 
+    public function LoadTemplateLink($className = '')
+    {
+        return $this->Link('loadtemplate').'?classname='.$className;
+    }
+
     public function Title()
     {
         return 'Build a '.$this->myBaseClass.' - Step '.$this->step.' of 2';
@@ -59,6 +65,47 @@ abstract class BuildController extends \Controller {
         $this->saveData('_PrimaryForm', null);
         $this->saveData('_SecondaryForm', null);
         return $this->redirect($this->link('primaryformstart'));
+    }
+
+    public function loadtemplate($request)
+    {
+        $className = $request->getVar('classname');
+        if(class_exists($className)) {
+            $obj = \Injector::inst()->get($className);
+            $primaryData = $this->turnStaticsIntoSessionData('primaryThingsToBuild', $className);
+            $primaryData['Name'] = $className;
+            $extends = get_parent_class($className);
+            $primaryData['Extends'] = $extends;
+            $primaryData['singular_name'] = $obj->i18n_singular_name();
+            $primaryData['plural_name'] = $obj->i18n_plural_name();
+            $this->saveData('_PrimaryForm', $primaryData);
+
+            $secondaryData = $this->turnStaticsIntoSessionData('secondaryThingsToBuild', $className);
+            $this->saveData('_SecondaryForm', $secondaryData);
+
+            return $this->redirect($this->link('primaryformstart'));
+        }
+    }
+
+    protected function turnStaticsIntoSessionData($method, $className) {
+        $data = [];
+        $thingsToBuild = $this->$method();
+        foreach($thingsToBuild as $static) {
+            $varName = $static['Name'];
+            $varValue = \Config::inst()->get($className, $varName);
+            if(is_array($varValue)) {
+                $count = 0;
+                foreach($varValue as $varInnerKey => $varInnerValue) {
+                    $count++;
+                    $data[$varName.'__KEY__'.$count] = $varInnerKey;
+                    $data[$varName.'__VALUE__'.$count] = trim(preg_replace("/\([^)]+\)/","",$varInnerValue));
+                }
+            } else {
+                $data[$varName] = $varValue;
+            }
+        }
+
+        return $data;
     }
 
     /**
@@ -215,10 +262,15 @@ abstract class BuildController extends \Controller {
 
         if($isPrimary) {
             $toBuild = $this->primaryThingsToBuild();
+            $possibleExtensions = $this->myAPI()->PossibleRelationsWithBaseClass($this->myBaseClass);
+            $finalFields->push(\HeaderField::create('Based On (OPTIONAL) ...'));
+            $possibleBasedOn = $possibleExtensions;
+            unset($possibleBasedOn['DataObject']);
+            $possibleBasedOn = ['' => '--- PRELOAD VALUES FROM ---'] + $possibleBasedOn;
+            $finalFields->push(\DropdownField::create('Template', '', $possibleBasedOn));
             $finalFields->push(\HeaderField::create('Name your '.$this->myBaseClass));
             $finalFields->push(\TextField::create('Name', ''));
             $finalFields->push(\HeaderField::create('Extends'));
-            $possibleExtensions = $this->myAPI()->PossibleRelationsWithBaseClass($this->myBaseClass);
             asort($possibleExtensions);
             $finalFields->push(
                 \DropdownField::create(
@@ -240,10 +292,10 @@ abstract class BuildController extends \Controller {
         $count = 0;
         //build fields ...
         foreach($toBuild as $item) {
-            $name = $item[0];
-            $sourceMethod1 = $item[1];
-            $sourceMethod2 = $item[2];
-            $isMultiple = $item[3];
+            $name = $item['Name'];
+            $sourceMethod1 = $item['SourceMethod1'];
+            $sourceMethod2 = $item['SourceMethod2'];
+            $isMultiple = $item['IsMultiple'];
 
 
             //work out style
@@ -450,7 +502,20 @@ abstract class BuildController extends \Controller {
 
     protected function saveData($name, $data)
     {
+        unset($data['url']);
+        unset($data['SecurityID']);
+        if(is_array($data)) {
+            foreach($data as $key => $value) {
+                if (strpos($key, 'action_') === 0) {
+                    unset($data[$key]);
+                }
+            }
+        }
         $var = $this->Config()->get('form_data_session_variable');
+        \Session::clear($var.$name);
+        \Session::save();
+        \Session::set($var.$name, null);
+        \Session::save();
         \Session::set($var.$name, $data);
         \Session::save();
     }
@@ -558,6 +623,25 @@ abstract class BuildController extends \Controller {
         $class = $this->apiProvider;
 
         return $class::inst($this->myBaseClass, $this->processedFormData());
+    }
+
+    protected function addKeysToThingsToBuild($array)
+    {
+        $newArray = [];
+        $fields = [
+            'Name',
+            'SourceMethod1',
+            'SourceMethod2',
+            'IsMultiple'
+        ];
+        foreach($array as $arrayRowKey => $arrayRowValues){
+            $newArray[$arrayRowKey] = [];
+            foreach($arrayRowValues as $arrayColumnKey => $arrayColumnValue) {
+                $newArray[$arrayRowKey][$fields[$arrayColumnKey]] = $arrayColumnValue;
+            }
+        }
+
+        return $newArray;
     }
 
 

@@ -82,19 +82,19 @@ class API extends \Object
                 if (substr($class, 0, 2) == 'DB') {
                     $class = substr($class, 2, strlen($class));
                 }
-                if (substr($class, 0, 3) == 'SS_') {
+                elseif (substr($class, 0, 3) == 'SS_') {
                     $class = substr($class, 3, strlen($class));
                 }
-                if ('Varchar' === $class) {
-                    $class = 'Varchar(n)';
+                elseif ('Varchar' === $class) {
+                    $class = 'Varchar';
                 }
-                if ('HTMLVarchar' === $class) {
-                    $class = 'HTMLVarchar(n)';
+                elseif ('HTMLVarchar' === $class) {
+                    $class = 'HTMLVarchar(255)';
                 }
-                if ('Enum' === $class) {
+                elseif ('Enum' === $class) {
                     $class = 'Enum(\\\'Foo,Bar\\\', \\\'FOO\\\')';
                 }
-                if ('MultiEnum' === $class) {
+                elseif ('MultiEnum' === $class) {
                     $class = 'MultiEnum(\\\'Foo,Bar\\\', \\\'FOO\\\')';
                 }
                 if (
@@ -259,9 +259,12 @@ class API extends \Object
         } else {
             $rootClass = $this->rootBaseClass;
         }
-        return
+        $list =
             [$rootClass => $rootClass] +
             $this->possibleRelations();
+        asort($list);
+
+        return $list;
     }
 
     protected $_classesCache = [];

@@ -234,7 +234,22 @@ footer p a {
                             return false;
                         }
                     );
-
+                jQuery('select[name="Template"]').on(
+                    'change',
+                    function(event) {
+                        var selection = jQuery(this).val();
+                        if(typeof selection === 'string' && selection.length > 0) {
+                            if (confirm('Loading a template will remove any data you have entered already.  Would you like to continue?')) {
+                                // Save it!
+                                var url = '$LoadTemplateLink' + selection;
+                                window.location = url;
+                                jQuery('body').fadeOut();
+                            } else {
+                                // Do nothing!
+                            }
+                        }
+                    }
+                );
 
             }
         );

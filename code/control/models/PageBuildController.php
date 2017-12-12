@@ -9,7 +9,7 @@ class PageBuildController extends BuildController
 
     protected function primaryThingsToBuild()
     {
-        return [
+        return $this->addKeysToThingsToBuild([
             ['singular_name',       'text',                                      '',                       false],
             ['plural_name',         'text',                                      '',                       false],
             ['db',                  'text',                                     'dbFields',                true],
@@ -18,12 +18,12 @@ class PageBuildController extends BuildController
             ['has_many',            'text',                                     'possibleRelations',       true],
             ['many_many',           'text',                                     'possibleRelations',       true],
             ['belongs_many_many',   'text',                                     'possibleRelations',       true]
-        ];
+        ]);
     }
 
     protected function secondaryThingsToBuild()
     {
-        return [
+        return $this->addKeysToThingsToBuild([
             ['description',         'text',                                      '',                       false],
             ['can_create',          'TrueOrFalseList',                           '',                       false],
             ['can_be_root',         'TrueOrFalseList',                           '',                       false],
@@ -44,6 +44,6 @@ class PageBuildController extends BuildController
             ['canView',             'canOptions',                                '',                       false],
             ['canEdit',             'canOptions',                                '',                       false],
             ['canDelete',           'canOptions',                                '',                       false]
-        ];
+        ]);
     }
 }
