@@ -63,6 +63,11 @@
         <% loop $indexes %>'$Key' => <% if $UnquotedValue %>$UnquotedValue<% else %>'$Value'<% end_if %><% if $Last %><% else %>,
         <% end_if %><% end_loop %>
     ];
+    <% end_if %><% if $defaults %>
+    private static \$defaults = [
+        <% loop $defaults %>'$Key' => <% if $UnquotedValue %>$UnquotedValue<% else %>'$Value'<% end_if %><% if $Last %><% else %>,
+        <% end_if %><% end_loop %>
+    ];
     <% end_if %><% if $default_sort %>
     private static \$default_sort = [
         <% loop $default_sort %>'$Key' => <% if $UnquotedValue %>$UnquotedValue<% else %>'$Value'<% end_if %><% if $Last %><% else %>,
@@ -154,7 +159,8 @@
         \$result = parent::validate();
         \$fieldLabels = \$this->FieldLabels();
         \$indexes = \$this->Config()->get('indexes');
-        foreach (\$this->Config()->get('required_fields') as \$field) {
+        \$requiredFields = \$this->Config()->get('required_fields');
+        if(is_array(\$requiredFields)) {
             \$value = \$this->\$field;
             if(! \$value) {
                 \$fieldWithoutID = \$field;
