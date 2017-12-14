@@ -161,36 +161,38 @@
         \$indexes = \$this->Config()->get('indexes');
         \$requiredFields = \$this->Config()->get('required_fields');
         if(is_array(\$requiredFields)) {
-            \$value = \$this->\$field;
-            if(! \$value) {
-                \$fieldWithoutID = \$field;
-                if(substr(\$fieldWithoutID, -2) === 'ID') {
-                    \$fieldWithoutID = substr(\$fieldWithoutID, 0, -2);
-                }
-                \$myName = isset(\$fieldLabels[\$fieldWithoutID]) ? \$fieldLabels[\$fieldWithoutID] : \$fieldWithoutID;
-                \$result->error(
-                    _t(
-                        '{$Name}.'.\$field.'_REQUIRED',
-                        \$myName.' is required'
-                    ),
-                    'REQUIRED_{$Name}_'.\$field
-                );
-            }
-            if (isset(\$indexes[\$field]) && isset(\$indexes[\$field]['type']) && \$indexes[\$field]['type'] === 'unique') {
-                \$id = (empty(\$this->ID) ? 0 : \$this->ID);
-                \$count = $Name::get()
-                    ->filter(array(\$field => \$value))
-                    ->exclude(array('ID' => \$id))
-                    ->count();
-                if(\$count > 0) {
-                    \$myName = \$fieldLabels['\$field'];
+            foreach(\$requiredFields as \$field) {
+                \$value = \$this->\$field;
+                if(! \$value) {
+                    \$fieldWithoutID = \$field;
+                    if(substr(\$fieldWithoutID, -2) === 'ID') {
+                        \$fieldWithoutID = substr(\$fieldWithoutID, 0, -2);
+                    }
+                    \$myName = isset(\$fieldLabels[\$fieldWithoutID]) ? \$fieldLabels[\$fieldWithoutID] : \$fieldWithoutID;
                     \$result->error(
                         _t(
-                            '{$Name}.'.\$field.'_UNIQUE',
-                            \$myName.' needs to be unique'
+                            '{$Name}.'.\$field.'_REQUIRED',
+                            \$myName.' is required'
                         ),
-                        'UNIQUE_{$Name}_'.\$field
+                        'REQUIRED_{$Name}_'.\$field
                     );
+                }
+                if (isset(\$indexes[\$field]) && isset(\$indexes[\$field]['type']) && \$indexes[\$field]['type'] === 'unique') {
+                    \$id = (empty(\$this->ID) ? 0 : \$this->ID);
+                    \$count = $Name::get()
+                        ->filter(array(\$field => \$value))
+                        ->exclude(array('ID' => \$id))
+                        ->count();
+                    if(\$count > 0) {
+                        \$myName = \$fieldLabels['\$field'];
+                        \$result->error(
+                            _t(
+                                '{$Name}.'.\$field.'_UNIQUE',
+                                \$myName.' needs to be unique'
+                            ),
+                            'UNIQUE_{$Name}_'.\$field
+                        );
+                    }
                 }
             }
         }
