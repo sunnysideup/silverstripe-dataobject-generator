@@ -81,20 +81,15 @@ class API extends \Object
             foreach ($list as $class) {
                 if (substr($class, 0, 2) == 'DB') {
                     $class = substr($class, 2, strlen($class));
-                }
-                elseif (substr($class, 0, 3) == 'SS_') {
+                } elseif (substr($class, 0, 3) == 'SS_') {
                     $class = substr($class, 3, strlen($class));
-                }
-                elseif ('Varchar' === $class) {
+                } elseif ('Varchar' === $class) {
                     $class = 'Varchar';
-                }
-                elseif ('HTMLVarchar' === $class) {
+                } elseif ('HTMLVarchar' === $class) {
                     $class = 'HTMLVarchar(255)';
-                }
-                elseif ('Enum' === $class) {
+                } elseif ('Enum' === $class) {
                     $class = 'Enum(\\\'Foo,Bar\\\', \\\'FOO\\\')';
-                }
-                elseif ('MultiEnum' === $class) {
+                } elseif ('MultiEnum' === $class) {
                     $class = 'MultiEnum(\\\'Foo,Bar\\\', \\\'FOO\\\')';
                 }
                 if (
@@ -254,7 +249,7 @@ class API extends \Object
 
     public function PossibleRelationsWithBaseClass($rootClass = '')
     {
-        if($rootClass) {
+        if ($rootClass) {
             //
         } else {
             $rootClass = $this->rootBaseClass;
@@ -275,7 +270,7 @@ class API extends \Object
      */
     public function PossibleRelations($rootClass = '')
     {
-        if($rootClass) {
+        if ($rootClass) {
             //
         } else {
             $rootClass = $this->rootBaseClass;
@@ -436,5 +431,4 @@ class API extends \Object
             'false' => 'NO'
         ];
     }
-
 }
