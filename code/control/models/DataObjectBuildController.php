@@ -17,7 +17,6 @@ class DataObjectBuildController extends BuildController
                 $this->prependNullOption($this->myAPI()->modelAdminOptions())
             )
         ];
-
     }
 
 

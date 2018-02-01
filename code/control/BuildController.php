@@ -3,11 +3,8 @@
 
 namespace SunnySideUp\BuildDataObject;
 
-
-
-abstract class BuildController extends \Controller {
-
-
+abstract class BuildController extends \Controller
+{
     private static $form_data_session_variable = 'SunnySideUp\BuildDataObject\DataObjectBuildController';
 
     private static $url_segment = 'build';
@@ -35,7 +32,7 @@ abstract class BuildController extends \Controller {
 
     public function Link($action = null)
     {
-        if($action) {
+        if ($action) {
             $action .= '/';
         }
         return
@@ -70,7 +67,7 @@ abstract class BuildController extends \Controller {
     public function loadtemplate($request)
     {
         $className = $request->getVar('classname');
-        if(class_exists($className)) {
+        if (class_exists($className)) {
             $obj = \Injector::inst()->get($className);
             $primaryData = $this->turnStaticsIntoSessionData('primaryThingsToBuild', $className);
             $primaryData['Name'] = $className;
@@ -87,18 +84,19 @@ abstract class BuildController extends \Controller {
         }
     }
 
-    protected function turnStaticsIntoSessionData($method, $className) {
+    protected function turnStaticsIntoSessionData($method, $className)
+    {
         $data = [];
         $thingsToBuild = $this->$method();
-        foreach($thingsToBuild as $static) {
+        foreach ($thingsToBuild as $static) {
             $varName = $static['Name'];
             $varValue = \Config::inst()->get($className, $varName);
-            if(is_array($varValue)) {
+            if (is_array($varValue)) {
                 $count = 0;
-                foreach($varValue as $varInnerKey => $varInnerValue) {
+                foreach ($varValue as $varInnerKey => $varInnerValue) {
                     $count++;
                     $data[$varName.'__KEY__'.$count] = $varInnerKey;
-                    $data[$varName.'__VALUE__'.$count] = trim(preg_replace("/\([^)]+\)/","",$varInnerValue));
+                    $data[$varName.'__VALUE__'.$count] = trim(preg_replace("/\([^)]+\)/", "", $varInnerValue));
                 }
             } else {
                 $data[$varName] = $varValue;
@@ -132,12 +130,12 @@ abstract class BuildController extends \Controller {
      */
     protected $finalData = null;
 
-    function index()
+    public function index()
     {
         return $this->redirect($this->Link('primaryformstart'));
     }
 
-    function primaryformstart()
+    public function primaryformstart()
     {
         $this->PrimaryForm();
         $this->prevLink = $this->Link('startover');
@@ -146,14 +144,14 @@ abstract class BuildController extends \Controller {
         return $this->renderWith('BuildControllerForm');
     }
 
-    function PrimaryForm()
+    public function PrimaryForm()
     {
         $this->form = $this->createForm('PrimaryForm', 'Build Model');
 
         return $this->form;
     }
 
-    function doprimaryform($data, $form)
+    public function doprimaryform($data, $form)
     {
         $this->saveData('_PrimaryForm', $data);
 
@@ -161,7 +159,7 @@ abstract class BuildController extends \Controller {
     }
 
 
-    function secondaryformstart()
+    public function secondaryformstart()
     {
         $this->step = 2;
         $this->SecondaryForm();
@@ -171,7 +169,7 @@ abstract class BuildController extends \Controller {
         return $this->renderWith('BuildControllerForm');
     }
 
-    function SecondaryForm()
+    public function SecondaryForm()
     {
         $this->form = $this->createForm('SecondaryForm', 'Download Example Class');
 
@@ -179,14 +177,14 @@ abstract class BuildController extends \Controller {
     }
 
 
-    function dosecondaryform($data, $form)
+    public function dosecondaryform($data, $form)
     {
         $this->saveData('_SecondaryForm', $data);
 
         return $this->redirect($this->Link('results'));
     }
 
-    function results()
+    public function results()
     {
         $this->finalData = $this->processedFormData($this->retrieveData());
         \SSViewer::set_source_file_comments(false);
@@ -197,7 +195,7 @@ abstract class BuildController extends \Controller {
         );
     }
 
-    function debug()
+    public function debug()
     {
         $this->finalData = $this->processedFormData($this->retrieveData());
         print_r($this->CanMethodBuilder('canEdit'));
@@ -205,38 +203,39 @@ abstract class BuildController extends \Controller {
         die('-----------------------------');
     }
 
-    function Form()
+    public function Form()
     {
         return $this->form;
     }
 
-    function FinalData()
+    public function FinalData()
     {
         return $this->finalData;
     }
 
-    function PrevLink()
+    public function PrevLink()
     {
         return $this->prevLink;
     }
 
     protected function ClassNameForObject()
     {
-        if(isset($this->finalData->Name)) {
+        if (isset($this->finalData->Name)) {
             return $this->finalData->Name;
         } else {
             return 'self::$class';
         }
     }
 
-    function MyCanMethodBuilder($type, $value) {
-        if($value === 'parent') {
+    public function MyCanMethodBuilder($type, $value)
+    {
+        if ($value === 'parent') {
             return null;
-        } elseif($value === 'one') {
+        } elseif ($value === 'one') {
             $str = 'DataObject::get_one($this->class) ? false : true;';
-        } elseif($value === 'true') {
+        } elseif ($value === 'true') {
             $str = 'true;';
-        } elseif($value === 'false') {
+        } elseif ($value === 'false') {
             $str = 'false;';
         } else {
             $str = 'Permission::check(\''.$value.'\', \'any\', $member);';
@@ -248,10 +247,10 @@ abstract class BuildController extends \Controller {
 
     protected function createForm($formName, $actionTitle)
     {
-        if($formName === 'PrimaryForm') {
+        if ($formName === 'PrimaryForm') {
             $isPrimary = true;
             $isSecond = false;
-        } elseif($formName === 'SecondaryForm') {
+        } elseif ($formName === 'SecondaryForm') {
             $isPrimary = false;
             $isSecond = true;
         } else {
@@ -260,7 +259,7 @@ abstract class BuildController extends \Controller {
 
         $finalFields = \FieldList::create();
 
-        if($isPrimary) {
+        if ($isPrimary) {
             $toBuild = $this->primaryThingsToBuild();
             $possibleExtensions = $this->myAPI()->PossibleRelationsWithBaseClass($this->myBaseClass);
             $finalFields->push(\HeaderField::create('Based On (OPTIONAL) ...'));
@@ -280,7 +279,7 @@ abstract class BuildController extends \Controller {
                 )
             );
             $additionalFields = $this->additionalPrimaryFields();
-            foreach($additionalFields as $additionalField) {
+            foreach ($additionalFields as $additionalField) {
                 $finalFields->push($additionalField);
             }
         } else {
@@ -291,7 +290,7 @@ abstract class BuildController extends \Controller {
 
         $count = 0;
         //build fields ...
-        foreach($toBuild as $item) {
+        foreach ($toBuild as $item) {
             $name = $item['Name'];
             $sourceMethod1 = $item['SourceMethod1'];
             $sourceMethod2 = $item['SourceMethod2'];
@@ -300,11 +299,11 @@ abstract class BuildController extends \Controller {
 
             //work out style
             $hasKeyAndValue = false;
-            if($sourceMethod1 && $sourceMethod2) {
+            if ($sourceMethod1 && $sourceMethod2) {
                 $hasKeyAndValue = true;
             }
             $formFields[$count] = [];
-            if($isMultiple) {
+            if ($isMultiple) {
                 $max = 12;
             } else {
                 $max = 1;
@@ -317,14 +316,14 @@ abstract class BuildController extends \Controller {
 
 
             //work out sources
-            if($sourceMethod1 && $this->myAPI()->hasMethod($sourceMethod1)) {
+            if ($sourceMethod1 && $this->myAPI()->hasMethod($sourceMethod1)) {
                 $source1 = $this->myAPI()->$sourceMethod1();
             } else {
                 $source1 = null;
             }
-            if($sourceMethod2 && $this->myAPI()->hasMethod($sourceMethod2)) {
+            if ($sourceMethod2 && $this->myAPI()->hasMethod($sourceMethod2)) {
                 $source2 = $this->myAPI()->$sourceMethod2();
-            } elseif($sourceMethod2) {
+            } elseif ($sourceMethod2) {
                 $source2 = null;
             } else {
                 $source2 = 'ignore';
@@ -332,9 +331,9 @@ abstract class BuildController extends \Controller {
 
             //work out field names
 
-            for($i = 1; $i <= $max; $i++) {
-                if($hasKeyAndValue) {
-                    if($isMultiple) {
+            for ($i = 1; $i <= $max; $i++) {
+                if ($hasKeyAndValue) {
+                    if ($isMultiple) {
                         $nameKey = $name.'__KEY__'.$i;
                         $nameValue = $name.'__VALUE__'.$i;
                         $formFieldsWithMultiple[$nameKey] = $nameKey;
@@ -343,7 +342,7 @@ abstract class BuildController extends \Controller {
                         $nameValue = $name.'__VALUE__';
                     }
                 } else {
-                    if($isMultiple) {
+                    if ($isMultiple) {
                         $nameKey = $name.$i;
                         $nameValue = '';
                         $formFieldsWithMultiple[$nameKey] = $nameKey;
@@ -352,9 +351,9 @@ abstract class BuildController extends \Controller {
                         $nameValue = '';
                     }
                 }
-                if($hasKeyAndValue) {
+                if ($hasKeyAndValue) {
                     //key field
-                    if($source1) {
+                    if ($source1) {
                         $formFields[$count][$i]['KEY'] = [
                             $nameKey,
                             'DropdownField',
@@ -368,7 +367,7 @@ abstract class BuildController extends \Controller {
                     }
 
                     //value field
-                    if($source2) {
+                    if ($source2) {
                         $formFields[$count][$i]['VALUE'] = [
                             $nameValue,
                             'DropdownField',
@@ -382,7 +381,7 @@ abstract class BuildController extends \Controller {
                     }
                 } else {
                     //keys only!
-                    if($source1) {
+                    if ($source1) {
                         $formFields[$count][$i] = [
                             $nameKey,
                             'DropdownField',
@@ -396,7 +395,7 @@ abstract class BuildController extends \Controller {
                     }
                 }
             }
-            if($i > 2) {
+            if ($i > 2) {
                 $formFields[$count][$i + 1] = [
                     $name.'_ADD_'.$i,
                     'LiteralField',
@@ -412,35 +411,35 @@ abstract class BuildController extends \Controller {
         }
         //create fields ...
         $count = 0;
-        foreach($formFields as $outerCount => $subFieldList) {
+        foreach ($formFields as $outerCount => $subFieldList) {
             $count++;
             $compositeField = \CompositeField::create();
             $compositeField->addExtraClass('OuterComposite pos'.$count);
             $innerCount = 0;
-            foreach($subFieldList as $innerCount => $fieldDetails) {
+            foreach ($subFieldList as $innerCount => $fieldDetails) {
                 $innerCount++;
-                if(isset($fieldDetails['KEY']) && isset($fieldDetails['VALUE'])) {
+                if (isset($fieldDetails['KEY']) && isset($fieldDetails['VALUE'])) {
                     $subCompositeField = \CompositeField::create();
                     $subCompositeField->addExtraClass('InnerComposite pos'.$innerCount);
-                    foreach($fieldDetails as $fieldDetailsInner) {
+                    foreach ($fieldDetails as $fieldDetailsInner) {
                         $fieldName = $fieldDetailsInner[0];
                         $fieldType = $fieldDetailsInner[1];
                         $additionalClasses = [];
-                        if(strpos($fieldName, '__KEY__')) {
+                        if (strpos($fieldName, '__KEY__')) {
                             $additionalClasses[] = 'mykey';
                         }
-                        if(strpos($fieldName, '__VALUE__')) {
+                        if (strpos($fieldName, '__VALUE__')) {
                             $additionalClasses[] = 'myvalue';
                         }
-                        if(isset($fieldDetailsInner[2])) {
+                        if (isset($fieldDetailsInner[2])) {
                             $source = $fieldDetailsInner[2];
                             asort($source);
-                            $source = $this->prependNullOption( $source );
+                            $source = $this->prependNullOption($source);
                             $tempField = $fieldType::create($fieldName, '', $source);
                         } else {
                             $tempField = $fieldType::create($fieldName, '');
                         }
-                        if(count($additionalClasses)) {
+                        if (count($additionalClasses)) {
                             $classes = implode(' ', $additionalClasses);
                             $tempField->addExtraClass($classes);
                         }
@@ -449,28 +448,28 @@ abstract class BuildController extends \Controller {
                     $compositeField->push($subCompositeField);
                 } else {
                     $fieldName = $fieldDetails[0];
-                    if(isset($formFieldsWithMultiple[$fieldName])) {
+                    if (isset($formFieldsWithMultiple[$fieldName])) {
                         $subCompositeField = \CompositeField::create();
                         $subCompositeField->addExtraClass('InnerComposite pos'.$innerCount);
                     } else {
                         $subCompositeField = null;
                     }
                     $fieldType = $fieldDetails[1];
-                    if($fieldType === 'DropdownField') {
+                    if ($fieldType === 'DropdownField') {
                         $source = $fieldDetails[2];
                         asort($source);
                         $source = $this->prependNullOption($source);
                         $myTempfield = $fieldType::create($fieldName, '', $source);
-                    } elseif($fieldType === 'HeaderField') {
+                    } elseif ($fieldType === 'HeaderField') {
                         $title = str_replace('_', ' ', $fieldDetails[2]);
                         $myTempfield = $fieldType::create($fieldName, $title);
-                    } elseif($fieldType === 'LiteralField') {
+                    } elseif ($fieldType === 'LiteralField') {
                         $title = $fieldDetails[2];
                         $myTempfield = $fieldType::create($fieldName, $title);
                     } else {
                         $myTempfield = $fieldType::create($fieldName, '');
                     }
-                    if($subCompositeField) {
+                    if ($subCompositeField) {
                         $subCompositeField->push($myTempfield);
                         $compositeField->push($subCompositeField);
                     } else {
@@ -504,8 +503,8 @@ abstract class BuildController extends \Controller {
     {
         unset($data['url']);
         unset($data['SecurityID']);
-        if(is_array($data)) {
-            foreach($data as $key => $value) {
+        if (is_array($data)) {
+            foreach ($data as $key => $value) {
                 if (strpos($key, 'action_') === 0) {
                     unset($data[$key]);
                 }
@@ -524,7 +523,7 @@ abstract class BuildController extends \Controller {
 
     protected function retrieveData()
     {
-        if(! $this->_data) {
+        if (! $this->_data) {
             $var = $this->Config()->get('form_data_session_variable');
             $retrieveDataPrimary = \Session::get($var.'_PrimaryForm');
             if ($retrieveDataPrimary && (is_array($retrieveDataPrimary) || is_object($retrieveDataPrimary))) {
@@ -546,39 +545,40 @@ abstract class BuildController extends \Controller {
 
     private $_processed_data = null;
 
-    protected function processedFormData($data = null) {
-        if(! $this->_processed_data) {
-            if(! $data) {
+    protected function processedFormData($data = null)
+    {
+        if (! $this->_processed_data) {
+            if (! $data) {
                 $data = $this->retrieveData();
             }
             $array = [];
-            foreach($data as $key => $value) {
-                if($key && $value) {
-                    if(
+            foreach ($data as $key => $value) {
+                if ($key && $value) {
+                    if (
                         strpos($key, '__KEY__') ||
                         strpos($key, '__VALUE__')
                     ) {
                         $parts = explode('__', $key);
-                        if(!isset($array[$parts[0]])) {
+                        if (!isset($array[$parts[0]])) {
                             $array[$parts[0]] = [];
                         }
-                        if(! isset($array[$parts[0]][$parts[2]])) {
+                        if (! isset($array[$parts[0]][$parts[2]])) {
                             $array[$parts[0]][$parts[2]] = [];
                         }
                         $array[$parts[0]][$parts[2]][$parts[1]] = $value;
-                    } elseif(substr($key, 0, 3) === 'can') {
+                    } elseif (substr($key, 0, 3) === 'can') {
                         $array[$key] = $this->MyCanMethodBuilder($key, $value);
                     } else {
                         $array[$key] = $value;
                     }
                 }
             }
-            foreach($array as $field => $values) {
+            foreach ($array as $field => $values) {
                 $alInner = \ArrayList::create();
-                if(is_array($values)) {
-                    foreach($values as $key => $valuePairs) {
-                        if(isset($valuePairs['KEY']) && isset($valuePairs['VALUE'])) {
-                            if($valuePairs['VALUE'] == 'true') {
+                if (is_array($values)) {
+                    foreach ($values as $key => $valuePairs) {
+                        if (isset($valuePairs['KEY']) && isset($valuePairs['VALUE'])) {
+                            if ($valuePairs['VALUE'] == 'true') {
                                 $valuePairArray = [
                                     'Key' => $valuePairs['KEY'],
                                     'UnquotedValue' => $valuePairs['VALUE'],
@@ -634,15 +634,13 @@ abstract class BuildController extends \Controller {
             'SourceMethod2',
             'IsMultiple'
         ];
-        foreach($array as $arrayRowKey => $arrayRowValues){
+        foreach ($array as $arrayRowKey => $arrayRowValues) {
             $newArray[$arrayRowKey] = [];
-            foreach($arrayRowValues as $arrayColumnKey => $arrayColumnValue) {
+            foreach ($arrayRowValues as $arrayColumnKey => $arrayColumnValue) {
                 $newArray[$arrayRowKey][$fields[$arrayColumnKey]] = $arrayColumnValue;
             }
         }
 
         return $newArray;
     }
-
-
 }
