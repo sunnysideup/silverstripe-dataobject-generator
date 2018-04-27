@@ -158,7 +158,7 @@ class API extends \Object
         $list += $this->retrieveDBFields('has_one');
         foreach ($list as $key => $value) {
             if ($value === 'Image' || is_subclass_of($value, 'Image')) {
-                $ar[$key.'.Thumbnail'] = $key.'.Thumbnail';
+                $ar[$key.'.CMSThumbnail'] = $key.'.CMSThumbnail';
             } else {
                 $ar[$key.'.Title'] = $key.'.Title';
             }
