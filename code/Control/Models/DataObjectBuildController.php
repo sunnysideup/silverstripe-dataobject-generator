@@ -2,17 +2,22 @@
 
 
 namespace SunnySideUp\BuildDataObject;
+use SilverStripe\ORM\DataObject;
+use SilverStripe\Forms\HeaderField;
+use SilverStripe\Admin\ModelAdmin;
+use SilverStripe\Forms\DropdownField;
+
 
 class DataObjectBuildController extends BuildController
 {
-    protected $myBaseClass = 'DataObject';
+    protected $myBaseClass = DataObject::class;
 
     protected function additionalPrimaryFields()
     {
         return [
-            \HeaderField::create('Model Admin Used'),
-            \DropdownField::create(
-                'ModelAdmin',
+            HeaderField::create('Model Admin Used'),
+            DropdownField::create(
+                ModelAdmin::class,
                 '',
                 $this->prependNullOption($this->myAPI()->modelAdminOptions())
             )

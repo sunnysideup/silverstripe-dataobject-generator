@@ -2,8 +2,28 @@
 
 
 namespace SunnySideUp\BuildDataObject;
+use SilverStripe\ORM\DataObject;
+use SilverStripe\Control\Director;
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Core\Config\Config;
+use SilverStripe\View\SSViewer;
+use SilverStripe\Control\HTTPRequest;
+use SilverStripe\ORM\FieldType\DBField;
+use SilverStripe\Forms\FieldList;
+use SilverStripe\Forms\HeaderField;
+use SilverStripe\Forms\DropdownField;
+use SilverStripe\Forms\TextField;
+use SilverStripe\Forms\LiteralField;
+use SilverStripe\Forms\CompositeField;
+use SilverStripe\Forms\FormAction;
+use SilverStripe\Forms\Form;
+use SilverStripe\Control\Session;
+use SilverStripe\ORM\ArrayList;
+use SilverStripe\View\ArrayData;
+use SilverStripe\Control\Controller;
 
-abstract class BuildController extends \Controller
+
+abstract class BuildController extends Controller
 {
     private static $form_data_session_variable = 'SunnySideUp\BuildDataObject\DataObjectBuildController';
 
@@ -22,7 +42,7 @@ abstract class BuildController extends \Controller
         'debug' => true
     ];
 
-    protected $myBaseClass = 'DataObject';
+    protected $myBaseClass = DataObject::class;
 
     protected $apiProvider = 'SunnySideUp\BuildDataObject\API';
 
@@ -54,7 +74,7 @@ abstract class BuildController extends \Controller
 
     public function jQueryLink()
     {
-        return \Director::absoluteURL('/framework/thirdparty/jquery/jquery.js');
+        return Director::absoluteURL('/framework/thirdparty/jquery/jquery.js');
     }
 
     public function startover()
@@ -68,7 +88,7 @@ abstract class BuildController extends \Controller
     {
         $className = $request->getVar('classname');
         if (class_exists($className)) {
-            $obj = \Injector::inst()->get($className);
+            $obj = Injector::inst()->get($className);
             $primaryData = $this->turnStaticsIntoSessionData('primaryThingsToBuild', $className);
             $primaryData['Name'] = $className;
             $extends = get_parent_class($className);
@@ -90,7 +110,7 @@ abstract class BuildController extends \Controller
         $thingsToBuild = $this->$method();
         foreach ($thingsToBuild as $static) {
             $varName = $static['Name'];
-            $varValue = \Config::inst()->get($className, $varName);
+            $varValue = Config::inst()->get($className, $varName);
             if (is_array($varValue)) {
                 $count = 0;
                 foreach ($varValue as $varInnerKey => $varInnerValue) {
@@ -139,7 +159,7 @@ abstract class BuildController extends \Controller
     {
         $this->PrimaryForm();
         $this->prevLink = $this->Link('startover');
-        \SSViewer::set_source_file_comments(false);
+        SSViewer::set_source_file_comments(false);
 
         return $this->renderWith('BuildControllerForm');
     }
@@ -164,7 +184,7 @@ abstract class BuildController extends \Controller
         $this->step = 2;
         $this->SecondaryForm();
         $this->prevLink = $this->Link('primaryformstart');
-        \SSViewer::set_source_file_comments(false);
+        SSViewer::set_source_file_comments(false);
 
         return $this->renderWith('BuildControllerForm');
     }
@@ -187,9 +207,9 @@ abstract class BuildController extends \Controller
     public function results()
     {
         $this->finalData = $this->processedFormData($this->retrieveData());
-        \SSViewer::set_source_file_comments(false);
+        SSViewer::set_source_file_comments(false);
 
-        return \SS_HTTPRequest::send_file(
+        return HTTPRequest::send_file(
             $this->renderWith($this->resultsTemplateForBuilder()),
             $this->finalData->Name.'.php'
         );
@@ -241,7 +261,7 @@ abstract class BuildController extends \Controller
             $str = 'Permission::check(\''.$value.'\', \'any\', $member);';
         }
 
-        return \DBField::create_field('Varchar', $str);
+        return DBField::create_field('Varchar', $str);
     }
 
 
@@ -257,22 +277,22 @@ abstract class BuildController extends \Controller
             user_error('Set right form type: '.$formName.' is not valid');
         }
 
-        $finalFields = \FieldList::create();
+        $finalFields = FieldList::create();
 
         if ($isPrimary) {
             $toBuild = $this->primaryThingsToBuild();
             $possibleExtensions = $this->myAPI()->PossibleRelationsWithBaseClass($this->myBaseClass);
-            $finalFields->push(\HeaderField::create('Based On (OPTIONAL) ...'));
+            $finalFields->push(HeaderField::create('Based On (OPTIONAL) ...'));
             $possibleBasedOn = $possibleExtensions;
-            unset($possibleBasedOn['DataObject']);
+            unset($possibleBasedOn[DataObject::class]);
             $possibleBasedOn = ['' => '--- PRELOAD VALUES FROM ---'] + $possibleBasedOn;
-            $finalFields->push(\DropdownField::create('Template', '', $possibleBasedOn));
-            $finalFields->push(\HeaderField::create('Name your '.$this->myBaseClass));
-            $finalFields->push(\TextField::create('Name', ''));
-            $finalFields->push(\HeaderField::create('Extends'));
+            $finalFields->push(DropdownField::create('Template', '', $possibleBasedOn));
+            $finalFields->push(HeaderField::create('Name your '.$this->myBaseClass));
+            $finalFields->push(TextField::create('Name', ''));
+            $finalFields->push(HeaderField::create('Extends'));
             asort($possibleExtensions);
             $finalFields->push(
-                \DropdownField::create(
+                DropdownField::create(
                     'Extends',
                     '',
                     $possibleExtensions
@@ -310,7 +330,7 @@ abstract class BuildController extends \Controller
             }
             $formFields[$count][0] = [
                 $name.'_HEADER',
-                'HeaderField',
+                HeaderField::class,
                 $name
             ];
 
@@ -356,13 +376,13 @@ abstract class BuildController extends \Controller
                     if ($source1) {
                         $formFields[$count][$i]['KEY'] = [
                             $nameKey,
-                            'DropdownField',
+                            DropdownField::class,
                             $source1
                         ];
                     } else {
                         $formFields[$count][$i]['KEY'] = [
                             $nameKey,
-                            'TextField'
+                            TextField::class
                         ];
                     }
 
@@ -370,13 +390,13 @@ abstract class BuildController extends \Controller
                     if ($source2) {
                         $formFields[$count][$i]['VALUE'] = [
                             $nameValue,
-                            'DropdownField',
+                            DropdownField::class,
                             $source2
                         ];
                     } else {
                         $formFields[$count][$i]['VALUE'] = [
                             $nameValue,
-                            'TextField'
+                            TextField::class
                         ];
                     }
                 } else {
@@ -384,13 +404,13 @@ abstract class BuildController extends \Controller
                     if ($source1) {
                         $formFields[$count][$i] = [
                             $nameKey,
-                            'DropdownField',
+                            DropdownField::class,
                             $source1
                         ];
                     } else {
                         $formFields[$count][$i] = [
                             $nameKey,
-                            'TextField'
+                            TextField::class
                         ];
                     }
                 }
@@ -398,7 +418,7 @@ abstract class BuildController extends \Controller
             if ($i > 2) {
                 $formFields[$count][$i + 1] = [
                     $name.'_ADD_'.$i,
-                    'LiteralField',
+                    LiteralField::class,
                     '
                     <div class="CompositeField add-and-remove">
                         <a href="#" class="add first-add"><i class="material-icons">add_circle_outline</i></a>
@@ -413,13 +433,13 @@ abstract class BuildController extends \Controller
         $count = 0;
         foreach ($formFields as $outerCount => $subFieldList) {
             $count++;
-            $compositeField = \CompositeField::create();
+            $compositeField = CompositeField::create();
             $compositeField->addExtraClass('OuterComposite pos'.$count);
             $innerCount = 0;
             foreach ($subFieldList as $innerCount => $fieldDetails) {
                 $innerCount++;
                 if (isset($fieldDetails['KEY']) && isset($fieldDetails['VALUE'])) {
-                    $subCompositeField = \CompositeField::create();
+                    $subCompositeField = CompositeField::create();
                     $subCompositeField->addExtraClass('InnerComposite pos'.$innerCount);
                     foreach ($fieldDetails as $fieldDetailsInner) {
                         $fieldName = $fieldDetailsInner[0];
@@ -449,21 +469,21 @@ abstract class BuildController extends \Controller
                 } else {
                     $fieldName = $fieldDetails[0];
                     if (isset($formFieldsWithMultiple[$fieldName])) {
-                        $subCompositeField = \CompositeField::create();
+                        $subCompositeField = CompositeField::create();
                         $subCompositeField->addExtraClass('InnerComposite pos'.$innerCount);
                     } else {
                         $subCompositeField = null;
                     }
                     $fieldType = $fieldDetails[1];
-                    if ($fieldType === 'DropdownField') {
+                    if ($fieldType === DropdownField::class) {
                         $source = $fieldDetails[2];
                         asort($source);
                         $source = $this->prependNullOption($source);
                         $myTempfield = $fieldType::create($fieldName, '', $source);
-                    } elseif ($fieldType === 'HeaderField') {
+                    } elseif ($fieldType === HeaderField::class) {
                         $title = str_replace('_', ' ', $fieldDetails[2]);
                         $myTempfield = $fieldType::create($fieldName, $title);
-                    } elseif ($fieldType === 'LiteralField') {
+                    } elseif ($fieldType === LiteralField::class) {
                         $title = $fieldDetails[2];
                         $myTempfield = $fieldType::create($fieldName, $title);
                     } else {
@@ -479,11 +499,11 @@ abstract class BuildController extends \Controller
             }
             $finalFields->push($compositeField);
         }
-        $actions = \FieldList::create(
-            [\FormAction::create('do'.strtolower($formName), $actionTitle)]
+        $actions = FieldList::create(
+            [FormAction::create('do'.strtolower($formName), $actionTitle)]
         );
 
-        $form = \Form::create($this, $formName, $finalFields, $actions);
+        $form = Form::create($this, $formName, $finalFields, $actions);
         $form->setFormAction($this->Link($formName));
         $form->loadDataFrom($this->retrieveData());
 
@@ -511,37 +531,37 @@ abstract class BuildController extends \Controller
             }
         }
         $var = $this->Config()->get('form_data_session_variable');
-        \Session::inst()->/*
+        Session::inst()->/*
 ### @@@@ START UPGRADE REQUIRED @@@@ ###
 FIND: Session::
 NOTE: Please review update and fix as required 
 ### @@@@ END UPGRADE REQUIRED @@@@ ###
 */clear($var.$name);
-        \Session::inst()->/*
+        Session::inst()->/*
 ### @@@@ START UPGRADE REQUIRED @@@@ ###
 FIND: Session::
 NOTE: Please review update and fix as required 
 ### @@@@ END UPGRADE REQUIRED @@@@ ###
 */save();
-        \Session::inst()->/*
+        Session::inst()->/*
 ### @@@@ START UPGRADE REQUIRED @@@@ ###
 FIND: Session::
 NOTE: Please review update and fix as required 
 ### @@@@ END UPGRADE REQUIRED @@@@ ###
 */set($var.$name, null);
-        \Session::inst()->/*
+        Session::inst()->/*
 ### @@@@ START UPGRADE REQUIRED @@@@ ###
 FIND: Session::
 NOTE: Please review update and fix as required 
 ### @@@@ END UPGRADE REQUIRED @@@@ ###
 */save();
-        \Session::inst()->/*
+        Session::inst()->/*
 ### @@@@ START UPGRADE REQUIRED @@@@ ###
 FIND: Session::
 NOTE: Please review update and fix as required 
 ### @@@@ END UPGRADE REQUIRED @@@@ ###
 */set($var.$name, $data);
-        \Session::inst()->/*
+        Session::inst()->/*
 ### @@@@ START UPGRADE REQUIRED @@@@ ###
 FIND: Session::
 NOTE: Please review update and fix as required 
@@ -555,7 +575,7 @@ NOTE: Please review update and fix as required
     {
         if (! $this->_data) {
             $var = $this->Config()->get('form_data_session_variable');
-            $retrieveDataPrimary = \Session::inst()->/*
+            $retrieveDataPrimary = Session::inst()->/*
 ### @@@@ START UPGRADE REQUIRED @@@@ ###
 FIND: Session::
 NOTE: Please review update and fix as required 
@@ -566,7 +586,7 @@ NOTE: Please review update and fix as required
             } else {
                 $retrieveDataPrimary = [];
             }
-            $retrieveDataSecondary = \Session::inst()->/*
+            $retrieveDataSecondary = Session::inst()->/*
 ### @@@@ START UPGRADE REQUIRED @@@@ ###
 FIND: Session::
 NOTE: Please review update and fix as required 
@@ -614,7 +634,7 @@ NOTE: Please review update and fix as required
                 }
             }
             foreach ($array as $field => $values) {
-                $alInner = \ArrayList::create();
+                $alInner = ArrayList::create();
                 if (is_array($values)) {
                     foreach ($values as $key => $valuePairs) {
                         if (isset($valuePairs['KEY']) && isset($valuePairs['VALUE'])) {
@@ -629,7 +649,7 @@ NOTE: Please review update and fix as required
                                     'Value' => $valuePairs['VALUE'],
                                 ];
                             }
-                            $alInner->push(\ArrayData::create($valuePairArray));
+                            $alInner->push(ArrayData::create($valuePairArray));
                         }
                     }
                     $array[$field] = $alInner;
@@ -637,7 +657,7 @@ NOTE: Please review update and fix as required
                     //do nothing
                 }
             }
-            $this->_processed_data = \ArrayData::create($array);
+            $this->_processed_data = ArrayData::create($array);
         }
 
         return $this->_processed_data;
