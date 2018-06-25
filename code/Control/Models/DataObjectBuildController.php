@@ -1,7 +1,7 @@
 <?php
 
 
-namespace SunnySideUp\BuildDataObject;
+namespace Sunnysideup\BuildDataObject\Control\Models\;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Forms\HeaderField;
 use SilverStripe\Admin\ModelAdmin;

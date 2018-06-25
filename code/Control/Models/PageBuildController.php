@@ -1,7 +1,7 @@
 <?php
 
 
-namespace SunnySideUp\BuildDataObject;
+namespace Sunnysideup\BuildDataObject\Control\Models;
 
 class PageBuildController extends BuildController
 {

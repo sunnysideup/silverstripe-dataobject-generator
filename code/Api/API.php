@@ -1,6 +1,6 @@
 <?php
 
-namespace SunnySideUp\BuildDataObject;
+namespace Sunnysideup\BuildDataObject\API;
 use SilverStripe\Security\PermissionRoleCode;
 use SilverStripe\Security\LoginAttempt;
 use SilverStripe\Security\MemberPassword;
@@ -19,17 +19,12 @@ use SilverStripe\ORM\Filters\SearchFilter;
 use SilverStripe\Admin\ModelAdmin;
 use SilverStripe\Security\Permission;
 use SilverStripe\CMS\Model\SiteTree;
+use SilverStripe\View\ViewableData;
 
 
-class API extends ViewableData/*
-### @@@@ START UPGRADE REQUIRED @@@@ ###
-FIND:  extends \Object
-NOTE: This used to extend Object, but object does not exist anymore.  
-### @@@@ END UPGRADE REQUIRED @@@@ ###
-*/
+class DataObjectAPI extends ViewableData
 {
     private static $excluded_data_objects = [
-        'Image_Cached',
         PermissionRoleCode::class,
         LoginAttempt::class,
         MemberPassword::class,
@@ -39,13 +34,11 @@ NOTE: This used to extend Object, but object does not exist anymore.
 
     private static $excluded_db_fields_types = [
         DBField::class,
-        'Field',
         DBLocale::class,
-        'Locale',
-        'StringField',
+        DBString::class,
         CompositeField::class,
-        'PrimaryKey',
-        'ForeignKey'
+        DBPrimaryKey::class,
+        DBForeignKey::class
     ];
 
     private static $additional_db_fields = [
@@ -66,7 +59,7 @@ NOTE: This used to extend Object, but object does not exist anymore.
     public static function inst($myBaseClass = DataObject::class, $data)
     {
         if (! isset(self::$_my_singleton[$myBaseClass])) {
-            self::$_my_singleton[$myBaseClass] = Injector::inst()->get('SunnySideUp\BuildDataObject\API');
+            self::$_my_singleton[$myBaseClass] = Injector::inst()->get('Sunnysideup\BuildDataObject\API\DataObjectAPI');
         }
         self::$_my_singleton[$myBaseClass]->_data = $data;
         self::$_my_singleton[$myBaseClass]->setBaseClass($myBaseClass);
@@ -100,24 +93,24 @@ NOTE: This used to extend Object, but object does not exist anymore.
     public function DbFields()
     {
         if (count($this->_dbfieldCache) === 0) {
-            $list = ClassInfo::subclassesFor('DbField');
+            $list = ClassInfo::subclassesFor('DBField');
             $newList = [];
             foreach ($list as $class) {
                 if (substr($class, 0, 2) == DB::class) {
                     $class = substr($class, 2, strlen($class));
                 } elseif (substr($class, 0, 3) == 'SS_') {
                     $class = substr($class, 3, strlen($class));
-                } elseif ('Varchar' === $class) {
-                    $class = 'Varchar';
-                } elseif ('HTMLVarchar' === $class) {
-                    $class = 'HTMLVarchar(255)';
+                } elseif ('DBVarchar' === $class) {
+                    $class = 'DBVarchar';
+                } elseif ('DBHTMLVarchar' === $class) {
+                    $class = 'DBHTMLVarchar(255)';
                 } elseif (DBEnum::class === $class) {
-                    $class = 'Enum(\\\'Foo,Bar\\\', \\\'FOO\\\')';
-                } elseif ('MultiEnum' === $class) {
-                    $class = 'MultiEnum(\\\'Foo,Bar\\\', \\\'FOO\\\')';
+                    $class = 'DBEnum(\\\'Foo,Bar\\\', \\\'FOO\\\')';
+                } elseif ('DBMultiEnum' === $class) {
+                    $class = 'DBMultiEnum(\\\'Foo,Bar\\\', \\\'FOO\\\')';
                 }
                 if (
-                    $class == 'DbField' ||
+                    $class == 'DBField' ||
                     is_subclass_of($class, TestOnly::class) ||
                     in_array($class, $this->Config()->get('excluded_db_fields_types'))
                 ) {
@@ -165,10 +158,10 @@ NOTE: This used to extend Object, but object does not exist anymore.
             $shortValue = explode('(', $value);
             $shortValue = $shortValue[0];
             switch ($shortValue) {
-                case 'Varchar':
-                case 'HTMLTextField':
-                case 'HTMLVarchar':
-                case 'Text':
+                case 'DBVarchar':
+                case 'DBHTMLTextField':
+                case 'DBHTMLVarchar':
+                case 'DBText':
                     $ar[$key.'.LimitCharacters'] = $key.'.LimitCharacters';
                     break;
                 default:

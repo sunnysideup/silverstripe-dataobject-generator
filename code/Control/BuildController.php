@@ -1,14 +1,16 @@
 <?php
 
 
-namespace SunnySideUp\BuildDataObject;
-use SilverStripe\ORM\DataObject;
-use SilverStripe\Control\Director;
+namespace Sunnysideup\BuildDataObject\Control;
+
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Core\Config\Config;
-use SilverStripe\View\SSViewer;
+
+use SilverStripe\Control\Session;
 use SilverStripe\Control\HTTPRequest;
-use SilverStripe\ORM\FieldType\DBField;
+use SilverStripe\Control\Controller;
+use SilverStripe\Control\Director;
+
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\HeaderField;
 use SilverStripe\Forms\DropdownField;
@@ -17,15 +19,18 @@ use SilverStripe\Forms\LiteralField;
 use SilverStripe\Forms\CompositeField;
 use SilverStripe\Forms\FormAction;
 use SilverStripe\Forms\Form;
-use SilverStripe\Control\Session;
+
+use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\ArrayList;
+use SilverStripe\ORM\FieldType\DBField;
+
+use SilverStripe\View\SSViewer;
 use SilverStripe\View\ArrayData;
-use SilverStripe\Control\Controller;
 
 
 abstract class BuildController extends Controller
 {
-    private static $form_data_session_variable = 'SunnySideUp\BuildDataObject\DataObjectBuildController';
+    private static $form_data_session_variable = 'Sunnysideup\BuildDataObject\Control\Models\DataObjectBuildController';
 
     private static $url_segment = 'build';
 
@@ -44,7 +49,7 @@ abstract class BuildController extends Controller
 
     protected $myBaseClass = DataObject::class;
 
-    protected $apiProvider = 'SunnySideUp\BuildDataObject\API';
+    protected $apiProvider = 'Sunnysideup\BuildDataObject\API\DataObjectAPI';
 
     abstract protected function primaryThingsToBuild();
 
@@ -261,7 +266,7 @@ abstract class BuildController extends Controller
             $str = 'Permission::check(\''.$value.'\', \'any\', $member);';
         }
 
-        return DBField::create_field('Varchar', $str);
+        return DBField::create_field('DBVarchar', $str);
     }
 
 
@@ -534,37 +539,37 @@ abstract class BuildController extends Controller
         Session::inst()->/*
 ### @@@@ START UPGRADE REQUIRED @@@@ ###
 FIND: Session::
-NOTE: Please review update and fix as required 
+NOTE: Please review update and fix as required
 ### @@@@ END UPGRADE REQUIRED @@@@ ###
 */clear($var.$name);
         Session::inst()->/*
 ### @@@@ START UPGRADE REQUIRED @@@@ ###
 FIND: Session::
-NOTE: Please review update and fix as required 
+NOTE: Please review update and fix as required
 ### @@@@ END UPGRADE REQUIRED @@@@ ###
 */save();
         Session::inst()->/*
 ### @@@@ START UPGRADE REQUIRED @@@@ ###
 FIND: Session::
-NOTE: Please review update and fix as required 
+NOTE: Please review update and fix as required
 ### @@@@ END UPGRADE REQUIRED @@@@ ###
 */set($var.$name, null);
         Session::inst()->/*
 ### @@@@ START UPGRADE REQUIRED @@@@ ###
 FIND: Session::
-NOTE: Please review update and fix as required 
+NOTE: Please review update and fix as required
 ### @@@@ END UPGRADE REQUIRED @@@@ ###
 */save();
         Session::inst()->/*
 ### @@@@ START UPGRADE REQUIRED @@@@ ###
 FIND: Session::
-NOTE: Please review update and fix as required 
+NOTE: Please review update and fix as required
 ### @@@@ END UPGRADE REQUIRED @@@@ ###
 */set($var.$name, $data);
         Session::inst()->/*
 ### @@@@ START UPGRADE REQUIRED @@@@ ###
 FIND: Session::
-NOTE: Please review update and fix as required 
+NOTE: Please review update and fix as required
 ### @@@@ END UPGRADE REQUIRED @@@@ ###
 */save();
     }
@@ -578,7 +583,7 @@ NOTE: Please review update and fix as required
             $retrieveDataPrimary = Session::inst()->/*
 ### @@@@ START UPGRADE REQUIRED @@@@ ###
 FIND: Session::
-NOTE: Please review update and fix as required 
+NOTE: Please review update and fix as required
 ### @@@@ END UPGRADE REQUIRED @@@@ ###
 */get($var.'_PrimaryForm');
             if ($retrieveDataPrimary && (is_array($retrieveDataPrimary) || is_object($retrieveDataPrimary))) {
@@ -589,7 +594,7 @@ NOTE: Please review update and fix as required
             $retrieveDataSecondary = Session::inst()->/*
 ### @@@@ START UPGRADE REQUIRED @@@@ ###
 FIND: Session::
-NOTE: Please review update and fix as required 
+NOTE: Please review update and fix as required
 ### @@@@ END UPGRADE REQUIRED @@@@ ###
 */get($var.'_SecondaryForm');
             if ($retrieveDataSecondary && (is_array($retrieveDataSecondary) || is_object($retrieveDataSecondary))) {
