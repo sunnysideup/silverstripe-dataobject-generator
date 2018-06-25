@@ -2,7 +2,12 @@
 
 namespace SunnySideUp\BuildDataObject;
 
-class API extends \Object
+class API extends ViewableData/*
+### @@@@ START UPGRADE REQUIRED @@@@ ###
+FIND:  extends \Object
+NOTE: This used to extend Object, but object does not exist anymore.  
+### @@@@ END UPGRADE REQUIRED @@@@ ###
+*/
 {
     private static $excluded_data_objects = [
         'Image_Cached',

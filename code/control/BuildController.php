@@ -511,12 +511,42 @@ abstract class BuildController extends \Controller
             }
         }
         $var = $this->Config()->get('form_data_session_variable');
-        \Session::clear($var.$name);
-        \Session::save();
-        \Session::set($var.$name, null);
-        \Session::save();
-        \Session::set($var.$name, $data);
-        \Session::save();
+        \Session::inst()->/*
+### @@@@ START UPGRADE REQUIRED @@@@ ###
+FIND: Session::
+NOTE: Please review update and fix as required 
+### @@@@ END UPGRADE REQUIRED @@@@ ###
+*/clear($var.$name);
+        \Session::inst()->/*
+### @@@@ START UPGRADE REQUIRED @@@@ ###
+FIND: Session::
+NOTE: Please review update and fix as required 
+### @@@@ END UPGRADE REQUIRED @@@@ ###
+*/save();
+        \Session::inst()->/*
+### @@@@ START UPGRADE REQUIRED @@@@ ###
+FIND: Session::
+NOTE: Please review update and fix as required 
+### @@@@ END UPGRADE REQUIRED @@@@ ###
+*/set($var.$name, null);
+        \Session::inst()->/*
+### @@@@ START UPGRADE REQUIRED @@@@ ###
+FIND: Session::
+NOTE: Please review update and fix as required 
+### @@@@ END UPGRADE REQUIRED @@@@ ###
+*/save();
+        \Session::inst()->/*
+### @@@@ START UPGRADE REQUIRED @@@@ ###
+FIND: Session::
+NOTE: Please review update and fix as required 
+### @@@@ END UPGRADE REQUIRED @@@@ ###
+*/set($var.$name, $data);
+        \Session::inst()->/*
+### @@@@ START UPGRADE REQUIRED @@@@ ###
+FIND: Session::
+NOTE: Please review update and fix as required 
+### @@@@ END UPGRADE REQUIRED @@@@ ###
+*/save();
     }
 
     private $_data = null;
@@ -525,13 +555,23 @@ abstract class BuildController extends \Controller
     {
         if (! $this->_data) {
             $var = $this->Config()->get('form_data_session_variable');
-            $retrieveDataPrimary = \Session::get($var.'_PrimaryForm');
+            $retrieveDataPrimary = \Session::inst()->/*
+### @@@@ START UPGRADE REQUIRED @@@@ ###
+FIND: Session::
+NOTE: Please review update and fix as required 
+### @@@@ END UPGRADE REQUIRED @@@@ ###
+*/get($var.'_PrimaryForm');
             if ($retrieveDataPrimary && (is_array($retrieveDataPrimary) || is_object($retrieveDataPrimary))) {
                 //do nothing
             } else {
                 $retrieveDataPrimary = [];
             }
-            $retrieveDataSecondary = \Session::get($var.'_SecondaryForm');
+            $retrieveDataSecondary = \Session::inst()->/*
+### @@@@ START UPGRADE REQUIRED @@@@ ###
+FIND: Session::
+NOTE: Please review update and fix as required 
+### @@@@ END UPGRADE REQUIRED @@@@ ###
+*/get($var.'_SecondaryForm');
             if ($retrieveDataSecondary && (is_array($retrieveDataSecondary) || is_object($retrieveDataSecondary))) {
                 //do nothing
             } else {
