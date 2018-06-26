@@ -9,7 +9,7 @@ class $Name extends $Extends
     ### SiteTree Specific Section
     #######################
     <% if $Name %>
-    private static \$icon = 'mysite/images/treeicons/$Name';
+    private static \$icon = 'app/images/treeicons/$Name';
     <% end_if %><% if $description %>
     private static \$description = '$description';
     <% end_if %><% if $can_create %>

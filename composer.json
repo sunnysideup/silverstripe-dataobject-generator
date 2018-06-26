@@ -1,5 +1,5 @@
 {
-    "name": "sunnysideup/dataobject-generator",
+    "name": "Sunnysideup/dataobject-generator",
     "type": "silverstripe-module",
     "description": "Developer Tool: generate DataObjects using a simple form. Helps you create a fully ornamented DataObject.",
     "keywords": [
@@ -16,13 +16,12 @@
     "authors": [
         {
             "name": "Nicolaas Francken",
-            "email": "modules@sunnysideup.co.nz",
+            "email": "modules@Sunnysideup.co.nz",
             "role": "lead developer"
         }
     ],
     "require": {
-        "silverstripe/framework": "~3.6",
-        "silverstripe/cms": "~3.6"
+        "silverstripe/framework": "~4.0"
     },
     "extra": {
         "installer-name": "dataobject-generator"

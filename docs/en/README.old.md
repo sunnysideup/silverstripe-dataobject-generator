@@ -47,7 +47,7 @@ file that shows options for the configuration of this module.
 We recommend that you:
 
   1. copy these `dataobject-generator.yml.example` files into your
-`mysite/_config` folder
+`app/_config` folder
   2. remove the .example extension
   3. delete the lines you not care about, and
   4. adjust the configurations that you would like to use.

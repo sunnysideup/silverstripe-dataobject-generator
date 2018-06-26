@@ -1,30 +1,19 @@
 <?php
 
 
-namespace SunnySideUp\BuildDataObject;
+namespace Sunnysideup\BuildDataObject\Control\Models;
 
-class DataObjectBuildController extends BuildController
+use Sunnysideup\BuildDataObject\Control\BuildController;
+
+class PageBuildController extends BuildController
 {
-    protected $myBaseClass = 'DataObject';
-
-    protected function additionalPrimaryFields()
-    {
-        return [
-            \HeaderField::create('Model Admin Used'),
-            \DropdownField::create(
-                'ModelAdmin',
-                '',
-                $this->prependNullOption($this->myAPI()->modelAdminOptions())
-            )
-        ];
-    }
-
+    protected $myBaseClass = 'Page';
 
     protected function primaryThingsToBuild()
     {
         return $this->addKeysToThingsToBuild([
-            ['singular_name',       'text',                                      '',                       false],
-            ['plural_name',         'text',                                      '',                       false],
+            ['singular_name',       'text',                                     '',                        false],
+            ['plural_name',         'text',                                     '',                        false],
             ['db',                  'text',                                     'dbFields',                true],
             ['belongs_to',          'text',                                     'possibleRelations',       true],
             ['has_one',             'text',                                     'possibleRelations',       true],
@@ -37,6 +26,13 @@ class DataObjectBuildController extends BuildController
     protected function secondaryThingsToBuild()
     {
         return $this->addKeysToThingsToBuild([
+            ['description',         'text',                                      '',                       false],
+            ['can_create',          'TrueOrFalseList',                           '',                       false],
+            ['can_be_root',         'TrueOrFalseList',                           '',                       false],
+            ['allowed_children',    'allowedChildrenOptions',                    '',                       true],
+            ['default_child',       'SiteTreeList',                              '',                       false],
+            ['default_parent',      'SiteTreeList',                              '',                       false],
+            ['hide_ancestor',       'SiteTreeList',                              '',                       false],
             ['defaults',            'myDbFields',                                'text',                   true],
             ['default_sort',        'MyDbFieldsWithDefaults',                    'sortOptions',            true],
             ['indexes',             'myDbFieldsAndIndexes',                      'indexOptions',           true],

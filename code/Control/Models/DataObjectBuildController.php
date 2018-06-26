@@ -1,11 +1,31 @@
 <?php
 
 
-namespace SunnySideUp\BuildDataObject;
+namespace Sunnysideup\BuildDataObject\Control\Models;
 
-class PageBuildController extends BuildController
+use SilverStripe\ORM\DataObject;
+use SilverStripe\Forms\HeaderField;
+use SilverStripe\Admin\ModelAdmin;
+use SilverStripe\Forms\DropdownField;
+
+use Sunnysideup\BuildDataObject\Control\BuildController;
+
+class DataObjectBuildController extends BuildController
 {
-    protected $myBaseClass = 'Page';
+    protected $myBaseClass = DataObject::class;
+
+    protected function additionalPrimaryFields()
+    {
+        return [
+            HeaderField::create('Model Admin Used'),
+            DropdownField::create(
+                ModelAdmin::class,
+                '',
+                $this->prependNullOption($this->myAPI()->modelAdminOptions())
+            )
+        ];
+    }
+
 
     protected function primaryThingsToBuild()
     {
@@ -24,13 +44,6 @@ class PageBuildController extends BuildController
     protected function secondaryThingsToBuild()
     {
         return $this->addKeysToThingsToBuild([
-            ['description',         'text',                                      '',                       false],
-            ['can_create',          'TrueOrFalseList',                           '',                       false],
-            ['can_be_root',         'TrueOrFalseList',                           '',                       false],
-            ['allowed_children',    'allowedChildrenOptions',                    '',                       true],
-            ['default_child',       'SiteTreeList',                              '',                       false],
-            ['default_parent',      'SiteTreeList',                              '',                       false],
-            ['hide_ancestor',       'SiteTreeList',                              '',                       false],
             ['defaults',            'myDbFields',                                'text',                   true],
             ['default_sort',        'MyDbFieldsWithDefaults',                    'sortOptions',            true],
             ['indexes',             'myDbFieldsAndIndexes',                      'indexOptions',           true],

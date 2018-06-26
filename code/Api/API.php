@@ -1,27 +1,44 @@
 <?php
 
-namespace SunnySideUp\BuildDataObject;
+namespace Sunnysideup\BuildDataObject\API;
+use SilverStripe\Security\PermissionRoleCode;
+use SilverStripe\Security\LoginAttempt;
+use SilverStripe\Security\MemberPassword;
+use SilverStripe\SiteConfig\SiteConfig;
+use SilverStripe\ORM\FieldType\DBField;
+use SilverStripe\ORM\FieldType\DBLocale;
+use SilverStripe\Forms\CompositeField;
+use SilverStripe\ORM\DataObject;
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Core\ClassInfo;
+use SilverStripe\ORM\DB;
+use SilverStripe\ORM\FieldType\DBEnum;
+use SilverStripe\Dev\TestOnly;
+use SilverStripe\Assets\Image;
+use SilverStripe\ORM\Filters\SearchFilter;
+use SilverStripe\Admin\ModelAdmin;
+use SilverStripe\Security\Permission;
+use SilverStripe\CMS\Model\SiteTree;
+use SilverStripe\View\ViewableData;
 
-class API extends \Object
+
+class DataObjectAPI extends ViewableData
 {
     private static $excluded_data_objects = [
-        'Image_Cached',
-        'PermissionRoleCode',
-        'LoginAttempt',
-        'MemberPassword',
-        'MemberPassword',
-        'SiteConfig'
+        PermissionRoleCode::class,
+        LoginAttempt::class,
+        MemberPassword::class,
+        MemberPassword::class,
+        SiteConfig::class
     ];
 
     private static $excluded_db_fields_types = [
-        'DBField',
-        'Field',
-        'DBLocale',
-        'Locale',
-        'StringField',
-        'CompositeField',
-        'PrimaryKey',
-        'ForeignKey'
+        DBField::class,
+        DBLocale::class,
+        DBString::class,
+        CompositeField::class,
+        DBPrimaryKey::class,
+        DBForeignKey::class
     ];
 
     private static $additional_db_fields = [
@@ -31,7 +48,7 @@ class API extends \Object
         'ClassName'
     ];
 
-    protected $rootBaseClass = 'DataObject';
+    protected $rootBaseClass = DataObject::class;
 
     protected $myBaseClass = '';
 
@@ -39,10 +56,10 @@ class API extends \Object
 
     private static $_my_singleton = [];
 
-    public static function inst($myBaseClass = 'DataObject', $data)
+    public static function inst($myBaseClass = DataObject::class, $data)
     {
         if (! isset(self::$_my_singleton[$myBaseClass])) {
-            self::$_my_singleton[$myBaseClass] = \Injector::inst()->get('SunnySideUp\BuildDataObject\API');
+            self::$_my_singleton[$myBaseClass] = Injector::inst()->get('Sunnysideup\BuildDataObject\API\DataObjectAPI');
         }
         self::$_my_singleton[$myBaseClass]->_data = $data;
         self::$_my_singleton[$myBaseClass]->setBaseClass($myBaseClass);
@@ -76,25 +93,25 @@ class API extends \Object
     public function DbFields()
     {
         if (count($this->_dbfieldCache) === 0) {
-            $list = \ClassInfo::subclassesFor('DbField');
+            $list = ClassInfo::subclassesFor('DBField');
             $newList = [];
             foreach ($list as $class) {
-                if (substr($class, 0, 2) == 'DB') {
+                if (substr($class, 0, 2) == DB::class) {
                     $class = substr($class, 2, strlen($class));
                 } elseif (substr($class, 0, 3) == 'SS_') {
                     $class = substr($class, 3, strlen($class));
-                } elseif ('Varchar' === $class) {
-                    $class = 'Varchar';
-                } elseif ('HTMLVarchar' === $class) {
-                    $class = 'HTMLVarchar(255)';
-                } elseif ('Enum' === $class) {
-                    $class = 'Enum(\\\'Foo,Bar\\\', \\\'FOO\\\')';
-                } elseif ('MultiEnum' === $class) {
-                    $class = 'MultiEnum(\\\'Foo,Bar\\\', \\\'FOO\\\')';
+                } elseif ('DBVarchar' === $class) {
+                    $class = 'DBVarchar';
+                } elseif ('DBHTMLVarchar' === $class) {
+                    $class = 'DBHTMLVarchar(255)';
+                } elseif (DBEnum::class === $class) {
+                    $class = 'DBEnum(\\\'Foo,Bar\\\', \\\'FOO\\\')';
+                } elseif ('DBMultiEnum' === $class) {
+                    $class = 'DBMultiEnum(\\\'Foo,Bar\\\', \\\'FOO\\\')';
                 }
                 if (
-                    $class == 'DbField' ||
-                    is_subclass_of($class, 'TestOnly') ||
+                    $class == 'DBField' ||
+                    is_subclass_of($class, TestOnly::class) ||
                     in_array($class, $this->Config()->get('excluded_db_fields_types'))
                 ) {
                     //do nothing
@@ -141,10 +158,10 @@ class API extends \Object
             $shortValue = explode('(', $value);
             $shortValue = $shortValue[0];
             switch ($shortValue) {
-                case 'Varchar':
-                case 'HTMLTextField':
-                case 'HTMLVarchar':
-                case 'Text':
+                case 'DBVarchar':
+                case 'DBHTMLTextField':
+                case 'DBHTMLVarchar':
+                case 'DBText':
                     $ar[$key.'.LimitCharacters'] = $key.'.LimitCharacters';
                     break;
                 default:
@@ -157,7 +174,7 @@ class API extends \Object
         }
         $list += $this->retrieveDBFields('has_one');
         foreach ($list as $key => $value) {
-            if ($value === 'Image' || is_subclass_of($value, 'Image')) {
+            if ($value === Image::class || is_subclass_of($value, Image::class)) {
                 $ar[$key.'.CMSThumbnail'] = $key.'.CMSThumbnail';
             } else {
                 $ar[$key.'.Title'] = $key.'.Title';
@@ -276,18 +293,18 @@ class API extends \Object
             $rootClass = $this->rootBaseClass;
         }
         if (!isset($this->_classesCache[$rootClass])) {
-            $list = \ClassInfo::subclassesFor($rootClass);
+            $list = ClassInfo::subclassesFor($rootClass);
             $newList = [];
             foreach ($list as $class) {
                 if (
                     $class == $rootClass ||
-                    is_subclass_of($class, 'TestOnly') ||
+                    is_subclass_of($class, TestOnly::class) ||
                     in_array($class, $this->Config()->get('excluded_data_objects'))
                 ) {
                     //do nothing
                 } else {
                     $newList[$class] = $class;
-                    $name = \Injector::inst()->get($class)->singular_name();
+                    $name = Injector::inst()->get($class)->singular_name();
                     if ($name !== $class) {
                         $newList[$class] .= ' ('.$name.')';
                     }
@@ -304,10 +321,10 @@ class API extends \Object
     public function PossibleSearchFilters()
     {
         if (count($this->_filtersCache) === 0) {
-            $list = \ClassInfo::subclassesFor('SearchFilter');
+            $list = ClassInfo::subclassesFor(SearchFilter::class);
             $newList = [];
             foreach ($list as $class) {
-                if ($class !== 'SearchFilter') {
+                if ($class !== SearchFilter::class) {
                     $newList[$class] = $class;
                 }
             }
@@ -322,12 +339,12 @@ class API extends \Object
     public function ModelAdminOptions()
     {
         if (count($this->_modelAdmins) === 0) {
-            $list = \ClassInfo::subclassesFor('ModelAdmin');
+            $list = ClassInfo::subclassesFor(ModelAdmin::class);
             $newList = [];
             foreach ($list as $class) {
                 if (
-                    $class == 'ModelAdmin' ||
-                    is_subclass_of($class, 'TestOnly')
+                    $class == ModelAdmin::class ||
+                    is_subclass_of($class, TestOnly::class)
                 ) {
                     //do nothing
                 } else {
@@ -361,7 +378,7 @@ class API extends \Object
                 'false' => 'never',
                 'parent' => 'use parent class',
             ];
-            $permissions = \Permission::get()->column('Code');
+            $permissions = Permission::get()->column('Code');
             $ar = $ar + array_combine($permissions, $permissions);
 
             $this->_canOptions = $ar;
@@ -376,19 +393,19 @@ class API extends \Object
      *
      * @return array
      */
-    public function SiteTreeList($rootClass = 'SiteTree')
+    public function SiteTreeList($rootClass = SiteTree::class)
     {
-        $list = \ClassInfo::subclassesFor($rootClass);
+        $list = ClassInfo::subclassesFor($rootClass);
         foreach ($list as $class) {
             if (
                 $class == $rootClass ||
-                is_subclass_of($class, 'TestOnly') ||
+                is_subclass_of($class, TestOnly::class) ||
                 in_array($class, $this->Config()->get('excluded_data_objects'))
             ) {
                 //do nothing
             } else {
                 $newList[$class] = $class;
-                $name = \Injector::inst()->get($class)->singular_name();
+                $name = Injector::inst()->get($class)->singular_name();
                 if ($name !== $class) {
                     $newList[$class] .= ' ('.$name.')';
                 }
@@ -403,7 +420,7 @@ class API extends \Object
      *
      * @return array
      */
-    public function AllowedChildrenOptions($rootClass = 'SiteTree')
+    public function AllowedChildrenOptions($rootClass = SiteTree::class)
     {
         return ['none' => 'none'] + $this->SiteTreeList($rootClass);
     }
