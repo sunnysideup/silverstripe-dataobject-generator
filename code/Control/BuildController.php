@@ -62,7 +62,7 @@ abstract class BuildController extends Controller
         }
         return
             '/'.$this->Config()->get('url_segment').
-            '/'.strtolower($this->myBaseClass).
+            '/'.strtolower($this->ShortBaseClass()).
             '/'.$action;
     }
 
@@ -74,6 +74,18 @@ abstract class BuildController extends Controller
     public function Title()
     {
         return 'Build a '.$this->myBaseClass.' - Step '.$this->step.' of 2';
+    }
+
+    public function LongBaseClass()
+    {
+        return $this->$myBaseClass;
+    }
+
+    public function ShortBaseClass()
+    {
+        $reflect = new \ReflectionClass($this->myBaseClass);
+
+        return $reflect->getShortName();
     }
 
 
@@ -164,7 +176,7 @@ abstract class BuildController extends Controller
     {
         $this->PrimaryForm();
         $this->prevLink = $this->Link('startover');
-        SSViewer::set_source_file_comments(false);
+        Config::inst()->set('SSViewer', 'source_file_comments', false);
 
         return $this->renderWith('BuildControllerForm');
     }
@@ -189,7 +201,7 @@ abstract class BuildController extends Controller
         $this->step = 2;
         $this->SecondaryForm();
         $this->prevLink = $this->Link('primaryformstart');
-        SSViewer::set_source_file_comments(false);
+        Config::inst()->set('SSViewer', 'source_file_comments', false);
 
         return $this->renderWith('BuildControllerForm');
     }
@@ -212,7 +224,7 @@ abstract class BuildController extends Controller
     public function results()
     {
         $this->finalData = $this->processedFormData($this->retrieveData());
-        SSViewer::set_source_file_comments(false);
+        Config::inst()->set('SSViewer', 'source_file_comments', false);
 
         return HTTPRequest::send_file(
             $this->renderWith($this->resultsTemplateForBuilder()),
@@ -287,14 +299,14 @@ abstract class BuildController extends Controller
         if ($isPrimary) {
             $toBuild = $this->primaryThingsToBuild();
             $possibleExtensions = $this->myAPI()->PossibleRelationsWithBaseClass($this->myBaseClass);
-            $finalFields->push(HeaderField::create('Based On (OPTIONAL) ...'));
+            $finalFields->push(HeaderField::create('BasedOnHeader', 'Based On (OPTIONAL) ...'));
             $possibleBasedOn = $possibleExtensions;
             unset($possibleBasedOn[DataObject::class]);
             $possibleBasedOn = ['' => '--- PRELOAD VALUES FROM ---'] + $possibleBasedOn;
             $finalFields->push(DropdownField::create('Template', '', $possibleBasedOn));
-            $finalFields->push(HeaderField::create('Name your '.$this->myBaseClass));
+            $finalFields->push(HeaderField::create('NameHeader', 'Name your '.$this->myBaseClass));
             $finalFields->push(TextField::create('Name', ''));
-            $finalFields->push(HeaderField::create('Extends'));
+            $finalFields->push(HeaderField::create('ExtendsHeader', 'Extends'));
             asort($possibleExtensions);
             $finalFields->push(
                 DropdownField::create(
@@ -536,12 +548,12 @@ abstract class BuildController extends Controller
             }
         }
         $var = $this->Config()->get('form_data_session_variable');
-        Session::inst()->clear($var.$name);
-        Session::inst()->save();
-        Session::inst()->set($var.$name, null);
-        Session::inst()->save();
-        Session::inst()->set($var.$name, $data);
-        Session::inst()->save();
+        $this->getRequest()->getSession()->clear($var.$name);
+        $this->getRequest()->getSession()->save();
+        $this->getRequest()->getSession()->set($var.$name, null);
+        $this->getRequest()->getSession()->save();
+        $this->getRequest()->getSession()->set($var.$name, $data);
+        $this->getRequest()->getSession()->save();
     }
 
     private $_data = null;
@@ -550,13 +562,13 @@ abstract class BuildController extends Controller
     {
         if (! $this->_data) {
             $var = $this->Config()->get('form_data_session_variable');
-            $retrieveDataPrimary = Session::inst()->get($var.'_PrimaryForm');
+            $retrieveDataPrimary = $this->getRequest()->getSession()->get($var.'_PrimaryForm');
             if ($retrieveDataPrimary && (is_array($retrieveDataPrimary) || is_object($retrieveDataPrimary))) {
                 //do nothing
             } else {
                 $retrieveDataPrimary = [];
             }
-            $retrieveDataSecondary = Session::inst()->get($var.'_SecondaryForm');
+            $retrieveDataSecondary = $this->getRequest()->getSession()->get($var.'_SecondaryForm');
             if ($retrieveDataSecondary && (is_array($retrieveDataSecondary) || is_object($retrieveDataSecondary))) {
                 //do nothing
             } else {

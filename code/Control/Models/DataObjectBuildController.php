@@ -17,7 +17,7 @@ class DataObjectBuildController extends BuildController
     protected function additionalPrimaryFields()
     {
         return [
-            HeaderField::create('Model Admin Used'),
+            HeaderField::create('ModelAdminUsedHeader', 'Model Admin Used'),
             DropdownField::create(
                 ModelAdmin::class,
                 '',

@@ -1,8 +1,10 @@
 ---
 Name: build_data_object
-After: '#rootroutes'
+After:
+  - '#rootroutes'
+  - '#coreroutes'
 ---
-Director:
+SilverStripe\Control\Director:
   rules:
-    'build/dataobject//$Action/$ID/$OtherID': 'Sunnysideup\BuildDataObject\DataObjectBuildController'
-    'build/page//$Action/$ID/$OtherID': 'Sunnysideup\BuildDataObject\PageBuildController'
+    'build/dataobject//$Action/$ID/$OtherID': 'Sunnysideup\BuildDataObject\Control\Models\DataObjectBuildController'
+    'build/page//$Action/$ID/$OtherID': 'Sunnysideup\BuildDataObject\Control\Models\PageBuildController'
