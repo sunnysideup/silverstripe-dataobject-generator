@@ -1,12 +1,14 @@
 <?php
 
 
-namespace Sunnysideup\BuildDataObject\Control\Models\;
+namespace Sunnysideup\BuildDataObject\Control\Models;
+
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Forms\HeaderField;
 use SilverStripe\Admin\ModelAdmin;
 use SilverStripe\Forms\DropdownField;
 
+use Sunnysideup\BuildDataObject\Control\BuildController;
 
 class DataObjectBuildController extends BuildController
 {

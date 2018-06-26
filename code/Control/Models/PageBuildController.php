@@ -3,6 +3,8 @@
 
 namespace Sunnysideup\BuildDataObject\Control\Models;
 
+use Sunnysideup\BuildDataObject\Control\BuildController;
+
 class PageBuildController extends BuildController
 {
     protected $myBaseClass = 'Page';
@@ -10,8 +12,8 @@ class PageBuildController extends BuildController
     protected function primaryThingsToBuild()
     {
         return $this->addKeysToThingsToBuild([
-            ['singular_name',       'text',                                      '',                       false],
-            ['plural_name',         'text',                                      '',                       false],
+            ['singular_name',       'text',                                     '',                        false],
+            ['plural_name',         'text',                                     '',                        false],
             ['db',                  'text',                                     'dbFields',                true],
             ['belongs_to',          'text',                                     'possibleRelations',       true],
             ['has_one',             'text',                                     'possibleRelations',       true],

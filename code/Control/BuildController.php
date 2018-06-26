@@ -536,42 +536,12 @@ abstract class BuildController extends Controller
             }
         }
         $var = $this->Config()->get('form_data_session_variable');
-        Session::inst()->/*
-### @@@@ START UPGRADE REQUIRED @@@@ ###
-FIND: Session::
-NOTE: Please review update and fix as required
-### @@@@ END UPGRADE REQUIRED @@@@ ###
-*/clear($var.$name);
-        Session::inst()->/*
-### @@@@ START UPGRADE REQUIRED @@@@ ###
-FIND: Session::
-NOTE: Please review update and fix as required
-### @@@@ END UPGRADE REQUIRED @@@@ ###
-*/save();
-        Session::inst()->/*
-### @@@@ START UPGRADE REQUIRED @@@@ ###
-FIND: Session::
-NOTE: Please review update and fix as required
-### @@@@ END UPGRADE REQUIRED @@@@ ###
-*/set($var.$name, null);
-        Session::inst()->/*
-### @@@@ START UPGRADE REQUIRED @@@@ ###
-FIND: Session::
-NOTE: Please review update and fix as required
-### @@@@ END UPGRADE REQUIRED @@@@ ###
-*/save();
-        Session::inst()->/*
-### @@@@ START UPGRADE REQUIRED @@@@ ###
-FIND: Session::
-NOTE: Please review update and fix as required
-### @@@@ END UPGRADE REQUIRED @@@@ ###
-*/set($var.$name, $data);
-        Session::inst()->/*
-### @@@@ START UPGRADE REQUIRED @@@@ ###
-FIND: Session::
-NOTE: Please review update and fix as required
-### @@@@ END UPGRADE REQUIRED @@@@ ###
-*/save();
+        Session::inst()->clear($var.$name);
+        Session::inst()->save();
+        Session::inst()->set($var.$name, null);
+        Session::inst()->save();
+        Session::inst()->set($var.$name, $data);
+        Session::inst()->save();
     }
 
     private $_data = null;
@@ -580,23 +550,13 @@ NOTE: Please review update and fix as required
     {
         if (! $this->_data) {
             $var = $this->Config()->get('form_data_session_variable');
-            $retrieveDataPrimary = Session::inst()->/*
-### @@@@ START UPGRADE REQUIRED @@@@ ###
-FIND: Session::
-NOTE: Please review update and fix as required
-### @@@@ END UPGRADE REQUIRED @@@@ ###
-*/get($var.'_PrimaryForm');
+            $retrieveDataPrimary = Session::inst()->get($var.'_PrimaryForm');
             if ($retrieveDataPrimary && (is_array($retrieveDataPrimary) || is_object($retrieveDataPrimary))) {
                 //do nothing
             } else {
                 $retrieveDataPrimary = [];
             }
-            $retrieveDataSecondary = Session::inst()->/*
-### @@@@ START UPGRADE REQUIRED @@@@ ###
-FIND: Session::
-NOTE: Please review update and fix as required
-### @@@@ END UPGRADE REQUIRED @@@@ ###
-*/get($var.'_SecondaryForm');
+            $retrieveDataSecondary = Session::inst()->get($var.'_SecondaryForm');
             if ($retrieveDataSecondary && (is_array($retrieveDataSecondary) || is_object($retrieveDataSecondary))) {
                 //do nothing
             } else {
