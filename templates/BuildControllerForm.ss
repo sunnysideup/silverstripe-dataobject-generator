@@ -5,7 +5,6 @@
 
     <title>$Title</title>
 
-    <script src="$jQueryLink"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
     <style type="text/css">
@@ -146,6 +145,13 @@ footer p a {
     </header>
     $Form
     <footer><p>This tool has been provided by <a href="http://www.Sunnysideup.co.nz">sunny side up</a>. Feedback welcome.</p></footer>
+
+    <script
+        src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous">
+    </script>
+
     <script type="text/javascript">
         jQuery('document').ready(
             function() {
