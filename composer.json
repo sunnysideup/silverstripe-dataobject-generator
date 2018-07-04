@@ -1,6 +1,6 @@
 {
     "name": "Sunnysideup/dataobject-generator",
-    "type": "silverstripe-module",
+    "type": "silverstripe-vendormodule",
     "description": "Developer Tool: generate DataObjects using a simple form. Helps you create a fully ornamented DataObject.",
     "keywords": [
         "Silverstripe-CMS",
