@@ -93,21 +93,19 @@ class DataObjectAPI extends ViewableData
     public function DbFields()
     {
         if (count($this->_dbfieldCache) === 0) {
-            $list = ClassInfo::subclassesFor('DBField');
+            $list = ClassInfo::subclassesFor(DBField::class);
             $newList = [];
             foreach ($list as $class) {
-                if (substr($class, 0, 2) == DB::class) {
-                    $class = substr($class, 2, strlen($class));
-                } elseif (substr($class, 0, 3) == 'SS_') {
-                    $class = substr($class, 3, strlen($class));
-                } elseif ('DBVarchar' === $class) {
-                    $class = 'DBVarchar';
-                } elseif ('DBHTMLVarchar' === $class) {
-                    $class = 'DBHTMLVarchar(255)';
+                $shortName = $this->dbFieldNameForClass($class);
+                if (DBHTMLVarchar::class === $class) {
+                    $class = DBHTMLVarchar::class.'(255)';
+                    $shortName = 'DBHTMLVarchar(255)';
                 } elseif (DBEnum::class === $class) {
                     $class = 'DBEnum(\\\'Foo,Bar\\\', \\\'FOO\\\')';
-                } elseif ('DBMultiEnum' === $class) {
+                    $shortName = $class;
+                } elseif (DBMultiEnum::class === $class) {
                     $class = 'DBMultiEnum(\\\'Foo,Bar\\\', \\\'FOO\\\')';
+                    $shortName = $class;
                 }
                 if (
                     $class == 'DBField' ||
@@ -116,12 +114,11 @@ class DataObjectAPI extends ViewableData
                 ) {
                     //do nothing
                 } else {
-                    $newList[$class] = $class;
+                    $newList[$shortName] = $shortName;
                 }
             }
             $this->_dbfieldCache = $newList;
         }
-
         return $this->_dbfieldCache;
     }
 
@@ -447,5 +444,55 @@ class DataObjectAPI extends ViewableData
             'true' => 'YES',
             'false' => 'NO'
         ];
+    }
+
+
+    public function removeNamespacesFromArrayValues(array $source) : array
+    {
+        // strip 'SilverStripe\...\DB'
+        $source = array_map(
+            function($e){
+                return $this->shortNameForClass($e);
+            },
+            $source
+        );
+        return $source;
+    }
+
+    /**
+     * turns SilverStripe\ORM\DB into DB
+     *
+     * @param string $longClassName
+     * @return string
+     */
+    public function shortNameForClass($longClassName)
+    {
+        if(class_exists($longClassName)) {
+            return ClassInfo::shortName($longClassName);
+        } else {
+            return $longClassName;
+        }
+    }
+
+    /**
+     * convert a class name into the corresponding DB field name
+     * @param string $className
+     * @return string
+     */
+    public function dbFieldNameForClass($className)
+    {
+        $shortName = $this->shortNameForClass($className);
+        // remove the beginning 'DB'
+        if (substr($shortName, 0, 2) == 'DB') {
+            $shortName = substr($shortName, 2, strlen($shortName));
+        }
+        switch ($shortName) {
+            case 'File':
+            case 'Enum':
+                $shortName = 'DB'.$shortName;
+                break;
+        }
+
+        return $shortName;
     }
 }

@@ -5,6 +5,7 @@ namespace Sunnysideup\BuildDataObject\Control;
 
 use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Core\Config\Config;
+use SilverStripe\Core\ClassInfo;
 
 use SilverStripe\Control\Session;
 use SilverStripe\Control\HTTPRequest;
@@ -26,7 +27,6 @@ use SilverStripe\ORM\FieldType\DBField;
 
 use SilverStripe\View\SSViewer;
 use SilverStripe\View\ArrayData;
-
 
 abstract class BuildController extends Controller
 {
@@ -61,7 +61,7 @@ abstract class BuildController extends Controller
             $action .= '/';
         }
         return
-            '/'.$this->Config()->get('url_segment').
+            Director::baseURL().$this->Config()->get('url_segment').
             '/'.strtolower($this->ShortBaseClass()).
             '/'.$action;
     }
@@ -83,9 +83,7 @@ abstract class BuildController extends Controller
 
     public function ShortBaseClass()
     {
-        $reflect = new \ReflectionClass($this->myBaseClass);
-
-        return $reflect->getShortName();
+        return $this->myAPI()->shortNameForClass($this->myBaseClass);
     }
 
     public function startover()
@@ -170,7 +168,7 @@ abstract class BuildController extends Controller
     {
         $this->PrimaryForm();
         $this->prevLink = $this->Link('startover');
-        Config::inst()->update('SSViewer', 'source_file_comments', false);
+        Config::modify()->set('SSViewer', 'source_file_comments', false);
 
         return $this->renderWith('BuildControllerForm');
     }
@@ -195,7 +193,7 @@ abstract class BuildController extends Controller
         $this->step = 2;
         $this->SecondaryForm();
         $this->prevLink = $this->Link('primaryformstart');
-        Config::inst()->update('SSViewer', 'source_file_comments', false);
+        Config::modify()->set('SSViewer', 'source_file_comments', false);
 
         return $this->renderWith('BuildControllerForm');
     }
@@ -218,7 +216,7 @@ abstract class BuildController extends Controller
     public function results()
     {
         $this->finalData = $this->processedFormData($this->retrieveData());
-        Config::inst()->update('SSViewer', 'source_file_comments', false);
+        Config::modify()->set('SSViewer', 'source_file_comments', false);
 
         return HTTPRequest::send_file(
             $this->renderWith($this->resultsTemplateForBuilder()),
@@ -543,11 +541,9 @@ abstract class BuildController extends Controller
         }
         $var = $this->Config()->get('form_data_session_variable');
         $this->getRequest()->getSession()->clear($var.$name);
-        $this->getRequest()->getSession()->save();
         $this->getRequest()->getSession()->set($var.$name, null);
-        $this->getRequest()->getSession()->save();
         $this->getRequest()->getSession()->set($var.$name, $data);
-        $this->getRequest()->getSession()->save();
+        //$this->getRequest()->getSession()->save();
     }
 
     private $_data = null;
@@ -631,6 +627,8 @@ abstract class BuildController extends Controller
             $this->_processed_data = ArrayData::create($array);
         }
 
+/// DEBUG DEBUG ///
+echo '<!-- ';var_dump($this->_processed_data); echo ' -->';
         return $this->_processed_data;
     }
 
