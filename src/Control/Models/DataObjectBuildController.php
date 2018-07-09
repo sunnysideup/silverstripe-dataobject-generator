@@ -21,8 +21,8 @@ class DataObjectBuildController extends BuildController
             DropdownField::create(
                 ModelAdmin::class,
                 '',
-                $this->prependNullOption($this->myAPI()->modelAdminOptions())
-            )
+                $this->myAPI()->modelAdminOptions()
+            )->setEmptyString('--- Please Select ---')
         ];
     }
 

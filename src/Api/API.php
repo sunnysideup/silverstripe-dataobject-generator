@@ -95,22 +95,23 @@ class DataObjectAPI extends ViewableData
         if (count($this->_dbfieldCache) === 0) {
             $list = ClassInfo::subclassesFor(DBField::class);
             $newList = [];
-            foreach ($list as $class) {
-                $shortName = $this->dbFieldNameForClass($class);
-                if (DBHTMLVarchar::class === $class) {
-                    $class = DBHTMLVarchar::class.'(255)';
+            foreach ($list as $fullQName) {
+                $shortName = $this->dbFieldNameForClass($fullQName);
+
+                if (DBHTMLVarchar::class === $fullQName) {
+                    $fullQName = DBHTMLVarchar::class.'(255)';
                     $shortName = 'DBHTMLVarchar(255)';
-                } elseif (DBEnum::class === $class) {
-                    $class = 'DBEnum(\\\'Foo,Bar\\\', \\\'FOO\\\')';
-                    $shortName = $class;
-                } elseif (DBMultiEnum::class === $class) {
-                    $class = 'DBMultiEnum(\\\'Foo,Bar\\\', \\\'FOO\\\')';
-                    $shortName = $class;
+                } elseif (DBEnum::class === $fullQName) {
+                    $fullQName = DBEnum::class.'(\\\'Foo,Bar\\\', \\\'FOO\\\')';
+                    $shortName = $shortName;
+                } elseif (DBMultiEnum::class === $fullQName) {
+                    $fullQName = DBMultiEnum::class.'(\\\'Foo,Bar\\\', \\\'FOO\\\')';
+                    $shortName = $shortName;
                 }
                 if (
-                    $class == 'DBField' ||
-                    is_subclass_of($class, TestOnly::class) ||
-                    in_array($class, $this->Config()->get('excluded_db_fields_types'))
+                    $fullQName == DBField::class ||
+                    is_subclass_of($fullQName, TestOnly::class) ||
+                    in_array($fullQName, $this->Config()->get('excluded_db_fields_types'))
                 ) {
                     //do nothing
                 } else {

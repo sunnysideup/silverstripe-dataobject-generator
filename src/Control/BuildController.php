@@ -73,7 +73,7 @@ abstract class BuildController extends Controller
 
     public function Title()
     {
-        return 'Build a '.$this->myBaseClass.' - Step '.$this->step.' of 2';
+        return 'Build a '.$this->ShortBaseClass().' - Step '.$this->step.' of 2';
     }
 
     public function LongBaseClass()
@@ -270,7 +270,7 @@ abstract class BuildController extends Controller
             $str = 'Permission::check(\''.$value.'\', \'any\', $member);';
         }
 
-        return DBField::create_field('DBVarchar', $str);
+        return DBField::create_field('Varchar', $str);
     }
 
 
@@ -294,9 +294,8 @@ abstract class BuildController extends Controller
             $finalFields->push(HeaderField::create('BasedOnHeader', 'Based On (OPTIONAL) ...'));
             $possibleBasedOn = $possibleExtensions;
             unset($possibleBasedOn[DataObject::class]);
-            $possibleBasedOn = ['' => '--- PRELOAD VALUES FROM ---'] + $possibleBasedOn;
-            $finalFields->push(DropdownField::create('Template', '', $possibleBasedOn));
-            $finalFields->push(HeaderField::create('NameHeader', 'Name your '.$this->myBaseClass));
+            $finalFields->push(DropdownField::create('Template', '', $possibleBasedOn)->setEmptyString('--- PRELOAD VALUES FROM ---'));
+            $finalFields->push(HeaderField::create('NameHeader', 'Name your '.$this->ShortBaseClass()));
             $finalFields->push(TextField::create('Name', ''));
             $finalFields->push(HeaderField::create('ExtendsHeader', 'Extends'));
             asort($possibleExtensions);
@@ -305,7 +304,7 @@ abstract class BuildController extends Controller
                     'Extends',
                     '',
                     $possibleExtensions
-                )
+                )->setValue($this->myBaseClass)
             );
             $additionalFields = $this->additionalPrimaryFields();
             foreach ($additionalFields as $additionalField) {
@@ -463,10 +462,12 @@ abstract class BuildController extends Controller
                         if (isset($fieldDetailsInner[2])) {
                             $source = $fieldDetailsInner[2];
                             asort($source);
-                            $source = $this->prependNullOption($source);
                             $tempField = $fieldType::create($fieldName, '', $source);
                         } else {
                             $tempField = $fieldType::create($fieldName, '');
+                        }
+                        if($tempField instanceof DropdownField) {
+                            $tempField->setEmptyString('--- Please Select ---');
                         }
                         if (count($additionalClasses)) {
                             $classes = implode(' ', $additionalClasses);
@@ -487,8 +488,8 @@ abstract class BuildController extends Controller
                     if ($fieldType === DropdownField::class) {
                         $source = $fieldDetails[2];
                         asort($source);
-                        $source = $this->prependNullOption($source);
                         $myTempfield = $fieldType::create($fieldName, '', $source);
+                        $myTempfield->setEmptyString('--- Please Select ---');
                     } elseif ($fieldType === HeaderField::class) {
                         $title = str_replace('_', ' ', $fieldDetails[2]);
                         $myTempfield = $fieldType::create($fieldName, $title);
@@ -628,22 +629,14 @@ abstract class BuildController extends Controller
         }
 
 /// DEBUG DEBUG ///
-echo '<!-- ';var_dump($this->_processed_data); echo ' -->';
+//echo '<!-- ';var_dump($this->_processed_data); echo ' -->';
         return $this->_processed_data;
     }
 
 
     protected function resultsTemplateForBuilder()
     {
-        return str_replace(__NAMESPACE__ .'\\', '', $this->class).'Results';
-    }
-
-
-    protected function prependNullOption($source)
-    {
-        $source = ['' => '--- Please Select ---'] + $source;
-
-        return $source;
+        return $this->myAPI()->shortNameForClass(get_class($this)).'Results';
     }
 
 
