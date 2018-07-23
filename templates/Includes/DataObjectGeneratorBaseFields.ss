@@ -186,7 +186,7 @@
                         ->exclude(array('ID' => \$id))
                         ->count();
                     if(\$count > 0) {
-                        \$myName = \$fieldLabels['\$field'];
+                        \$myName = \$fieldLabels[\$field];
                         \$result->error(
                             _t(
                                 '{$Name}.'.\$field.'_UNIQUE',
