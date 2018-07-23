@@ -12,7 +12,7 @@ class DBTyperTester extends SapphireTest
             'SilverStripe\\ORM\\FieldType\\DBVarchar',
             'SilverStripe\\ORM\\FieldType\\DBEnum',
             'SilverStripe\\Assets\\Storage\\DBFile',
-            'SilverStripe\\Assets\\Image' => 'Image'
+            'SilverStripe\\Assets\\Image'
         ];
         // in & out are the same
         foreach ($expected_classname as $inout) {
@@ -27,6 +27,7 @@ class DBTyperTester extends SapphireTest
             'SilverStripe\\ORM\\FieldType\\DBInt' => 'Int',
             'SilverStripe\\ORM\\FieldType\\DBVarchar' => 'Varchar',
             'SilverStripe\\ORM\\FieldType\\DBEnum' => 'Enum',
+            'SilverStripe\\ORM\\DataObject' => 'DataObject',
             'SilverStripe\\Assets\\Storage\\DBFile' => 'DBFile',
             'SilverStripe\\Assets\\Image' => 'Image'
         );
@@ -42,8 +43,9 @@ class DBTyperTester extends SapphireTest
             'SilverStripe\\ORM\\FieldType\\DBInt' => 'Int',
             'SilverStripe\\ORM\\FieldType\\DBVarchar' => 'Varchar',
             'SilverStripe\\ORM\\FieldType\\DBEnum' => 'Enum(array("foo", "bar", "baz"))',
+            'SilverStripe\\ORM\\DataObject' => 'DataObject',
             'SilverStripe\\Assets\\Storage\\DBFile' => 'DBFile',
-            'SilverStripe\\Assets\\Image' => 'SilverStripe\\Assets\\Image'
+            'SilverStripe\\Assets\\Image' => 'SilverStripe\\\\Assets\\\\Image'
         );
         foreach ($expected_classname_dbfield as $input => $expected) {
             $result = DBTyper::fromClass($input)->toDataObject();
@@ -58,10 +60,27 @@ class DBTyperTester extends SapphireTest
             'Varchar' => 'Varchar',
             'Enum' => 'Enum(array("foo", "bar", "baz"))',
             'DBFile' => 'DBFile',
-            'Image' => 'Image'
+            'DataObject' => 'DataObject',
+            'Image' => 'SilverStripe\\\\Assets\\\\Image'
         );
         foreach ($expected_dbfield_classname as $input => $expected) {
             $result = DBTyper::fromDropdown($input)->toDataObject();
+            $this->assertSame($result, $expected);
+        }
+    }
+
+    public function testDropdownToClass()
+    {
+        $expected_dbfield_classname = array(
+            'Int' => 'SilverStripe\\ORM\\FieldType\\DBInt',
+            'Varchar' => 'SilverStripe\\ORM\\FieldType\\DBVarchar',
+            'Enum' => 'SilverStripe\\ORM\\FieldType\\DBEnum',
+            'DBFile' => 'SilverStripe\\Assets\\Storage\\DBFile',
+            'DataObject' => 'SilverStripe\\ORM\\DataObject',
+            'Image' => 'SilverStripe\\Assets\\Image'
+        );
+        foreach ($expected_dbfield_classname as $input => $expected) {
+            $result = DBTyper::fromDropdown($input)->toClass();
             $this->assertSame($result, $expected);
         }
     }
@@ -74,6 +93,7 @@ class DBTyperTester extends SapphireTest
             'Varchar(256)' => 'SilverStripe\\ORM\\FieldType\\DBVarchar',
             'Enum' => 'SilverStripe\\ORM\\FieldType\\DBEnum',
             'Enum(array(\'baa\', \'boo\'))' => 'SilverStripe\\ORM\\FieldType\\DBEnum',
+            'DataObject' => 'SilverStripe\\ORM\\DataObject',
             'DBFile' => 'SilverStripe\\Assets\\Storage\\DBFile',
             'SilverStripe\\Assets\\Image' => 'SilverStripe\\Assets\\Image'
         );
