@@ -1,7 +1,7 @@
 <?php
 
 use SilverStripe\Dev\SapphireTest;
-use Sunnysideup\BuildDataObject\DBTyper;
+use Sunnysideup\BuildDataObject\API\DBTyper;
 
 class DBTyperTester extends SapphireTest
 {
