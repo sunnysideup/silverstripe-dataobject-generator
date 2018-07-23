@@ -88,37 +88,47 @@ class DataObjectAPI extends ViewableData
         return $ar;
     }
 
-    protected $_dbfieldCache = [];
+    private function isExcludedClass($fqClass, $fqRootClass) : bool
+    {
+        return $fqClass === $fqRootClass
+            || is_subclass_of($fqClass, TestOnly::class)
+            || in_array($fqClass, $this->Config()->get('excluded_db_fields_types'));
+    }
+
+    private function walkSubclasses(callable $callback, string $fqRootClass) : array
+    {
+        $array = [];
+        $fqChildren = ClassInfo::subclassesFor($fqRootClass);
+        foreach ($fqChildren as $fqChildClass) {
+            if ($this->isExcludedClass($fqChildClass, $fqRootClass)) {
+                //do nothing
+            } else {
+                $type = DBTyper::fromClass($fqChildClass);
+                $result = call_user_func($callback, $type);
+                if (is_array($result)) {
+                    $array += $result;
+                }
+            }
+        }
+        return $array;
+    }
+
+    protected $_dbfieldCache = null;
 
     public function DbFields()
     {
-        if (count($this->_dbfieldCache) === 0) {
-            $list = ClassInfo::subclassesFor(DBField::class);
-            $newList = [];
-            foreach ($list as $fullQName) {
-                $shortName = $this->dbFieldNameForClass($fullQName);
+        if (!$this->_dbfieldCache) {
+            $newCache = $this->walkSubclasses(function($type){
+                $key = $type->toDropdown();
+                $val = $type->toDropdown();
+                return [ $key => $val ];
+            }, DBField::class);
 
-                if (DBHTMLVarchar::class === $fullQName) {
-                    $fullQName = DBHTMLVarchar::class.'(255)';
-                    $shortName = 'DBHTMLVarchar(255)';
-                } elseif (DBEnum::class === $fullQName) {
-                    $fullQName = DBEnum::class.'(\\\'Foo,Bar\\\', \\\'FOO\\\')';
-                    $shortName = $shortName;
-                } elseif (DBMultiEnum::class === $fullQName) {
-                    $fullQName = DBMultiEnum::class.'(\\\'Foo,Bar\\\', \\\'FOO\\\')';
-                    $shortName = $shortName;
-                }
-                if (
-                    $fullQName == DBField::class ||
-                    is_subclass_of($fullQName, TestOnly::class) ||
-                    in_array($fullQName, $this->Config()->get('excluded_db_fields_types'))
-                ) {
-                    //do nothing
-                } else {
-                    $newList[$shortName] = $shortName;
-                }
-            }
-            $this->_dbfieldCache = $newList;
+            // add missing field types
+            $newCache['HTMLFragment'] = 'HTMLFragment';
+
+            $this->_dbfieldCache = $newCache;
+            //echo '<!--'; print_r($this->_dbfieldCache); echo '-->';
         }
         return $this->_dbfieldCache;
     }
@@ -270,7 +280,7 @@ class DataObjectAPI extends ViewableData
             $rootClass = $this->rootBaseClass;
         }
         $list =
-            [$rootClass => $rootClass] +
+            [ $rootClass => DBTyper::fromClass($rootClass)->toDropdown() ] +
             $this->possibleRelations();
         asort($list);
 
@@ -283,7 +293,7 @@ class DataObjectAPI extends ViewableData
      *
      * @return array
      */
-    public function PossibleRelations($rootClass = '')
+    public function possibleRelations(string $rootClass = '')
     {
         if ($rootClass) {
             //
@@ -291,23 +301,15 @@ class DataObjectAPI extends ViewableData
             $rootClass = $this->rootBaseClass;
         }
         if (!isset($this->_classesCache[$rootClass])) {
-            $list = ClassInfo::subclassesFor($rootClass);
-            $newList = [];
-            foreach ($list as $class) {
-                if (
-                    $class == $rootClass ||
-                    is_subclass_of($class, TestOnly::class) ||
-                    in_array($class, $this->Config()->get('excluded_data_objects'))
-                ) {
-                    //do nothing
-                } else {
-                    $newList[$class] = $class;
-                    $name = Injector::inst()->get($class)->singular_name();
-                    if ($name !== $class) {
-                        $newList[$class] .= ' ('.$name.')';
-                    }
+            $newList = $this->walkSubclasses(function($type){
+                $key = $type->toClass();
+                $val = $type->toDropdown();
+                $singular = Injector::inst()->get($key)->singular_name();
+                if ($singular !== $val) {
+                    $val .= ' ('.$singular.')';
                 }
-            }
+                return [ $key => $val ];
+            }, $rootClass);
             $this->_classesCache[$rootClass] = $newList;
         }
 
@@ -445,55 +447,5 @@ class DataObjectAPI extends ViewableData
             'true' => 'YES',
             'false' => 'NO'
         ];
-    }
-
-
-    public function removeNamespacesFromArrayValues(array $source) : array
-    {
-        // strip 'SilverStripe\...\DB'
-        $source = array_map(
-            function($e){
-                return $this->shortNameForClass($e);
-            },
-            $source
-        );
-        return $source;
-    }
-
-    /**
-     * turns SilverStripe\ORM\DB into DB
-     *
-     * @param string $longClassName
-     * @return string
-     */
-    public function shortNameForClass($longClassName)
-    {
-        if(class_exists($longClassName)) {
-            return ClassInfo::shortName($longClassName);
-        } else {
-            return $longClassName;
-        }
-    }
-
-    /**
-     * convert a class name into the corresponding DB field name
-     * @param string $className
-     * @return string
-     */
-    public function dbFieldNameForClass($className)
-    {
-        $shortName = $this->shortNameForClass($className);
-        // remove the beginning 'DB'
-        if (substr($shortName, 0, 2) == 'DB') {
-            $shortName = substr($shortName, 2, strlen($shortName));
-        }
-        switch ($shortName) {
-            case 'File':
-            case 'Enum':
-                $shortName = 'DB'.$shortName;
-                break;
-        }
-
-        return $shortName;
     }
 }
