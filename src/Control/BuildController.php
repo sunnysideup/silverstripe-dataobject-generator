@@ -472,7 +472,7 @@ abstract class BuildController extends Controller
                         } else {
                             $tempField = $fieldType::create($fieldName, '');
                         }
-                        if($tempField instanceof DropdownField) {
+                        if ($tempField instanceof DropdownField) {
                             $tempField->setEmptyString('--- Please Select ---');
                         }
                         if (count($additionalClasses)) {
@@ -634,8 +634,8 @@ abstract class BuildController extends Controller
             $this->_processed_data = ArrayData::create($array);
         }
 
-/// DEBUG DEBUG ///
-//echo '<!-- ';var_dump($this->_processed_data); echo ' -->';
+        /// DEBUG DEBUG ///
+        //echo '<!-- ';var_dump($this->_processed_data); echo ' -->';
         return $this->_processed_data;
     }
 
