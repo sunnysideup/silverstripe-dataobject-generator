@@ -1,6 +1,7 @@
 <?php
 
 namespace Sunnysideup\BuildDataObject\API;
+
 use SilverStripe\Security\PermissionRoleCode;
 use SilverStripe\Security\LoginAttempt;
 use SilverStripe\Security\MemberPassword;
@@ -20,7 +21,6 @@ use SilverStripe\Admin\ModelAdmin;
 use SilverStripe\Security\Permission;
 use SilverStripe\CMS\Model\SiteTree;
 use SilverStripe\View\ViewableData;
-
 
 class DataObjectAPI extends ViewableData
 {
@@ -118,7 +118,7 @@ class DataObjectAPI extends ViewableData
     public function DbFields()
     {
         if (!$this->_dbfieldCache) {
-            $newCache = $this->walkSubclasses(function($type){
+            $newCache = $this->walkSubclasses(function ($type) {
                 $key = $type->toDropdown();
                 $val = $type->toDropdown();
                 return [ $key => $val ];
@@ -301,7 +301,7 @@ class DataObjectAPI extends ViewableData
             $rootClass = $this->rootBaseClass;
         }
         if (!isset($this->_classesCache[$rootClass])) {
-            $newList = $this->walkSubclasses(function($type){
+            $newList = $this->walkSubclasses(function ($type) {
                 $key = $type->toClass();
                 $val = $type->toDropdown();
                 $singular = Injector::inst()->get($key)->singular_name();
