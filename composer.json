@@ -21,6 +21,6 @@
         }
     ],
     "require": {
-        "silverstripe/framework": "~4.0"
+        "silverstripe/framework": "~3.6"
     }
 }
