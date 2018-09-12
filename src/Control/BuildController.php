@@ -27,7 +27,7 @@ use SilverStripe\ORM\FieldType\DBField;
 
 use SilverStripe\View\SSViewer;
 use SilverStripe\View\ArrayData;
-use Sunnysideup\BuildDataObject\API\DBTyper;
+use Sunnysideup\BuildDataObject\API\DBTypeConverter;
 
 abstract class BuildController extends Controller
 {
@@ -105,7 +105,7 @@ abstract class BuildController extends Controller
         if (class_exists($className)) {
             $obj = Injector::inst()->get($className);
             $primaryData = $this->turnStaticsIntoSessionData('primaryThingsToBuild', $className);
-            $primaryData['Name'] = DBTyper::fromClass($className)->toDropdown();
+            $primaryData['Name'] = DBTypeConverter::fromClass($className)->toDropdown();
             $extends = get_parent_class($className);
             $primaryData['Extends'] = $extends;
             $primaryData['singular_name'] = $obj->i18n_singular_name();
@@ -620,7 +620,7 @@ abstract class BuildController extends Controller
                             } else {
                                 $valuePairArray = [
                                     'Key' => $valuePairs['KEY'],
-                                    'Value' => DBTyper::fromDropdown($valuePairs['VALUE'])->toDataObject(),
+                                    'Value' => DBTypeConverter::fromDropdown($valuePairs['VALUE'])->toDataObject(),
                                 ];
                             }
                             $alInner->push(ArrayData::create($valuePairArray));

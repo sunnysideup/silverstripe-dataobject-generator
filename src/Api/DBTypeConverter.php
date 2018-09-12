@@ -4,7 +4,7 @@ namespace Sunnysideup\BuildDataObject\API;
 
 use SilverStripe\Core\ClassInfo;
 
-class DBTyper
+class DBTypeConverter
 {
     private $fullQualClassName;
 
@@ -33,30 +33,30 @@ class DBTyper
             // convert to fully qualified name and test it
             $fullyQualifiedName = $prefix.$trimmedTypeName;
             if (class_exists($fullyQualifiedName)) {
-                return new DBTyper($fullyQualifiedName);
+                return new DBTypeConverter($fullyQualifiedName);
             }
         }
         return null;
     }
 
-    public static function fromClass(string $fullQualClassName) : DBTyper
+    public static function fromClass(string $fullQualClassName) : DBTypeConverter
     {
-        return new DBTyper($fullQualClassName);
+        return new DBTypeConverter($fullQualClassName);
     }
 
-    public static function fromDataObject(string $dbTypeName) : DBTyper
+    public static function fromDataObject(string $dbTypeName) : DBTypeConverter
     {
         $inst = self::fromAny($dbTypeName, self::PREFIXES_OF_KNOWN_DB_TYPES);
-        return $inst ? $inst : new DBTyper($dbTypeName);
+        return $inst ? $inst : new DBTypeConverter($dbTypeName);
     }
 
-    public static function fromDropdown(string $ddName) : DBTyper
+    public static function fromDropdown(string $ddName) : DBTypeConverter
     {
         $inst = self::fromAny($ddName, self::PREFIXES_OF_KNOWN_DB_TYPES);
         if (!$inst) {
             $inst = self::fromAny($ddName, self::PREFIXES_OF_KNOWN_COMPOSITED_TYPES);
         }
-        return $inst ? $inst : new DBTyper($ddName);
+        return $inst ? $inst : new DBTypeConverter($ddName);
     }
 
     public function toClass() : string

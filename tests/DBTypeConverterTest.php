@@ -1,9 +1,9 @@
 <?php
 
 use SilverStripe\Dev\SapphireTest;
-use Sunnysideup\BuildDataObject\API\DBTyper;
+use Sunnysideup\BuildDataObject\API\DBTypeConverter;
 
-class DBTyperTester extends SapphireTest
+class DBTypeConverterTest extends SapphireTest
 {
     public function testClassToClass()
     {
@@ -16,7 +16,7 @@ class DBTyperTester extends SapphireTest
         ];
         // in & out are the same
         foreach ($expected_classname as $inout) {
-            $result = DBTyper::fromClass($inout)->toClass();
+            $result = DBTypeConverter::fromClass($inout)->toClass();
             $this->assertSame($inout, $result, $inout);
         }
     }
@@ -32,7 +32,7 @@ class DBTyperTester extends SapphireTest
             'SilverStripe\\Assets\\Image' => 'Image'
         );
         foreach ($expected_classname_dropdown as $input => $expected) {
-            $result = DBTyper::fromClass($input)->toDropdown();
+            $result = DBTypeConverter::fromClass($input)->toDropdown();
             $this->assertSame($expected, $result, $input);
         }
     }
@@ -48,7 +48,7 @@ class DBTyperTester extends SapphireTest
             'SilverStripe\\Assets\\Image' => 'SilverStripe\\\\Assets\\\\Image'
         );
         foreach ($expected_classname_dbfield as $input => $expected) {
-            $result = DBTyper::fromClass($input)->toDataObject();
+            $result = DBTypeConverter::fromClass($input)->toDataObject();
             $this->assertSame($expected, $result);
         }
     }
@@ -64,7 +64,7 @@ class DBTyperTester extends SapphireTest
             'Image' => 'SilverStripe\\\\Assets\\\\Image'
         );
         foreach ($expected_dbfield_classname as $input => $expected) {
-            $result = DBTyper::fromDropdown($input)->toDataObject();
+            $result = DBTypeConverter::fromDropdown($input)->toDataObject();
             $this->assertSame($result, $expected);
         }
     }
@@ -80,7 +80,7 @@ class DBTyperTester extends SapphireTest
             'Image' => 'SilverStripe\\Assets\\Image'
         );
         foreach ($expected_dbfield_classname as $input => $expected) {
-            $result = DBTyper::fromDropdown($input)->toClass();
+            $result = DBTypeConverter::fromDropdown($input)->toClass();
             $this->assertSame($result, $expected);
         }
     }
@@ -98,7 +98,7 @@ class DBTyperTester extends SapphireTest
             'SilverStripe\\Assets\\Image' => 'SilverStripe\\Assets\\Image'
         );
         foreach ($expected_dbfield_classname as $input => $expected) {
-            $result = DBTyper::fromDataObject($input)->toClass();
+            $result = DBTypeConverter::fromDataObject($input)->toClass();
             $this->assertSame($result, $expected);
         }
     }

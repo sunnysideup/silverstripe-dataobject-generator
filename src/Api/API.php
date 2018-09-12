@@ -103,7 +103,7 @@ class DataObjectAPI extends ViewableData
             if ($this->isExcludedClass($fqChildClass, $fqRootClass)) {
                 //do nothing
             } else {
-                $type = DBTyper::fromClass($fqChildClass);
+                $type = DBTypeConverter::fromClass($fqChildClass);
                 $result = call_user_func($callback, $type);
                 if (is_array($result)) {
                     $array += $result;
@@ -280,7 +280,7 @@ class DataObjectAPI extends ViewableData
             $rootClass = $this->rootBaseClass;
         }
         $list =
-            [ $rootClass => DBTyper::fromClass($rootClass)->toDropdown() ] +
+            [ $rootClass => DBTypeConverter::fromClass($rootClass)->toDropdown() ] +
             $this->possibleRelations();
         asort($list);
 
