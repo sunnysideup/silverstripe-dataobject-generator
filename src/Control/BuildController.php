@@ -28,8 +28,12 @@ use SilverStripe\ORM\FieldType\DBField;
 use SilverStripe\View\SSViewer;
 use SilverStripe\View\ArrayData;
 use Sunnysideup\BuildDataObject\API\DBTypeConverter;
+use Sunnysideup\BuildDataObject\API\FormData\FormDataDecomposer;
+use Sunnysideup\BuildDataObject\API\PrimaryFormBuilder;
+use Sunnysideup\BuildDataObject\API\IFormBuilderOwner;
+use Sunnysideup\BuildDataObject\API\SecondaryFormBuilder;
 
-abstract class BuildController extends Controller
+abstract class BuildController extends Controller implements IFormBuilderOwner
 {
     private static $form_data_session_variable = 'Sunnysideup\BuildDataObject\Control\Models\DataObjectBuildController';
 
@@ -55,6 +59,24 @@ abstract class BuildController extends Controller
     abstract protected function primaryThingsToBuild();
 
     abstract protected function secondaryThingsToBuild();
+
+    private static $debug = true;
+
+    private static function var_export_debug(&$var)
+    {
+        if (self::$debug) {
+            /// DEBUG DEBUG ///
+            echo '<!-- ';var_export($var); echo ' -->';
+        }
+    }
+
+    private static function print_r_debug(&$var)
+    {
+        if (self::$debug) {
+            /// DEBUG DEBUG ///
+            echo '<!-- ';print_r($var); echo ' -->';
+        }
+    }
 
     public function Link($action = null)
     {
@@ -283,238 +305,15 @@ abstract class BuildController extends Controller
     protected function createForm($formName, $actionTitle)
     {
         if ($formName === 'PrimaryForm') {
-            $isPrimary = true;
-            $isSecond = false;
+            $builder = new PrimaryFormBuilder($this, $this->primaryThingsToBuild());
         } elseif ($formName === 'SecondaryForm') {
-            $isPrimary = false;
-            $isSecond = true;
+            $builder = new SecondaryFormBuilder($this, $this->secondaryThingsToBuild());
         } else {
             user_error('Set right form type: '.$formName.' is not valid');
         }
 
-        $finalFields = FieldList::create();
+        $finalFields = $builder->build();
 
-        if ($isPrimary) {
-            $toBuild = $this->primaryThingsToBuild();
-            $possibleExtensions = $this->myAPI()->PossibleRelationsWithBaseClass($this->myBaseClass);
-            $finalFields->push(HeaderField::create('BasedOnHeader', 'Based On (OPTIONAL) ...'));
-            $possibleBasedOn = $possibleExtensions;
-            unset($possibleBasedOn[DataObject::class]);
-            $finalFields->push(DropdownField::create('Template', '', $possibleBasedOn)->setEmptyString('--- PRELOAD VALUES FROM ---'));
-            $finalFields->push(HeaderField::create('NameHeader', 'Name your '.$this->ShortBaseClass()));
-            $finalFields->push(TextField::create('Name', ''));
-            $finalFields->push(HeaderField::create('ExtendsHeader', 'Extends'));
-            asort($possibleExtensions);
-            $finalFields->push(
-                DropdownField::create(
-                    'Extends',
-                    '',
-                    $possibleExtensions
-                )->setValue($this->myBaseClass)
-            );
-            $additionalFields = $this->additionalPrimaryFields();
-            foreach ($additionalFields as $additionalField) {
-                $finalFields->push($additionalField);
-            }
-        } else {
-            $toBuild = $this->secondaryThingsToBuild();
-        }
-        $formFields = [];
-        $formFieldsWithMultiple = [];
-
-        $count = 0;
-        //build fields ...
-        foreach ($toBuild as $item) {
-            $name = $item['Name'];
-            $sourceMethod1 = $item['SourceMethod1'];
-            $sourceMethod2 = $item['SourceMethod2'];
-            $isMultiple = $item['IsMultiple'];
-
-
-            //work out style
-            $hasKeyAndValue = false;
-            if ($sourceMethod1 && $sourceMethod2) {
-                $hasKeyAndValue = true;
-            }
-            $formFields[$count] = [];
-            if ($isMultiple) {
-                $max = 12;
-            } else {
-                $max = 1;
-            }
-            $formFields[$count][0] = [
-                $name.'_HEADER',
-                HeaderField::class,
-                $name
-            ];
-
-
-            //work out sources
-            if ($sourceMethod1 && $this->myAPI()->hasMethod($sourceMethod1)) {
-                $source1 = $this->myAPI()->$sourceMethod1();
-            } else {
-                $source1 = null;
-            }
-            if ($sourceMethod2 && $this->myAPI()->hasMethod($sourceMethod2)) {
-                $source2 = $this->myAPI()->$sourceMethod2();
-            } elseif ($sourceMethod2) {
-                $source2 = null;
-            } else {
-                $source2 = 'ignore';
-            }
-
-            //work out field names
-
-            for ($i = 1; $i <= $max; $i++) {
-                if ($hasKeyAndValue) {
-                    if ($isMultiple) {
-                        $nameKey = $name.'__KEY__'.$i;
-                        $nameValue = $name.'__VALUE__'.$i;
-                        $formFieldsWithMultiple[$nameKey] = $nameKey;
-                    } else {
-                        $nameKey = $name.'__KEY__';
-                        $nameValue = $name.'__VALUE__';
-                    }
-                } else {
-                    if ($isMultiple) {
-                        $nameKey = $name.$i;
-                        $nameValue = '';
-                        $formFieldsWithMultiple[$nameKey] = $nameKey;
-                    } else {
-                        $nameKey = $name;
-                        $nameValue = '';
-                    }
-                }
-                if ($hasKeyAndValue) {
-                    //key field
-                    if ($source1) {
-                        $formFields[$count][$i]['KEY'] = [
-                            $nameKey,
-                            DropdownField::class,
-                            $source1
-                        ];
-                    } else {
-                        $formFields[$count][$i]['KEY'] = [
-                            $nameKey,
-                            TextField::class
-                        ];
-                    }
-
-                    //value field
-                    if ($source2) {
-                        $formFields[$count][$i]['VALUE'] = [
-                            $nameValue,
-                            DropdownField::class,
-                            $source2
-                        ];
-                    } else {
-                        $formFields[$count][$i]['VALUE'] = [
-                            $nameValue,
-                            TextField::class
-                        ];
-                    }
-                } else {
-                    //keys only!
-                    if ($source1) {
-                        $formFields[$count][$i] = [
-                            $nameKey,
-                            DropdownField::class,
-                            $source1
-                        ];
-                    } else {
-                        $formFields[$count][$i] = [
-                            $nameKey,
-                            TextField::class
-                        ];
-                    }
-                }
-            }
-            if ($i > 2) {
-                $formFields[$count][$i + 1] = [
-                    $name.'_ADD_'.$i,
-                    LiteralField::class,
-                    '
-                    <div class="CompositeField add-and-remove">
-                        <a href="#" class="add first-add"><i class="material-icons">add_circle_outline</i></a>
-                        <a href="#" class="remove"><i class="material-icons">remove_circle_outline</i></a>
-                    </div>
-                    '
-                ];
-            }
-            $count++;
-        }
-        //create fields ...
-        $count = 0;
-        foreach ($formFields as $outerCount => $subFieldList) {
-            $count++;
-            $compositeField = CompositeField::create();
-            $compositeField->addExtraClass('OuterComposite pos'.$count);
-            $innerCount = 0;
-            foreach ($subFieldList as $innerCount => $fieldDetails) {
-                $innerCount++;
-                if (isset($fieldDetails['KEY']) && isset($fieldDetails['VALUE'])) {
-                    $subCompositeField = CompositeField::create();
-                    $subCompositeField->addExtraClass('InnerComposite pos'.$innerCount);
-                    foreach ($fieldDetails as $fieldDetailsInner) {
-                        $fieldName = $fieldDetailsInner[0];
-                        $fieldType = $fieldDetailsInner[1];
-                        $additionalClasses = [];
-                        if (strpos($fieldName, '__KEY__')) {
-                            $additionalClasses[] = 'mykey';
-                        }
-                        if (strpos($fieldName, '__VALUE__')) {
-                            $additionalClasses[] = 'myvalue';
-                        }
-                        if (isset($fieldDetailsInner[2])) {
-                            $source = $fieldDetailsInner[2];
-                            asort($source);
-                            $tempField = $fieldType::create($fieldName, '', $source);
-                        } else {
-                            $tempField = $fieldType::create($fieldName, '');
-                        }
-                        if ($tempField instanceof DropdownField) {
-                            $tempField->setEmptyString('--- Please Select ---');
-                        }
-                        if (count($additionalClasses)) {
-                            $classes = implode(' ', $additionalClasses);
-                            $tempField->addExtraClass($classes);
-                        }
-                        $subCompositeField->push($tempField);
-                    }
-                    $compositeField->push($subCompositeField);
-                } else {
-                    $fieldName = $fieldDetails[0];
-                    if (isset($formFieldsWithMultiple[$fieldName])) {
-                        $subCompositeField = CompositeField::create();
-                        $subCompositeField->addExtraClass('InnerComposite pos'.$innerCount);
-                    } else {
-                        $subCompositeField = null;
-                    }
-                    $fieldType = $fieldDetails[1];
-                    if ($fieldType === DropdownField::class) {
-                        $source = $fieldDetails[2];
-                        asort($source);
-                        $myTempfield = $fieldType::create($fieldName, '', $source);
-                        $myTempfield->setEmptyString('--- Please Select ---');
-                    } elseif ($fieldType === HeaderField::class) {
-                        $title = str_replace('_', ' ', $fieldDetails[2]);
-                        $myTempfield = $fieldType::create($fieldName, $title);
-                    } elseif ($fieldType === LiteralField::class) {
-                        $title = $fieldDetails[2];
-                        $myTempfield = $fieldType::create($fieldName, $title);
-                    } else {
-                        $myTempfield = $fieldType::create($fieldName, '');
-                    }
-                    if ($subCompositeField) {
-                        $subCompositeField->push($myTempfield);
-                        $compositeField->push($subCompositeField);
-                    } else {
-                        $compositeField->push($myTempfield);
-                    }
-                }
-            }
-            $finalFields->push($compositeField);
-        }
         $actions = FieldList::create(
             [FormAction::create('do'.strtolower($formName), $actionTitle)]
         );
@@ -585,57 +384,12 @@ abstract class BuildController extends Controller
             if (! $data) {
                 $data = $this->retrieveData();
             }
-            $array = [];
-            foreach ($data as $key => $value) {
-                if ($key && $value) {
-                    if (
-                        strpos($key, '__KEY__') ||
-                        strpos($key, '__VALUE__')
-                    ) {
-                        $parts = explode('__', $key);
-                        if (!isset($array[$parts[0]])) {
-                            $array[$parts[0]] = [];
-                        }
-                        if (! isset($array[$parts[0]][$parts[2]])) {
-                            $array[$parts[0]][$parts[2]] = [];
-                        }
-                        $array[$parts[0]][$parts[2]][$parts[1]] = $value;
-                    } elseif (substr($key, 0, 3) === 'can') {
-                        $array[$key] = $this->MyCanMethodBuilder($key, $value);
-                    } else {
-                        $array[$key] = $value;
-                    }
-                }
-            }
-            foreach ($array as $field => $values) {
-                $alInner = ArrayList::create();
-                if (is_array($values)) {
-                    foreach ($values as $key => $valuePairs) {
-                        if (isset($valuePairs['KEY']) && isset($valuePairs['VALUE'])) {
-                            if ($valuePairs['VALUE'] == 'true') {
-                                $valuePairArray = [
-                                    'Key' => $valuePairs['KEY'],
-                                    'UnquotedValue' => $valuePairs['VALUE'],
-                                ];
-                            } else {
-                                $valuePairArray = [
-                                    'Key' => $valuePairs['KEY'],
-                                    'Value' => DBTypeConverter::fromDropdown($valuePairs['VALUE'])->toDataObject(),
-                                ];
-                            }
-                            $alInner->push(ArrayData::create($valuePairArray));
-                        }
-                    }
-                    $array[$field] = $alInner;
-                } else {
-                    //do nothing
-                }
-            }
-            $this->_processed_data = ArrayData::create($array);
+            $decomposer = new FormDataDecomposer($data);
+            $this->_processed_data = $decomposer->toArrayData();
         }
 
         /// DEBUG DEBUG ///
-        //echo '<!-- ';var_dump($this->_processed_data); echo ' -->';
+        // self::print_r_debug($this->_processed_data);
         return $this->_processed_data;
     }
 
@@ -670,5 +424,38 @@ abstract class BuildController extends Controller
         }
 
         return $newArray;
+    }
+
+    // IFormBuilderOwner implements
+
+    public function getBaseClass() : string
+    {
+        return $this->myBaseClass;
+    }
+
+    public function getShortBaseClass() : string
+    {
+        return $this->ShortBaseClass();
+    }
+
+    public function getAdditionalPrimaryFields() : array
+    {
+        return $this->additionalPrimaryFields();
+    }
+
+    public function getPossibleRelationsWithBaseClass()
+    {
+        return $this->myAPI()->PossibleRelationsWithBaseClass($this->myBaseClass);
+    }
+
+    public function callAPIMethod($method, $defaultValueIfMethodIsNull)
+    {
+        if ($method) {
+            if ($this->myAPI()->hasMethod($method)) {
+                return $this->myAPI()->$method();
+            }
+            return null;
+        }
+        return $defaultValueIfMethodIsNull;
     }
 }
