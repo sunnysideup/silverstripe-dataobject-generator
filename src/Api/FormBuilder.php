@@ -157,8 +157,8 @@ abstract class FormPart
         if ($this->isMultiple) {
             // TODO: add buttons dynamically in the front-end side rather than doing here
             // e.g. jQuery(() => $('.OuterComposite.multiple').append(buttons));
-            $addRemoveField = $this->createAddRemoveField($innerCount);
-            $compositeField->push($addRemoveField);
+            //$addRemoveField = $this->createAddRemoveField($innerCount);
+            //$compositeField->push($addRemoveField);
             $compositeField->addExtraClass('multiple');
         }
         return $compositeField;

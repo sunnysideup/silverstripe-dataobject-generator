@@ -153,112 +153,101 @@ footer p a {
     </script>
 
     <script type="text/javascript">
-        jQuery('document').ready(
-            function() {
-                jQuery('.InnerComposite')
-                    .hide()
-                    .each(
-                        function(i, el) {
-                            var show = false;
-                            var keyInput = jQuery(el).find('div.mykey select, input').first();
-                            var valInput = jQuery(el).find('div.myvalue select, input').first();
-                            if(keyInput && keyInput.length > 0 && valInput && valInput.length > 0) {
-                                var keyVal = jQuery(el).find('div.mykey select, input').first().val();
-                                var valVal = jQuery(el).find('div.myvalue select, input').first().val();
-                                if(keyVal.length > 0 && valVal.length > 0) {
-                                    show = true;
-                                }
-                            }
-                            else if(keyInput && keyInput.length > 0) {
-                                var keyVal = jQuery(el).find('div.mykey select, input').first().val();
-                                if(keyVal.length) {
-                                    show = true;
-                                }
-                            }
-                            if(show) {
-                                jQuery(el).show();
-                            }
-                        }
+        (function($){
+            const css = `
+            div.field.dropdown, div.field.text { width: calc(50% - 3em); }
+            div.mykey { float: none; }
+            div.myvalue { float: none; }
+            div.myvalue { margin-left: 40px; }
+            .btn-remove { margin-left: 1em; }
+            .btn-add, .btn-remove { cursor: pointer; height: 2.5em; color: #fff; text-shadow: 1px 1px rgba(0,0,0,.5); border-width: 1px; border-style: solid; border-radius: 4px; box-shadow: 1px 1px 2px rgba(255,255,255,.4) inset, -1px -1px 2px rgba(0,0,0,.3) inset; }
+            .btn-add > .material-icons, .btn-remove > .material-icons { vertical-align: middle; }
+            .btn-add { background: #3c6; border-color: #afc #063 #063 #afc; }
+            .btn-remove { background: #f66; border-color: #faa #633 #633 #faa; }
+            .InnerComposite { display: none; }
+            .InnerComposite.active { display: flex; }
+            `;
 
-                    );
+            $(function(){
+                $('<style>', { text: css }).appendTo(document.head);
 
-                jQuery('.add-and-remove .add')
-                    .show()
-                    .on(
-                        'click',
-                        function(event){
-                            event.preventDefault();
-                            var outerEl = jQuery(this);
-                            var outerDiv = outerEl.closest('.OuterComposite');
-                            var todo = true;
-                            jQuery(outerDiv)
-                                .find('div.InnerComposite')
-                                .each(
-                                    function(i, innerEl) {
-                                        if(todo === true) {
-                                            var innerEl = jQuery(innerEl);
-                                            if(innerEl.is(':hidden')) {
-                                                innerEl.show();
-                                                todo = false;
-                                                if(innerEl.hasClass('pos13')) {
-                                                    jQuery(outerEl).hide();
-                                                }
-                                                outerDiv.find('.add').removeClass('first-add');
-                                            }
+                $('.InnerComposite').filter(function(){
+                    let hasAny = false;
+                    $(this).find('.mykey:input, .myvalue:input').each(function(){
+                        hasAny |= !!$(this).val();
+                    });
+                    return hasAny;
+                }).addClass('active');
+
+                function showHideAddButton(outer){
+                    let remaining = $(outer).find('.InnerComposite:not(.active):first');
+                    $(outer).find('.btn-add').toggle(remaining.length > 0);
+                };
+
+                $('.OuterComposite.multiple').each(function(){
+                    $(this).children('.InnerComposite').each(function(i){
+                        $('<button type="button" class="btn-remove" title="Remove"><i class="material-icons">remove_circle_outline</i></button>')
+                            .appendTo(this)
+                            .click(
+                                i,
+                                function(e){
+                                    // TODO: use front-end framework e.g. React, Angular, Vue, Ember
+                                    let pos = e.data;
+                                    let me = $(this).closest('.InnerComposite');
+                                    let parent = me.closest('.OuterComposite');
+                                    let children = parent.find('.InnerComposite');
+                                    //console.log(pos, me, parent);
+                                    let array = [];
+                                    children.each(function(){
+                                        if ($(this).hasClass('active')) {
+                                            array.push({ key: $(this).find('.mykey:input').val(), value: $(this).find('.myvalue:input').val() });
                                         }
+                                    });
+                                    array.splice(pos, 1);
+                                    array.forEach(function(e, i){
+                                        let c = children.eq(i);
+                                        c.find('.mykey:input').val(e.key);
+                                        c.find('.myvalue:input').val(e.value);
+                                    });
+                                    //console.log(array);
+                                    for (let i = array.length, len = children.length; i < len; i++) {
+                                        let c = children.eq(i);
+                                        c.find('.mykey:input').val('');
+                                        c.find('.myvalue:input').val('');
+                                        c.removeClass('active');
                                     }
-                                );
-                            outerDiv.find('.remove').show();
-                            return false;
-                        }
-                    );
-                jQuery('.add-and-remove .remove')
-                    .hide()
-                    .on(
-                        'click',
-                        function(event){
-                            event.preventDefault();
-                            var outerEl = jQuery(this);
-                            var outerDiv = outerEl.closest('.OuterComposite');
-                            var todo = true;
-                            var myHiddenDiv = jQuery(outerDiv)
-                                .find('div.InnerComposite:visible')
-                                .last();
-                            myHiddenDiv.hide();
-                            myHiddenDiv.find('input, select').each(
-                                function(i, formEl) {
-                                    jQuery(formEl).val('');
-                                }
-                            );
-                            if(myHiddenDiv.hasClass('pos2')) {
-                                jQuery(outerEl).hide();
-                                outerDiv.find('.add').addClass('first-add');
-                            } else {
-                                outerDiv.find('.add').removeClass('first-add');
-                            }
-                            outerDiv.find('.add').show();
-                            return false;
-                        }
-                    );
-                jQuery('select[name="Template"]').on(
-                    'change',
-                    function(event) {
-                        var selection = jQuery(this).val();
-                        if(typeof selection === 'string' && selection.length > 0) {
+                                    showHideAddButton(parent);
+                                });
+                        });
+                });
+
+                $('.OuterComposite.multiple').each(function(){
+                    $('<button type="button" class="btn-add" title="Add"><i class="material-icons">add_circle_outline</i></button>')
+                        .appendTo(this)
+                        .click(
+                            this,
+                            function(e){
+                                $(e.data).find('.InnerComposite:not(.active):first').addClass('active');
+                                showHideAddButton(e.data);
+                            });
+                });
+
+                $('select[name="Template"]').change(
+                    function(e){
+                        var selection = $(this).val();
+                        if (typeof selection === 'string' && selection.length > 0) {
                             if (confirm('Loading a template will remove any data you have entered already.  Would you like to continue?')) {
                                 // Save it!
                                 var url = '$LoadTemplateLink' + selection;
                                 window.location = url;
-                                jQuery('body').fadeOut();
+                                $('body').fadeOut();
                             } else {
                                 // Do nothing!
                             }
                         }
-                    }
-                );
-
-            }
-        );
+                    });
+            });
+        })(jQuery);
     </script>
 </body>
 </html>
