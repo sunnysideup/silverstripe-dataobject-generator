@@ -46,7 +46,7 @@ class $Name extends $Extends
 }
 
 
-class {$Name}_Controller extends {$Extends}_Controller
+class {$Name}Controller extends {$Extends}Controller
 {
 
     public function init()
