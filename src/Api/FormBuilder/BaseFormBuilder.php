@@ -14,6 +14,8 @@ abstract class BaseFormBuilder
     private $toBuild;
     private $headerFields;
 
+    protected abstract function onGetHeaderFields(IFormBuilderOwner $owner, array &$headerFields);
+
     public function __construct(IFormBuilderOwner $owner, array $toBuild)
     {
         $this->owner = $owner;
@@ -42,16 +44,19 @@ abstract class BaseFormBuilder
     {
         $finalFields = new FieldList($this->headerFields);
 
-        $outerCount = 0;
+        $parts = [];
         foreach ($this->toBuild as $item) {
-            $outerCount++;
-
             $part = $this->createFormPartOnItem($item);
+            array_push($parts, $part);
+        }
+
+        $outerCount = 0;
+        foreach ($parts as $part) {
+            $outerCount++;
             $compositeField = $part->toCompositeField($outerCount);
             $finalFields->push($compositeField);
         }
+
         return $finalFields;
     }
-
-    protected abstract function onGetHeaderFields(IFormBuilderOwner $owner, array &$headerFields);
 }
