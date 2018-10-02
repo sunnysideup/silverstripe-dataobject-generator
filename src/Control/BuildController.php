@@ -29,9 +29,9 @@ use SilverStripe\View\SSViewer;
 use SilverStripe\View\ArrayData;
 use Sunnysideup\BuildDataObject\API\DBTypeConverter;
 use Sunnysideup\BuildDataObject\API\FormData\FormDataDecomposer;
-use Sunnysideup\BuildDataObject\API\PrimaryFormBuilder;
-use Sunnysideup\BuildDataObject\API\IFormBuilderOwner;
-use Sunnysideup\BuildDataObject\API\SecondaryFormBuilder;
+use Sunnysideup\BuildDataObject\API\FormBuilder\IFormBuilderOwner;
+use Sunnysideup\BuildDataObject\API\FormBuilder\PrimaryFormBuilder;
+use Sunnysideup\BuildDataObject\API\FormBuilder\SecondaryFormBuilder;
 
 abstract class BuildController extends Controller implements IFormBuilderOwner
 {

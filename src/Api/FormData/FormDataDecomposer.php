@@ -35,7 +35,7 @@ class FormDataDecomposer
                 } elseif (substr($key, 0, 3) === 'can') {
                     $array[$key] = new CanFormData($value);
                 } else {
-                    $array[$key] = new PlainFormData($value);
+                    $array[$key] = new BasicFormData($value);
                 }
             }
         }
