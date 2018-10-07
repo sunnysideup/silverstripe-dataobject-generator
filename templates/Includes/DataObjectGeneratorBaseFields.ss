@@ -5,14 +5,14 @@
     <% if $singular_name %>
     private static \$singular_name = '$singular_name';
 
-    function i18n_singular_name()
+    public function i18n_singular_name()
     {
         return _t('{$Name}.SINGULAR_NAME', '$singular_name');
     }
     <% end_if %><% if $plural_name %>
     private static \$plural_name = '$plural_name';
 
-    function i18n_plural_name()
+    public function i18n_plural_name()
     {
         return _t('{$Name}.PLURAL_NAME', '$plural_name');
     }
@@ -127,22 +127,22 @@
     ### can Section
     #######################
     <% if $canCreate %>
-    function canCreate(\$member = null)
+    public function canCreate(\$member = null, \$context = [])
     {
         return $canCreate.RAW
     }
     <% end_if %><% if $canView %>
-    function canView(\$member = null)
+    public function canView(\$member = null, \$context = [])
     {
         return $canView.RAW
     }
     <% end_if %><% if $canEdit %>
-    function canEdit(\$member = null)
+    public function canEdit(\$member = null, \$context = [])
     {
         return $canEdit.RAW
     }
     <% end_if %><% if $canDelete %>
-    function canDelete(\$member = null)
+    public function canDelete(\$member = null, \$context = [])
     {
         return $canDelete.RAW
     }

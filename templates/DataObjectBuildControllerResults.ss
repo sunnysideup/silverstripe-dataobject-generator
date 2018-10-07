@@ -2,7 +2,9 @@
 
 <% with $FinalData %>
 
-class $Name extends $Extends
+use SilverStripe\\Security\\Permission;
+
+class $Name extends \\$Extends
 {
 
 <% include DataObjectGeneratorBaseFields %>
