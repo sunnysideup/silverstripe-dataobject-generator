@@ -3,6 +3,7 @@
 <% with $FinalData %>
 
 use SilverStripe\\Security\\Permission;
+use SilverStripe\\ORM\\DataObject;
 
 class $Name extends \\$Extends
 {
@@ -17,14 +18,14 @@ class $Name extends \\$Extends
     <% if $ModelAdmin %>
     public function CMSEditLink()
     {
-        \$controller = singleton("$ModelAdmin");
+        \$controller = singleton($ModelAdmin::class);
 
         return \$controller->Link().\$this->ClassName."/EditForm/field/".\$this->ClassName."/item/".\$this->ID."/edit";
     }
 
     public function CMSAddLink()
     {
-        \$controller = singleton("$ModelAdmin");
+        \$controller = singleton($ModelAdmin::class);
 
         return \$controller->Link().\$this->ClassName."/EditForm/field/".\$this->ClassName."/item/new";
     }

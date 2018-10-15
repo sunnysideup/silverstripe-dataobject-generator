@@ -45,7 +45,7 @@ form {
 
 header {
   display: grid;
-  grid-template-areas: '. home start' 'head head head';
+  grid-template-areas: 'home . start' 'head head head';
   grid-template-columns: 1fr auto auto;
 }
 
@@ -121,10 +121,16 @@ select:focus {
 }
 
 .btn-remove { margin-left: 1em; }
-.btn-add, .btn-remove { cursor: pointer; height: 2.5em; color: #fff; text-shadow: 1px 1px rgba(0,0,0,.5); border-width: 1px; border-style: solid; border-radius: 4px; box-shadow: 1px 1px 2px rgba(255,255,255,.4) inset, -1px -1px 2px rgba(0,0,0,.3) inset; }
-.btn-add > .material-icons, .btn-remove > .material-icons { vertical-align: middle; }
-.btn-add { background: #3c6; border-color: #afc #063 #063 #afc; }
-.btn-remove { background: #f66; border-color: #faa #633 #633 #faa; }
+.btn-add, .btn-remove {
+  cursor: pointer;
+  color: #575757;
+  border: none;
+  padding: 0;
+  background-color: transparent;
+}
+.btn-add > .material-icons, .btn-remove > .material-icons { vertical-align: middle; text-align: center;}
+.btn-add { color: green;}
+.btn-remove { color: red; }
 
 .OuterComposite {
   margin: 2rem 0;
