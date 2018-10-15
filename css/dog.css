@@ -1,114 +1,181 @@
+* {
+  box-sizing: border-box;
+}
+
 html {
   background-color: #eee;
 }
 
 body {
-  font-family: sans-serif;
   color: #333;
-  margin: 50px auto 500px auto;
-  max-width: 600px;
+  font-family: sans-serif;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: 800px;
+  margin: 50px auto;
   padding: 40px;
   border: 1px solid #FFCC1A;
   border-radius: 10px;
   background-color: #fff;
 }
 
-h1, h2, h3, h4 {color: #838080; clear: both; }
-form { position: relative;}
-a {color: green;}
-header {}
-header  p.back-home {margin-top: -20px; float: right; margin-right: 20px;}
-header  p.start-over {margin-top: -20px; float: right;}
-header  h1 {
-  border-bottom: 1px solid #FFCC1A;
-  background-color: #efefef;
+h1, h2, h3, h4 {
+  color: #838080;
+}
+
+h1 {
   text-align: center;
-  padding: 0.9em 0.2em 0.2em 0.2em;
-  border-radius: 3px;
-  font-size: 23px;
-  margin-bottom: 2em;
-}
-a.remove, a.clear {color: red;}
-div.add-and-remove {padding-top: 0.5em;}
-a.add {float: right;}
-a.add.first-add,
-a.remove {
-  float: left;
-  margin-top: -2.2em;
-  margin-left: -1.7em;
-}
-h2 {
-  padding-top: 1.7em;
-  padding-bottom: 0.3em;
+  padding: .9em .2em .2em;
   margin: 0;
-  clear: both;
+  font-size: 23px;
+}
+
+h2 {
+  padding: .3em 0;
+  margin: 0;
   font-size: 16px;
 }
-div.field.dropdown,
-div.field.text {
-  width: calc((600px / 2) - 2em);
+
+/*
+form {
+  position: relative;
+}
+*/
+
+header {
+  display: grid;
+  grid-template-areas: '. home start' 'head head head';
+  grid-template-columns: 1fr auto auto;
+}
+
+header a {
+  padding: .3em;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+header a .text {
+  display: none;
+}
+
+header .home {
+  grid-area: home;
+}
+header .clear {
+  grid-area: start;
+}
+
+header .home i {
+  color: green;
+}
+
+header .clear i {
+  color: red;
+}
+
+header h1 {
+  grid-area: head;
+  background-color: #efefef;
+  border-bottom: 1px solid #FFCC1A;
+  border-radius: 3px;
+}
+
+fieldset {
+  outline: 0;
+  border: 0;
+  padding: 0;
+  margin: 1em 0;
+}
+
+fieldset h2 {
+  margin-top: 2rem;
+}
+
+fieldset h2:first-child {
+  margin-top: 2rem;
 }
 
 input, select {
-  width: calc( 100% - 2px - 1em);
+  width: 100%;
   color: #555;
-  padding: 0.5em;
+  padding: .5em;
   border-radius: 5px;
   border: 1px solid #ccc;
   display: block;
-  margin: 0 0.5em 0 0;
   font-family: monospace;
 }
-select {width: calc( 100% );background-color: #efefef;}
 
 input:focus,
 select:focus {
+  box-shadow: 0 0 0 3px rgba(0,128,0,.6);
   border-color: green;
   background-color: green;
   color: #fff;
   outline: 0;
 }
 
-div.CompositeField {
-  clear: both;
-}
-div.Actions {
-  padding-top: 2em;
-}
-div.Actions input {width: 100%; font-weight: bold;}
-fieldset, form {
-  outline: 0;
-  border: 0;
-  padding: 0;
-  margin: 0;
-}
-fieldset {
-  outline: 0;
-  border: 0;
+.field.dropdown, .field.text {
+  width: 45%;
 }
 
-.InnerComposite {padding: 0.5em 0;}
+.btn-remove { margin-left: 1em; }
+.btn-add, .btn-remove { cursor: pointer; height: 2.5em; color: #fff; text-shadow: 1px 1px rgba(0,0,0,.5); border-width: 1px; border-style: solid; border-radius: 4px; box-shadow: 1px 1px 2px rgba(255,255,255,.4) inset, -1px -1px 2px rgba(0,0,0,.3) inset; }
+.btn-add > .material-icons, .btn-remove > .material-icons { vertical-align: middle; }
+.btn-add { background: #3c6; border-color: #afc #063 #063 #afc; }
+.btn-remove { background: #f66; border-color: #faa #633 #633 #faa; }
 
-fieldset > h2:first-child {
-  padding-top: 0;
-  margin-top: 0;
+.OuterComposite {
+  margin: 2rem 0;
 }
+
+.InnerComposite {
+  padding: .5em 0;
+  display: none;
+}
+
+.InnerComposite.active {
+  display: flex;
+}
+
+.myvalue {
+  display: flex;
+  flex: 1;
+  align-items: center;
+}
+
+.myvalue::before {
+  content: '';
+  display: block;
+  border-style: solid none solid solid;
+  border-color: transparent transparent transparent #777;
+  border-width: 10px 0 10px 10px;
+  margin: 0 10px;
+}
+
+.myvalue > .middleColumn {
+  flex: 1;
+}
+
 footer {
-  clear: both;
   padding-top: 3em;
 }
+
 footer p  {
   text-align: center;
   padding: 0;
   margin: 0;
   color: #777;
-
 }
+
 footer p a {
   border-bottom: 1px solid #FFCC1A;
   text-decoration: none;
   color: #777;
 }
+
+/*
 @media only screen and (min-width: 700px) {
   div.myvalue:before {
       content: '=> ';
@@ -125,4 +192,4 @@ footer p a {
       float: right;
   }
 }
-
+*/

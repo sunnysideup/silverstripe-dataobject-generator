@@ -9,12 +9,13 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
     <%require css('sunnysideup/dataobject-generator:css/lib/jquery-ui.min.css') %>
     <%require css('sunnysideup/dataobject-generator:css/dog.css') %>
+    <%require css('sunnysideup/dataobject-generator:css/new.css') %>
 </head>
 <body>
     <header>
-        <p class="start-over"><a href="$PrevLink" class="clear"><i class="material-icons">clear</i></a></p>
-        <p class="back-home"><a href="/" class="back"><i class="material-icons">home</i></a></p>
         <h1>$Title</h1>
+        <a href="$PrevLink" class="clear"><i class="material-icons">clear</i><span class="text">Start over</span></a>
+        <a href="/" class="home"><i class="material-icons">home</i><span class="text">Homepage</span></a>
     </header>
     $Form
     <footer><p>This tool has been provided by <a href="http://www.Sunnysideup.co.nz">sunny side up</a>. Feedback welcome.</p></footer>
