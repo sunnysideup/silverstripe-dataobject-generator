@@ -22,5 +22,11 @@
     ],
     "require": {
         "silverstripe/framework": "~4.0"
+    },
+    "extra": {
+        "expose": [
+            "javascript",
+            "css"
+        ]
     }
 }
