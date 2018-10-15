@@ -15,7 +15,13 @@
 
     $('.OuterComposite.multiple').each(function(){
       $(this).sortable({
-        update: function(evt, ui){
+        start: function(evt, ui){
+          $(ui.item).addClass('grabbing');
+        },
+        stop: function(){
+          $(this).children('.InnerComposite').removeClass('grabbing');
+        },
+        update: function(){
           function rewriteName(e, i){
             i++;
             $.each(['name', 'id'], function(){

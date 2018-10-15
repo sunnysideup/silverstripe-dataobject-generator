@@ -139,19 +139,32 @@ select:focus {
 .InnerComposite {
   padding: .5em 0;
   display: none;
+  cursor: grab;
 }
 
 .InnerComposite.active {
   display: flex;
 }
 
-.myvalue {
+.InnerComposite.grabbing {
+  cursor: grabbing;
+}
+
+.InnerComposite > .mykey,
+.InnerComposite > .myvalue {
   display: flex;
   flex: 1;
   align-items: center;
 }
 
-.myvalue::before {
+.InnerComposite > .mykey::before {
+  content: '\22ee';
+  display: block;
+  width: 3ch;
+  text-align: left;
+}
+
+.InnerComposite > .myvalue::before {
   content: '';
   display: block;
   border-style: solid none solid solid;
@@ -160,7 +173,8 @@ select:focus {
   margin: 0 10px;
 }
 
-.myvalue > .middleColumn {
+.InnerComposite > .mykey > .middleColumn,
+.InnerComposite > .myvalue > .middleColumn {
   flex: 1;
 }
 
