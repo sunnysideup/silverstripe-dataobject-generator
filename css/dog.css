@@ -59,19 +59,22 @@ header a {
 header a .text {
   display: none;
 }
+header a i {
+  color: #575757;
+}
 
 header .home {
-  grid-area: home;
-}
-header .clear {
   grid-area: start;
 }
-
-header .home i {
-  color: green;
+header .clear {
+  grid-area: home;
 }
 
-header .clear i {
+header .home i:hover {
+  color: red;
+}
+
+header .clear i:hover {
   color: red;
 }
 
@@ -129,8 +132,8 @@ select:focus {
   background-color: transparent;
 }
 .btn-add > .material-icons, .btn-remove > .material-icons { vertical-align: middle; text-align: center;}
-.btn-add { color: green;}
-.btn-remove { color: red; }
+.btn-add:hover { color: green;}
+.btn-remove:hover { color: red; }
 
 .OuterComposite {
   margin: 2rem 0;

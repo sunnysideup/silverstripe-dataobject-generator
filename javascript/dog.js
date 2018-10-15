@@ -39,7 +39,7 @@
         }
       });
       $(this).children('.InnerComposite').each(function(i){
-        $('<button type="button" class="btn-remove" title="Remove"><i class="material-icons">remove_circle_outline</i></button>')
+        $('<button type="button" class="btn-remove" title="Remove" tabindex="-1"><i class="material-icons">remove_circle_outline</i></button>')
           .appendTo(this)
           .click(
             i,
