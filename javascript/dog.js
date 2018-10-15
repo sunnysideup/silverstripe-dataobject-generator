@@ -14,7 +14,24 @@
     };
 
     $('.OuterComposite.multiple').each(function(){
-      $(this).sortable();
+      $(this).sortable({
+        update: function(evt, ui){
+          function rewriteName(e, i){
+            i++;
+            $.each(['name', 'id'], function(){
+              let attr = e.attr(this);
+              if (attr) {
+                attr = attr.replace(/\d+/, i);
+                e.attr(this, attr);
+              }
+            });
+          }
+          $(this).children('.InnerComposite').each(function(i, e){
+            rewriteName($(e).find('.mykey:input'), i);
+            rewriteName($(e).find('.myvalue:input'), i);
+          });
+        }
+      });
       $(this).children('.InnerComposite').each(function(i){
         $('<button type="button" class="btn-remove" title="Remove"><i class="material-icons">remove_circle_outline</i></button>')
           .appendTo(this)
@@ -33,7 +50,7 @@
                 }
               });
               array.splice(pos, 1);
-              array.forEach(function(e, i){
+              array.forEach(function(i, e){
                 let c = children.eq(i);
                 c.find('.mykey:input').val(e.key);
                 c.find('.myvalue:input').val(e.value);
