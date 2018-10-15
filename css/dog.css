@@ -45,7 +45,7 @@ form {
 
 header {
   display: grid;
-  grid-template-areas: 'home . start' 'head head head';
+  grid-template-areas: 'start . home' 'head head head';
   grid-template-columns: 1fr auto auto;
 }
 
@@ -64,10 +64,10 @@ header a i {
 }
 
 header .home {
-  grid-area: start;
+  grid-area: home;
 }
 header .clear {
-  grid-area: home;
+  grid-area: start;
 }
 
 header .home i:hover {
