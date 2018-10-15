@@ -14,7 +14,7 @@
 <body>
     <header>
         <h1>$Title</h1>
-        <a href="$PrevLink" class="clear"><i class="material-icons">clear</i><span class="text">Start over</span></a>
+        <a href="$PrevLink" class="clear"><i class="material-icons">backspace</i><span class="text">Start over</span></a>
         <a href="/" class="home"><i class="material-icons">home</i><span class="text">Homepage</span></a>
     </header>
     $Form
