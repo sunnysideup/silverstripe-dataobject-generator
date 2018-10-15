@@ -83,20 +83,5 @@
             showHideAddButton(e.data);
           });
     });
-
-    $('select[name="Template"]').change(
-      function(e){
-        var selection = $(this).val();
-        if (typeof selection === 'string' && selection.length > 0) {
-          if (confirm('Loading a template will remove any data you have entered already.  Would you like to continue?')) {
-            // Save it!
-            var url = '$LoadTemplateLink' + selection;
-            window.location = url;
-            $('body').fadeOut();
-          } else {
-            // Do nothing!
-          }
-        }
-      });
   });
 })(jQuery);

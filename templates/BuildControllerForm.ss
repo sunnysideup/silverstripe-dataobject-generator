@@ -23,5 +23,26 @@
     <%require javascript('sunnysideup/dataobject-generator:javascript/lib/jquery.slim.min.js') %>
     <%require javascript('sunnysideup/dataobject-generator:javascript/lib/jquery-ui.min.js') %>
     <%require javascript('sunnysideup/dataobject-generator:javascript/dog.js') %>
+
+    <script>
+        (function($){
+            $(function(){
+                $('select[name="Template"]').change(
+                    function(e){
+                        var selection = $(this).val();
+                        if (typeof selection === 'string' && selection.length > 0) {
+                        if (confirm('Loading a template will remove any data you have entered already.  Would you like to continue?')) {
+                            // Save it!
+                            var url = '$LoadTemplateLink' + selection;
+                            window.location = url;
+                            //$('body').fadeOut();
+                        } else {
+                            // Do nothing!
+                        }
+                    }
+                });
+            });
+      })(window.jQuery);
+    </script>
 </body>
 </html>
