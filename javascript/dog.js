@@ -79,7 +79,7 @@
         .click(
           this,
           function(e){
-            $(e.data).find('.InnerComposite:not(.active):first').addClass('active');
+            $(e.data).find('.InnerComposite:not(.active):first').addClass('active').find('input').focus();
             showHideAddButton(e.data);
           });
     });

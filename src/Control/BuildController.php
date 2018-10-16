@@ -106,7 +106,7 @@ abstract class BuildController extends Controller implements IFormBuilderOwner
     public function debug()
     {
         $this->processedFormData($this->retrieveData());
-        print_r($this->CanMethodBuilder('canEdit'));
+        // print_r($this->CanMethodBuilder('canEdit'));
         print_r($this->finalData);
         die('-----------------------------');
     }
@@ -363,9 +363,10 @@ abstract class BuildController extends Controller implements IFormBuilderOwner
             }
         }
         $var = $this->Config()->get('form_data_session_variable');
-        $this->getRequest()->getSession()->clear($var.$name);
-        $this->getRequest()->getSession()->set($var.$name, null);
-        $this->getRequest()->getSession()->set($var.$name, $data);
+        $varName = $var.$name;
+        $this->getRequest()->getSession()->clear($varName);
+        $this->getRequest()->getSession()->set($varName, null);
+        $this->getRequest()->getSession()->set($varName, $data);
         //$this->getRequest()->getSession()->save();
     }
 
@@ -426,7 +427,6 @@ abstract class BuildController extends Controller implements IFormBuilderOwner
             $decomposer = new FormDataDecomposer($data);
             $this->finalData = $decomposer->toArrayData();
             $this->finalData->setBaseClassName($this->baseClass);
-
             //add more data ....
         }
 

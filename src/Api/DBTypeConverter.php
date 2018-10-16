@@ -15,7 +15,7 @@ class DBTypeConverter
 
     const PREFIXES_OF_KNOWN_DB_TYPES = array(
         'SilverStripe\\ORM\\FieldType\\DB', // trim 'DB' from built-in types (e.g. 'DBInt' => 'Int')
-        'SilverStripe\\ORM\\',              // for DataObject
+        // 'SilverStripe\\ORM\\',              // for DataObject
         'SilverStripe\\Assets\\Storage\\'   // preserve 'DB' for composite objects (e.g. 'DBFile' => 'DBFile')
     );
 

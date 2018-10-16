@@ -82,7 +82,7 @@
     ];
     <% end_if %><% if $searchable_fields %>
     private static \$searchable_fields = [
-        <% loop $searchable_fields %>'$Key' => <% if $UnquotedValue.RAW %>$UnquotedValue.RAW<% else %>'$Value.RAW'<% end_if %><% if $Last %><% else %>,
+        <% loop $searchable_fields %>'$Key' => <% if $UnquotedValue.RAW %>$UnquotedValue.ShortName<% else %>$Value.ShortName::class<% end_if %><% if $Last %><% else %>,
         <% end_if %><% end_loop %>
     ];
     <% end_if %>
