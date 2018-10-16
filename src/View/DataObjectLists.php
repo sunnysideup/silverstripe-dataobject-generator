@@ -377,6 +377,7 @@ class DataObjectLists extends ViewableData
             $ar = [
                 'one' => 'only one (useful for can create)',
                 'true' => 'always',
+                'basedonmodeladmin' => 'based on model admin',
                 'false' => 'never',
                 'parent' => 'use parent class',
             ];

@@ -80,7 +80,11 @@ class NewDataObject extends ArrayData
         }
     }
 
-    protected $listForUseStatements = [];
+    protected $listForUseStatements = [
+        'SilverStripe\ORM\DataObject' => 'SilverStripe\ORM\DataObject',
+        'SilverStripe\Security\Permission' => 'SilverStripe\Security\Permission',
+        'SilverStripe\ORM\FieldType\DBField' => 'SilverStripe\ORM\FieldType\DBField'
+    ];
 
 
     protected function addToListToUse($suspectedClassName)
