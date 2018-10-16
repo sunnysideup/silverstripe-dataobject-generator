@@ -80,14 +80,14 @@ class NewDataObject extends ArrayData
         }
     }
 
-    protected $listOfUse = [];
+    protected $listForUseStatements = [];
 
 
     protected function addToListToUse($suspectedClassName)
     {
         $object = ClassObject::create($suspectedClassName);
         if($object->isClass()) {
-            $this->listOfUse[$object->getFullName()] = $object->getFullName();
+            $this->listForUseStatements[$object->getFullName()] = $object->getFullName();
 
             return $object;
         }
@@ -96,7 +96,8 @@ class NewDataObject extends ArrayData
     public function getFinalListToUse()
     {
         $al = ArrayList::create();
-        foreach($this->listOfUse as $fullClassName) {
+        ksort($this->listForUseStatements);
+        foreach($this->listForUseStatements as $fullClassName) {
             $fullClassName = str_replace('\\\\', '\\', $fullClassName);
             $al->push(
                 ArrayData::create(['FullClassName' => $fullClassName])

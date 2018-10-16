@@ -4,7 +4,7 @@ namespace $NameSpace;
 
 use SilverStripe\\Security\\Permission;
 <% if $casting %>
-use SilverStripe\\ORM\\FieldType\\DBField
+use SilverStripe\\ORM\\FieldType\\DBField;
 <% end_if %>
 
 <% if $FinalListToUse %>
