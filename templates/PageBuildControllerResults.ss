@@ -1,8 +1,10 @@
 <?php
 
-<% with FinalData %>
+<% with $FinalData %>
 
-class $Name extends $Extends
+<% include DataObjectGeneratorClassHeader %>
+
+class $Name extends $Extends.ShortName
 {
 
     #######################

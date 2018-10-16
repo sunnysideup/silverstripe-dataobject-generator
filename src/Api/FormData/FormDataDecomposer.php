@@ -2,8 +2,7 @@
 
 namespace Sunnysideup\BuildDataObject\API\FormData;
 
-use SilverStripe\View\ArrayData;
-
+use Sunnysideup\BuildDataObject\View\NewDataObject;
 
 class FormDataDecomposer
 {
@@ -47,12 +46,12 @@ class FormDataDecomposer
         $array = $this->array;
     }
 
-    public function toArrayData() : ArrayData
+    public function toArrayData() : NewDataObject
     {
         $newArray = [];
         foreach ($this->array as $field => $value) {
             $newArray[$field] = $value->toLiveObject();
         }
-        return ArrayData::create($newArray);
+        return NewDataObject::create($newArray);
     }
 }

@@ -7,17 +7,17 @@
 
     public function i18n_singular_name()
     {
-        return _t('{$Name}.SINGULAR_NAME', '$singular_name');
+        return _t('{$ClassNameForObject}.SINGULAR_NAME', '$singular_name');
     }
     <% end_if %><% if $plural_name %>
     private static \$plural_name = '$plural_name';
 
     public function i18n_plural_name()
     {
-        return _t('{$Name}.PLURAL_NAME', '$plural_name');
+        return _t('{$ClassNameForObject}.PLURAL_NAME', '$plural_name');
     }
-    <% end_if %><%if $Name %>
-    private static \$table_name = '$Name';
+    <% end_if %><%if $ShortClassNameForObject %>
+    private static \$table_name = '$ShortClassNameForObject';
     <% end_if %>
 
     #######################
@@ -30,29 +30,29 @@
     ];
     <% end_if %><% if $belongs_to %>
     private static \$belongs_to = [
-        <% loop $belongs_to %>'$Key' => <% if $UnquotedValue.RAW %>$UnquotedValue.RAW<% else %>'$Value.RAW'<% end_if %><% if $Last %><% else %>,
+        <% loop $belongs_to %>'$Key' => <% if $UnquotedValue.RAW %>$UnquotedValue.ShortName<% else %>$Value.ShortName::class<% end_if %><% if $Last %><% else %>,
         <% end_if %><% end_loop %>
     ];
     <% end_if %><% if $has_one %>
     private static \$has_one = [
-        <% loop $has_one %>'$Key' => <% if $UnquotedValue.RAW %>$UnquotedValue.RAW<% else %>'$Value.RAW'<% end_if %><% if $Last %><% else %>,
+        <% loop $has_one %>'$Key' => <% if $UnquotedValue.RAW %>$UnquotedValue.ShortName<% else %>$Value.ShortName::class<% end_if %><% if $Last %><% else %>,
         <% end_if %><% end_loop %>
     ];
     <% end_if %><% if $has_many %>
     private static \$has_many = [
-        <% loop $has_many %>'$Key' => <% if $UnquotedValue.RAW %>$UnquotedValue.RAW<% else %>'$Value.RAW'<% end_if %><% if $Last %><% else %>,
+        <% loop $has_many %>'$Key' => <% if $UnquotedValue.RAW %>$UnquotedValue.RAW<% else %>$Value.ShortName::class<% end_if %><% if $Last %><% else %>,
         <% end_if %><% end_loop %>
     ];
     <% end_if %><% if $many_many %>
     private static \$many_many = [
-        <% loop $many_many %>'$Key' => <% if $UnquotedValue.RAW %>$UnquotedValue.RAW<% else %>'$Value.RAW'<% end_if %><% if $Last %><% else %>,
+        <% loop $many_many %>'$Key' => <% if $UnquotedValue.RAW %>$UnquotedValue.RAW<% else %>$Value.ShortName::class<% end_if %><% if $Last %><% else %>,
         <% end_if %><% end_loop %>
     ];
 
     private static \$many_many_extraFields = [];
     <% end_if %><% if $belongs_many_many %>
     private static \$belongs_many_many = [
-        <% loop $belongs_many_many %>'$Key' => <% if $UnquotedValue.RAW %>$UnquotedValue.RAW<% else %>'$Value.RAW'<% end_if %><% if $Last %><% else %>,
+        <% loop $belongs_many_many %>'$Key' => <% if $UnquotedValue.RAW %>$UnquotedValue.ShortName<% else %>$Value.ShortName::class<% end_if %><% if $Last %><% else %>,
         <% end_if %><% end_loop %>
     ];
     <% end_if %>
@@ -173,15 +173,15 @@
                     \$myName = isset(\$fieldLabels[\$fieldWithoutID]) ? \$fieldLabels[\$fieldWithoutID] : \$fieldWithoutID;
                     \$result->error(
                         _t(
-                            '{$Name}.'.\$field.'_REQUIRED',
+                            '{$ClassNameForObject}.'.\$field.'_REQUIRED',
                             \$myName.' is required'
                         ),
-                        'REQUIRED_{$Name}_'.\$field
+                        'REQUIRED_{$ClassNameForObject}_'.\$field
                     );
                 }
                 if (isset(\$indexes[\$field]) && isset(\$indexes[\$field]['type']) && \$indexes[\$field]['type'] === 'unique') {
                     \$id = (empty(\$this->ID) ? 0 : \$this->ID);
-                    \$count = $Name::get()
+                    \$count = self::get()
                         ->filter(array(\$field => \$value))
                         ->exclude(array('ID' => \$id))
                         ->count();
@@ -189,10 +189,10 @@
                         \$myName = \$fieldLabels[\$field];
                         \$result->error(
                             _t(
-                                '{$Name}.'.\$field.'_UNIQUE',
+                                '{$ClassNameForObject}.'.\$field.'_UNIQUE',
                                 \$myName.' needs to be unique'
                             ),
-                            'UNIQUE_{$Name}_'.\$field
+                            'UNIQUE_{$ShortNameForObject}_'.\$field
                         );
                     }
                 }

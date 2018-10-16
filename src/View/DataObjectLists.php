@@ -1,6 +1,6 @@
 <?php
 
-namespace Sunnysideup\BuildDataObject\API;
+namespace Sunnysideup\BuildDataObject\View;
 
 use SilverStripe\Security\PermissionRoleCode;
 use SilverStripe\Security\LoginAttempt;
@@ -22,7 +22,9 @@ use SilverStripe\Security\Permission;
 use SilverStripe\CMS\Model\SiteTree;
 use SilverStripe\View\ViewableData;
 
-class DataObjectAPI extends ViewableData
+use  Sunnysideup\BuildDataObject\API\DBTypeConverter;
+
+class DataObjectLists extends ViewableData
 {
     private static $excluded_data_objects = [
         PermissionRoleCode::class,
@@ -59,7 +61,7 @@ class DataObjectAPI extends ViewableData
     public static function inst($myBaseClass = DataObject::class, $data)
     {
         if (! isset(self::$_my_singleton[$myBaseClass])) {
-            self::$_my_singleton[$myBaseClass] = Injector::inst()->get('Sunnysideup\BuildDataObject\API\DataObjectAPI');
+            self::$_my_singleton[$myBaseClass] = Injector::inst()->get(self::class);
         }
         self::$_my_singleton[$myBaseClass]->_data = $data;
         self::$_my_singleton[$myBaseClass]->setBaseClass($myBaseClass);
@@ -448,4 +450,23 @@ class DataObjectAPI extends ViewableData
             'false' => 'NO'
         ];
     }
+
+
+    public function MyCanMethodBuilder($type, $value)
+    {
+        if ($value === 'parent') {
+            return null;
+        } elseif ($value === 'one') {
+            $str = 'DataObject::get_one($this->class) ? false : true;';
+        } elseif ($value === 'true') {
+            $str = 'true;';
+        } elseif ($value === 'false') {
+            $str = 'false;';
+        } else {
+            $str = 'Permission::check(\''.$value.'\', \'any\', $member);';
+        }
+
+        return DBField::create_field('Varchar', $str);
+    }
+
 }

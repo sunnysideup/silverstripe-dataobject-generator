@@ -1,11 +1,9 @@
 <?php
-
 <% with $FinalData %>
 
-use SilverStripe\\Security\\Permission;
-use SilverStripe\\ORM\\DataObject;
+<% include DataObjectGeneratorClassHeader %>
 
-class $Name extends \\$Extends
+class $Name extends $Extends.ShortName
 {
 
 <% include DataObjectGeneratorBaseFields %>

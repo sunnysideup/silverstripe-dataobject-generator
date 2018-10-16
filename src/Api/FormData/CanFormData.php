@@ -36,6 +36,8 @@ class CanFormData implements IFormData
             $str = 'true;';
         } elseif ($value === 'false') {
             $str = 'false;';
+        } elseif ($value === 'basedonmodeladmin') {
+            $str = 'false;';
         } else {
             $str = 'Permission::check(\''.$value.'\', \'any\', $member);';
         }

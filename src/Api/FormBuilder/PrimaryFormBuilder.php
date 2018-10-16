@@ -21,6 +21,8 @@ class PrimaryFormBuilder extends BaseFormBuilder
 
         array_push($headerFields, HeaderField::create('BasedOnHeader', 'Based On (OPTIONAL) ...'));
         array_push($headerFields, DropdownField::create('Template', '', $possibleBasedOn)->setEmptyString('--- PRELOAD VALUES FROM ---'));
+        array_push($headerFields, HeaderField::create('NameSpaceHeader', 'Namespace your '.$owner->getShortBaseClass()));
+        array_push($headerFields, TextField::create('NameSpace', '')->setAttribute('placeholder', 'MyProject\\Model'));
         array_push($headerFields, HeaderField::create('NameHeader', 'Name your '.$owner->getShortBaseClass()));
         array_push($headerFields, TextField::create('Name', ''));
         array_push($headerFields, HeaderField::create('ExtendsHeader', 'Extends'));

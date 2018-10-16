@@ -33,6 +33,8 @@ use Sunnysideup\BuildDataObject\API\FormBuilder\IFormBuilderOwner;
 use Sunnysideup\BuildDataObject\API\FormBuilder\PrimaryFormBuilder;
 use Sunnysideup\BuildDataObject\API\FormBuilder\SecondaryFormBuilder;
 
+use Sunnysideup\BuildDataObject\View\DataObjectLists;
+
 abstract class BuildController extends Controller implements IFormBuilderOwner
 {
     private static $form_data_session_variable = 'Sunnysideup\BuildDataObject\Control\Models\DataObjectBuildController';
@@ -52,13 +54,36 @@ abstract class BuildController extends Controller implements IFormBuilderOwner
         'debug' => true
     ];
 
+
+
+
+
+
+
+    ######################
+    # ABSTRACT AND PROVIDERS
+    ######################
+
     protected $myBaseClass = DataObject::class;
 
-    protected $apiProvider = 'Sunnysideup\BuildDataObject\API\DataObjectAPI';
+    protected $apiProvider = DataObjectLists::class;
 
     abstract protected function primaryThingsToBuild();
 
     abstract protected function secondaryThingsToBuild();
+
+
+
+
+
+
+
+
+
+
+    ######################
+    # DEBUG STUFF
+    ######################
 
     private static $debug = true;
 
@@ -78,6 +103,22 @@ abstract class BuildController extends Controller implements IFormBuilderOwner
         }
     }
 
+    public function debug()
+    {
+        $this->processedFormData($this->retrieveData());
+        print_r($this->CanMethodBuilder('canEdit'));
+        print_r($this->finalData);
+        die('-----------------------------');
+    }
+
+
+
+
+
+    ######################
+    # STRING VARS
+    ######################
+
     public function Link($action = null)
     {
         if ($action) {
@@ -94,6 +135,20 @@ abstract class BuildController extends Controller implements IFormBuilderOwner
         return $this->Link('loadtemplate').'?classname='.$className;
     }
 
+
+    // IFormBuilderOwner implements
+
+    public function getBaseClass() : string
+    {
+        return $this->myBaseClass;
+    }
+
+    public function getShortBaseClass() : string
+    {
+        return $this->ShortBaseClass();
+    }
+
+
     public function Title()
     {
         return 'Build a '.$this->ShortBaseClass().' - Step '.$this->step.' of 2';
@@ -109,10 +164,21 @@ abstract class BuildController extends Controller implements IFormBuilderOwner
         return ClassInfo::shortName($this);
     }
 
-    public function ShortBaseClass()
+
+    protected function ShortBaseClass()
     {
         return ClassInfo::shortName($this->myBaseClass);
     }
+
+
+
+
+
+
+
+    ######################
+    # ACTIONS AND FORMS
+    ######################
 
     public function startover()
     {
@@ -241,64 +307,15 @@ abstract class BuildController extends Controller implements IFormBuilderOwner
         return $this->redirect($this->Link('results'));
     }
 
-    public function results()
-    {
-        $this->finalData = $this->processedFormData($this->retrieveData());
-        Config::modify()->set('SSViewer', 'source_file_comments', false);
-
-        return HTTPRequest::send_file(
-            $this->renderWith($this->resultsTemplateForBuilder()),
-            $this->finalData->Name.'.php'
-        );
-    }
-
-    public function debug()
-    {
-        $this->finalData = $this->processedFormData($this->retrieveData());
-        print_r($this->CanMethodBuilder('canEdit'));
-        print_r($this->finalData);
-        die('-----------------------------');
-    }
 
     public function Form()
     {
         return $this->form;
     }
 
-    public function FinalData()
-    {
-        return $this->finalData;
-    }
-
     public function PrevLink()
     {
         return $this->prevLink;
-    }
-
-    protected function ClassNameForObject()
-    {
-        if (isset($this->finalData->Name)) {
-            return $this->finalData->Name;
-        } else {
-            return 'self::$class';
-        }
-    }
-
-    public function MyCanMethodBuilder($type, $value)
-    {
-        if ($value === 'parent') {
-            return null;
-        } elseif ($value === 'one') {
-            $str = 'DataObject::get_one($this->class) ? false : true;';
-        } elseif ($value === 'true') {
-            $str = 'true;';
-        } elseif ($value === 'false') {
-            $str = 'false;';
-        } else {
-            $str = 'Permission::check(\''.$value.'\', \'any\', $member);';
-        }
-
-        return DBField::create_field('Varchar', $str);
     }
 
 
@@ -376,21 +393,52 @@ abstract class BuildController extends Controller implements IFormBuilderOwner
         return $this->_data;
     }
 
-    private $_processed_data = null;
+
+    public function results()
+    {
+        Config::modify()->set('SSViewer', 'source_file_comments', false);
+
+        $this->processedFormData($this->retrieveData());
+        $this->getFinalData()->CompileDataForRendering();
+        return HTTPRequest::send_file(
+            $this->renderWith($this->resultsTemplateForBuilder()),
+            $this->getFinalData()->getShortClassNameForObject().'.php'
+        );
+    }
+
+
+
+
+
+
+
+    #######################################
+    # Process results
+    #######################################
+
 
     protected function processedFormData($data = null)
     {
-        if (! $this->_processed_data) {
+        if (! $this->finalData) {
             if (! $data) {
                 $data = $this->retrieveData();
             }
             $decomposer = new FormDataDecomposer($data);
-            $this->_processed_data = $decomposer->toArrayData();
+            $this->finalData = $decomposer->toArrayData();
+            $this->finalData->setBaseClassName($this->baseClass);
+
+            //add more data ....
         }
 
         /// DEBUG DEBUG ///
         // self::print_r_debug($this->_processed_data);
-        return $this->_processed_data;
+        return $this->finalData;
+    }
+
+
+    public function getFinalData()
+    {
+        return $this->finalData;
     }
 
 
@@ -398,6 +446,16 @@ abstract class BuildController extends Controller implements IFormBuilderOwner
     {
         return $this->ShortThisClass().'Results';
     }
+
+
+
+
+
+
+
+    #######################################
+    # INFO FROM API
+    #######################################
 
 
     protected function myAPI()
@@ -426,17 +484,6 @@ abstract class BuildController extends Controller implements IFormBuilderOwner
         return $newArray;
     }
 
-    // IFormBuilderOwner implements
-
-    public function getBaseClass() : string
-    {
-        return $this->myBaseClass;
-    }
-
-    public function getShortBaseClass() : string
-    {
-        return $this->ShortBaseClass();
-    }
 
     public function getAdditionalPrimaryFields() : array
     {
