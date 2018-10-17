@@ -217,10 +217,15 @@ abstract class BuildController extends Controller implements InterfaceForFormCon
             if (is_array($varValue)) {
                 $count = 0;
                 foreach ($varValue as $varInnerKey => $varInnerValue) {
-                    $count++;
-                    $data[$varName.'__KEY__'.$count] = $varInnerKey;
-                    $data[$varName.'__VALUE__'.$count] = trim(preg_replace("/\([^)]+\)/", "", $varInnerValue));
+                    if(is_array($varInnerValue)) {
+                        //we will ignore these values for now
+                    } else {
+                        $count++;
+                        $data[$varName.'__KEY__'.$count] = $varInnerKey;
+                        $data[$varName.'__VALUE__'.$count] = trim(preg_replace("/\([^)]+\)/", "", $varInnerValue));
+                    }
                 }
+
             } else {
                 $data[$varName] = $varValue;
             }
