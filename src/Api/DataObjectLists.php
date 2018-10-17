@@ -1,6 +1,6 @@
 <?php
 
-namespace Sunnysideup\BuildDataObject\View;
+namespace Sunnysideup\BuildDataObject\API;
 
 use SilverStripe\Security\PermissionRoleCode;
 use SilverStripe\Security\LoginAttempt;
@@ -21,11 +21,26 @@ use SilverStripe\Admin\ModelAdmin;
 use SilverStripe\Security\Permission;
 use SilverStripe\CMS\Model\SiteTree;
 use SilverStripe\View\ViewableData;
-
+use SilverStripe\Core\Config\Config;
+use SilverStripe\Core\Config\Configurable;
+use SilverStripe\Core\Convert;
+use SilverStripe\Core\Extensible;
+use SilverStripe\Core\Injector\Injectable;
+use SilverStripe\Core\Manifest\ModuleResourceLoader;
+use SilverStripe\Dev\Debug;
+use SilverStripe\Dev\Deprecation;
+use SilverStripe\ORM\ArrayLib;
+use SilverStripe\ORM\FieldType\DBHTMLText;
+use SilverStripe\View\SSViewer;
 use  Sunnysideup\BuildDataObject\API\DBTypeConverter;
 
-class DataObjectLists extends ViewableData
+class DataObjectLists
 {
+
+    use Extensible;
+    use Injectable;
+    use Configurable;
+
     private static $excluded_data_objects = [
         PermissionRoleCode::class,
         LoginAttempt::class,
@@ -377,7 +392,7 @@ class DataObjectLists extends ViewableData
             $ar = [
                 'one' => 'only one (useful for can create)',
                 'true' => 'always',
-                'basedonmodeladmin' => 'based on model admin',
+                'basedonmodeladmin' => 'mimic my Model Admin',
                 'false' => 'never',
                 'parent' => 'use parent class',
             ];

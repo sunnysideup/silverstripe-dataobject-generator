@@ -126,6 +126,11 @@
     #######################
     ### can Section
     #######################
+
+    <% if $ModelAdmin %>
+    private static \$primary_model_admin_class = $ModelAdmin.ShortName::class;
+
+    <% end_if %>
     <% if $canCreate %>
     public function canCreate(\$member = null, \$context = [])
     {

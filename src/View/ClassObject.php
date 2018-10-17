@@ -64,6 +64,6 @@ class ClassObject  extends ViewableData {
 
     function forTemplate()
     {
-        user_error('You need to escape '.$this->fullName.' in the template.');
+        user_error('You need to add .ShortName or .FullName to variables with the following value: '.$this->fullName.'.');
     }
 }

@@ -7,7 +7,7 @@ use SilverStripe\View\ArrayData;
 use Sunnysideup\BuildDataObject\API\DBTypeConverter;
 
 
-class KeyValueArrayFormData implements IFormData
+class KeyValueArrayFormData implements InterfaceForFormDataParts
 {
     const KEY = 0;
     const VALUE = 1;

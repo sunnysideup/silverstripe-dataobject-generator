@@ -3,7 +3,7 @@
 namespace Sunnysideup\BuildDataObject\API\FormData;
 
 
-class BasicFormData implements IFormData
+class BasicFormData implements InterfaceForFormDataParts
 {
     private $value;
 

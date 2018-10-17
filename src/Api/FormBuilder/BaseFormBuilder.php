@@ -7,6 +7,9 @@ use Sunnysideup\BuildDataObject\API\FormBuilder\Parts\BasePart;
 use Sunnysideup\BuildDataObject\API\FormBuilder\Parts\KeyValuePart;
 use Sunnysideup\BuildDataObject\API\FormBuilder\Parts\PlainPart;
 
+/**
+ * abstract concept of how to build a form
+ */
 
 abstract class BaseFormBuilder
 {
@@ -14,9 +17,9 @@ abstract class BaseFormBuilder
     private $toBuild;
     private $headerFields;
 
-    protected abstract function onGetHeaderFields(IFormBuilderOwner $owner, array &$headerFields);
+    protected abstract function onGetHeaderFields(InterfaceForFormController $owner, array &$headerFields);
 
-    public function __construct(IFormBuilderOwner $owner, array $toBuild)
+    public function __construct(InterfaceForFormController $owner, array $toBuild)
     {
         $this->owner = $owner;
         $this->toBuild = $toBuild;

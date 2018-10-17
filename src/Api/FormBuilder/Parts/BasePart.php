@@ -5,7 +5,7 @@ namespace Sunnysideup\BuildDataObject\API\FormBuilder\Parts;
 use SilverStripe\Forms\CompositeField;
 use SilverStripe\Forms\HeaderField;
 use SilverStripe\Forms\LiteralField;
-use Sunnysideup\BuildDataObject\API\FormBuilder\InnerComposite;
+use Sunnysideup\BuildDataObject\API\FormBuilder\Parts\InnerComposite;
 
 
 abstract class BasePart
@@ -64,13 +64,15 @@ abstract class BasePart
 
     private function createAddRemoveField($position) : LiteralField
     {
-        return LiteralField::create($this->name.'_ADD_'.$position,
-        '
-            <div class="CompositeField add-and-remove">
-                <a href="#" class="add first-add"><i class="material-icons">add_circle_outline</i></a>
-                <a href="#" class="remove"><i class="material-icons">remove_circle_outline</i></a>
-            </div>
-        ');
+        return LiteralField::create(
+            $this->name.'_ADD_'.$position,
+            '
+                <div class="CompositeField add-and-remove">
+                    <a href="#" class="add first-add"><i class="material-icons">add_circle_outline</i></a>
+                    <a href="#" class="remove"><i class="material-icons">remove_circle_outline</i></a>
+                </div>
+            '
+        );
     }
 
     private function isMultiple(InnerComposite $innerComposite)

@@ -2,7 +2,7 @@
 
 namespace Sunnysideup\BuildDataObject\API\FormBuilder\Parts;
 
-use Sunnysideup\BuildDataObject\API\FormBuilder\InnerComposite;
+use Sunnysideup\BuildDataObject\API\FormBuilder\Parts\InnerComposite;
 
 
 class KeyValuePart extends BasePart

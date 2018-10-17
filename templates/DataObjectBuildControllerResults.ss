@@ -16,14 +16,14 @@ class $Name extends $Extends.ShortName
     <% if $ModelAdmin %>
     public function CMSEditLink()
     {
-        \$controller = singleton($ModelAdmin::class);
+        \$controller = Injector::inst(\$this->Config()->get('primary_model_admin_class'));
 
         return \$controller->Link().\$this->ClassName."/EditForm/field/".\$this->ClassName."/item/".\$this->ID."/edit";
     }
 
     public function CMSAddLink()
     {
-        \$controller = singleton($ModelAdmin::class);
+        \$controller = Injector::inst(\$this->Config()->get('primary_model_admin_class'));
 
         return \$controller->Link().\$this->ClassName."/EditForm/field/".\$this->ClassName."/item/new";
     }

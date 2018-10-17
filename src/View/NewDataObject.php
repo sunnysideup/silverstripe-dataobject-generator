@@ -81,9 +81,9 @@ class NewDataObject extends ArrayData
     }
 
     protected $listForUseStatements = [
-        'SilverStripe\ORM\DataObject' => 'SilverStripe\ORM\DataObject',
-        'SilverStripe\Security\Permission' => 'SilverStripe\Security\Permission',
-        'SilverStripe\ORM\FieldType\DBField' => 'SilverStripe\ORM\FieldType\DBField'
+        'SilverStripe\ORM\DataObject' => true,
+        'SilverStripe\Security\Permission' => true,
+        'SilverStripe\ORM\FieldType\DBField' => true
     ];
 
 
@@ -91,7 +91,7 @@ class NewDataObject extends ArrayData
     {
         $object = ClassObject::create($suspectedClassName);
         if($object->isClass()) {
-            $this->listForUseStatements[$object->getFullName()] = $object->getFullName();
+            $this->listForUseStatements[$object->getFullName()] = true;
 
             return $object;
         }
@@ -100,13 +100,15 @@ class NewDataObject extends ArrayData
     public function getFinalListToUse()
     {
         $al = ArrayList::create();
-        ksort($this->listForUseStatements);
-        foreach($this->listForUseStatements as $fullClassName) {
+        $array = $this->listForUseStatements;
+        foreach($array as $fullClassName => $trueIsTrue) {
+            //just in case ...
             $fullClassName = str_replace('\\\\', '\\', $fullClassName);
             $al->push(
                 ArrayData::create(['FullClassName' => $fullClassName])
             );
         }
+        $al = $al->Sort('FullClassName');
 
         return $al;
     }

@@ -19,7 +19,7 @@ class DataObjectBuildController extends BuildController
         return [
             HeaderField::create('ModelAdminUsedHeader', 'Model Admin Used'),
             DropdownField::create(
-                ModelAdmin::class,
+                'ModelAdmin',
                 '',
                 $this->myAPI()->modelAdminOptions()
             )->setEmptyString('--- Please Select ---')

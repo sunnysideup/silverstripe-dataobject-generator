@@ -29,13 +29,13 @@ use SilverStripe\View\SSViewer;
 use SilverStripe\View\ArrayData;
 use Sunnysideup\BuildDataObject\API\DBTypeConverter;
 use Sunnysideup\BuildDataObject\API\FormData\FormDataDecomposer;
-use Sunnysideup\BuildDataObject\API\FormBuilder\IFormBuilderOwner;
+use Sunnysideup\BuildDataObject\API\FormBuilder\InterfaceForFormController;
 use Sunnysideup\BuildDataObject\API\FormBuilder\PrimaryFormBuilder;
 use Sunnysideup\BuildDataObject\API\FormBuilder\SecondaryFormBuilder;
 
-use Sunnysideup\BuildDataObject\View\DataObjectLists;
+use Sunnysideup\BuildDataObject\Api\DataObjectLists;
 
-abstract class BuildController extends Controller implements IFormBuilderOwner
+abstract class BuildController extends Controller implements InterfaceForFormController
 {
     private static $form_data_session_variable = 'Sunnysideup\BuildDataObject\Control\Models\DataObjectBuildController';
 
@@ -136,7 +136,7 @@ abstract class BuildController extends Controller implements IFormBuilderOwner
     }
 
 
-    // IFormBuilderOwner implements
+    // InterfaceForFormController implements
 
     public function getBaseClass() : string
     {

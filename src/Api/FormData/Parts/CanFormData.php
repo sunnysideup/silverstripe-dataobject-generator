@@ -5,7 +5,7 @@ namespace Sunnysideup\BuildDataObject\API\FormData;
 use SilverStripe\ORM\FieldType\DBField;
 
 
-class CanFormData implements IFormData
+class CanFormData implements InterfaceForFormDataParts
 {
     private $value;
 
@@ -37,7 +37,7 @@ class CanFormData implements IFormData
         } elseif ($value === 'false') {
             $str = 'false;';
         } elseif ($value === 'basedonmodeladmin') {
-            $str = 'false;';
+            $str = 'Permission::check(\'CMS_ACCESS_\'.$this->Config()->get(\'primary_model_admin_class\'), \'any\', $member);';
         } else {
             $str = 'Permission::check(\''.$value.'\', \'any\', $member);';
         }

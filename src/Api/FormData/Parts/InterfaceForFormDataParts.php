@@ -3,7 +3,7 @@
 namespace Sunnysideup\BuildDataObject\API\FormData;
 
 
-interface IFormData
+interface InterfaceForFormDataParts
 {
     public function setKeyAt($index, $key);
     public function setValueAt($index, $value);
