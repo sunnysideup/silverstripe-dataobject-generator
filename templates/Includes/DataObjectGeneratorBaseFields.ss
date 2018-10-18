@@ -7,14 +7,14 @@
 
     public function i18n_singular_name()
     {
-        return _t('{$ClassNameForObject}.SINGULAR_NAME', '$singular_name');
+        return _t(self::class.'.SINGULAR_NAME', '$singular_name');
     }
     <% end_if %><% if $plural_name %>
     private static \$plural_name = '$plural_name';
 
     public function i18n_plural_name()
     {
-        return _t('{$ClassNameForObject}.PLURAL_NAME', '$plural_name');
+        return _t(self::class.'.PLURAL_NAME', '$plural_name');
     }
     <% end_if %><%if $ShortClassNameForObject %>
     private static \$table_name = '$ShortClassNameForObject';
@@ -176,12 +176,12 @@
                         \$fieldWithoutID = substr(\$fieldWithoutID, 0, -2);
                     }
                     \$myName = isset(\$fieldLabels[\$fieldWithoutID]) ? \$fieldLabels[\$fieldWithoutID] : \$fieldWithoutID;
-                    \$result->error(
+                    \$result->addError(
                         _t(
-                            '{$ClassNameForObject}.'.\$field.'_REQUIRED',
+                            self::class.'.'.\$field.'_REQUIRED',
                             \$myName.' is required'
                         ),
-                        'REQUIRED_{$ClassNameForObject}_'.\$field
+                        'REQUIRED_'.self::class.'.'.\$field
                     );
                 }
                 if (isset(\$indexes[\$field]) && isset(\$indexes[\$field]['type']) && \$indexes[\$field]['type'] === 'unique') {
@@ -192,12 +192,12 @@
                         ->count();
                     if(\$count > 0) {
                         \$myName = \$fieldLabels[\$field];
-                        \$result->error(
+                        \$result->addError(
                             _t(
-                                '{$ClassNameForObject}.'.\$field.'_UNIQUE',
+                                self::class.'.'.\$field.'_UNIQUE',
                                 \$myName.' needs to be unique'
                             ),
-                            'UNIQUE_{$ShortNameForObject}_'.\$field
+                            'UNIQUE_'.self::class.'.'.\$field
                         );
                     }
                 }
