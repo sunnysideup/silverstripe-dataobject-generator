@@ -1,7 +1,7 @@
 <?php
 
 use SilverStripe\Dev\SapphireTest;
-use Sunnysideup\BuildDataObject\API\DBTypeConverter;
+use Sunnysideup\BuildDataObject\Api\DBTypeConverter;
 
 class DBTypeConverterTest extends SapphireTest
 {

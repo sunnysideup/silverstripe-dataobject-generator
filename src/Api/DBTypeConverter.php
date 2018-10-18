@@ -1,6 +1,6 @@
 <?php
 
-namespace Sunnysideup\BuildDataObject\API;
+namespace Sunnysideup\BuildDataObject\Api;
 
 use SilverStripe\Core\ClassInfo;
 

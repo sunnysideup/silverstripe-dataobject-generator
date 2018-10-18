@@ -27,11 +27,11 @@ use SilverStripe\ORM\FieldType\DBField;
 
 use SilverStripe\View\SSViewer;
 use SilverStripe\View\ArrayData;
-use Sunnysideup\BuildDataObject\API\DBTypeConverter;
-use Sunnysideup\BuildDataObject\API\FormData\FormDataDecomposer;
-use Sunnysideup\BuildDataObject\API\FormBuilder\InterfaceForFormController;
-use Sunnysideup\BuildDataObject\API\FormBuilder\PrimaryFormBuilder;
-use Sunnysideup\BuildDataObject\API\FormBuilder\SecondaryFormBuilder;
+use Sunnysideup\BuildDataObject\Api\DBTypeConverter;
+use Sunnysideup\BuildDataObject\Api\FormData\FormDataDecomposer;
+use Sunnysideup\BuildDataObject\Api\FormBuilder\InterfaceForFormController;
+use Sunnysideup\BuildDataObject\Api\FormBuilder\PrimaryFormBuilder;
+use Sunnysideup\BuildDataObject\Api\FormBuilder\SecondaryFormBuilder;
 
 use Sunnysideup\BuildDataObject\Api\DataObjectLists;
 
@@ -107,8 +107,10 @@ abstract class BuildController extends Controller implements InterfaceForFormCon
     {
         $this->processedFormData($this->retrieveData());
         // print_r($this->CanMethodBuilder('canEdit'));
+        echo '<pre>';
         print_r($this->finalData);
-        die('-----------------------------');
+        echo '</pre>';
+        die('<hr />');
     }
 
 
@@ -211,15 +213,33 @@ abstract class BuildController extends Controller implements InterfaceForFormCon
     {
         $data = [];
         $thingsToBuild = $this->$method();
+        $keyIndex =
+            FormDataDecomposer::EXP_CHAR.
+            FormDataDecomposer::KEY_IDENTIFIER.
+            FormDataDecomposer::EXP_CHAR;
+        $valIndex =
+            FormDataDecomposer::EXP_CHAR.
+            FormDataDecomposer::VALUE_IDENTIFIER.
+            FormDataDecomposer::EXP_CHAR;
+        $listIndex =
+            FormDataDecomposer::EXP_CHAR.
+            FormDataDecomposer::LIST_IDENTIFIER.
+            FormDataDecomposer::EXP_CHAR;
         foreach ($thingsToBuild as $static) {
             $varName = $static['Name'];
             $varValue = Config::inst()->get($className, $varName);
-            if (is_array($varValue)) {
+            if ($this->isAssoc($varValue)) {
                 $count = 0;
                 foreach ($varValue as $varInnerKey => $varInnerValue) {
                     $count++;
-                    $data[$varName.'__KEY__'.$count] = $varInnerKey;
-                    $data[$varName.'__VALUE__'.$count] = trim(preg_replace("/\([^)]+\)/", "", $varInnerValue));
+                    $data[$varName.$keyIndex.$count] = $varInnerKey;
+                    $data[$varName.$valIndex.$count] = trim(preg_replace("/\([^)]+\)/", "", $varInnerValue));
+                }
+            } elseif (is_array($varValue)) {
+                $count = 0;
+                foreach ($varValue as $varInnerKey => $varInnerValue) {
+                    $count++;
+                    $data[$varName.$listIndex.$count] = trim(preg_replace("/\([^)]+\)/", "", $varInnerValue));
                 }
             } else {
                 $data[$varName] = $varValue;
@@ -229,6 +249,11 @@ abstract class BuildController extends Controller implements InterfaceForFormCon
         return $data;
     }
 
+    protected function isAssoc(array $arr)
+    {
+        if (array() === $arr) return false;
+        return array_keys($arr) !== range(0, count($arr) - 1);
+    }
     /**
      *
      * @var Form

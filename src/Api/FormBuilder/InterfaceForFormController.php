@@ -1,6 +1,6 @@
 <?php
 
-namespace Sunnysideup\BuildDataObject\API\FormBuilder;
+namespace Sunnysideup\BuildDataObject\Api\FormBuilder;
 
 /**
  * What do we need in the form controller?

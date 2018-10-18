@@ -1,11 +1,11 @@
 <?php
 
-namespace Sunnysideup\BuildDataObject\API\FormBuilder;
+namespace Sunnysideup\BuildDataObject\Api\FormBuilder;
 
 use SilverStripe\Forms\FieldList;
-use Sunnysideup\BuildDataObject\API\FormBuilder\Parts\BasePart;
-use Sunnysideup\BuildDataObject\API\FormBuilder\Parts\KeyValuePart;
-use Sunnysideup\BuildDataObject\API\FormBuilder\Parts\PlainPart;
+use Sunnysideup\BuildDataObject\Api\FormBuilder\Parts\BasePart;
+use Sunnysideup\BuildDataObject\Api\FormBuilder\Parts\KeyValuePart;
+use Sunnysideup\BuildDataObject\Api\FormBuilder\Parts\PlainPart;
 
 /**
  * abstract concept of how to build a form

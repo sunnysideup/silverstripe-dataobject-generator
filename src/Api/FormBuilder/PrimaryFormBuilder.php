@@ -1,6 +1,6 @@
 <?php
 
-namespace Sunnysideup\BuildDataObject\API\FormBuilder;
+namespace Sunnysideup\BuildDataObject\Api\FormBuilder;
 
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Forms\DropdownField;

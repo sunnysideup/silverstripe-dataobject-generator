@@ -1,20 +1,27 @@
 <?php
 
-namespace Sunnysideup\BuildDataObject\API\FormBuilder\Parts;
+namespace Sunnysideup\BuildDataObject\Api\FormBuilder\Parts;
 
-use Sunnysideup\BuildDataObject\API\FormBuilder\Parts\InnerComposite;
-
+use Sunnysideup\BuildDataObject\Api\FormBuilder\Parts\InnerComposite;
+use Sunnysideup\BuildDataObject\Api\FormData\FormDataDecomposer;
 
 class KeyValuePart extends BasePart
 {
     protected function onGetInnerComposite(int $index) : InnerComposite
     {
+        $char = FormDataDecomposer::EXP_CHAR;
+        $key = FormDataDecomposer::KEY_IDENTIFIER;
+        $val = FormDataDecomposer::VALUE_IDENTIFIER;
+
+        $keyIndex = $char.$key.$char;
+        $valIndex = $char.$val.$char;
+
+        $nameKey = $this->name.$keyIndex;
+        $nameValue = $this->name.$valIndex;
+
         if ($this->isMultiple) {
-            $nameKey = $this->name.'__KEY__'.$index;
-            $nameValue = $this->name.'__VALUE__'.$index;
-        } else {
-            $nameKey = $this->name.'__KEY__';
-            $nameValue = $this->name.'__VALUE__';
+            $nameKey .= $index;
+            $nameValue .= $index;
         }
         return new InnerComposite($nameKey, $this->source1, $nameValue, $this->source2);
     }

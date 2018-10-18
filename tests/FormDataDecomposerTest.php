@@ -1,10 +1,10 @@
 <?php
 
 use SilverStripe\Dev\SapphireTest;
-use Sunnysideup\BuildDataObject\API\FormData\FormDataDecomposer;
-use Sunnysideup\BuildDataObject\API\FormData\PlainFormData;
-use Sunnysideup\BuildDataObject\API\FormData\CanFormData;
-use Sunnysideup\BuildDataObject\API\FormData\KeyValueArrayFormData;
+use Sunnysideup\BuildDataObject\Api\FormData\FormDataDecomposer;
+use Sunnysideup\BuildDataObject\Api\FormData\PlainFormData;
+use Sunnysideup\BuildDataObject\Api\FormData\CanFormData;
+use Sunnysideup\BuildDataObject\Api\FormData\KeyValueArrayFormData;
 
 class FormDataDecomposerTest extends SapphireTest
 {
@@ -63,15 +63,18 @@ class FormDataDecomposerTest extends SapphireTest
 
     public function testKeyValueFields()
     {
+        $char = FormDataDecomposer::EXP_CHAR;
+        $key = FormDataDecomposer::KEY_IDENTIFIER;
+        $val = FormDataDecomposer::VALUE_IDENTIFIER;
         $input = [
-            'db__KEY__1' => 'Name',
-            'db__VALUE__1' => 'Varchar',
-            'db__KEY__2' => 'File',
-            'db__VALUE__2' => 'DBFile',
-            'db__KEY__3' => 'ShowInSearch',
-            'db__VALUE__3' => 'Boolean',
-            'db__KEY__4' => 'CanViewType',
-            'db__VALUE__4' => 'Enum',
+            'db'.$char.$key.$char.'1' => 'Name',
+            'db'.$char.$val.$char.'1' => 'Varchar',
+            'db'.$char.$key.$char.'2' => 'File',
+            'db'.$char.$val.$char.'2' => 'DBFile',
+            'db'.$char.$key.$char.'3' => 'ShowInSearch',
+            'db'.$char.$val.$char.'3' => 'Boolean',
+            'db'.$char.$key.$char.'4' => 'CanViewType',
+            'db'.$char.$val.$char.'4' => 'Enum',
         ];
         $decomposer = new FormDataDecomposer($input);
         $decomposer->getResult($output);

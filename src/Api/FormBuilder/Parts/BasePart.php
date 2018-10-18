@@ -1,11 +1,11 @@
 <?php
 
-namespace Sunnysideup\BuildDataObject\API\FormBuilder\Parts;
+namespace Sunnysideup\BuildDataObject\Api\FormBuilder\Parts;
 
 use SilverStripe\Forms\CompositeField;
 use SilverStripe\Forms\HeaderField;
 use SilverStripe\Forms\LiteralField;
-use Sunnysideup\BuildDataObject\API\FormBuilder\Parts\InnerComposite;
+use Sunnysideup\BuildDataObject\Api\FormBuilder\Parts\InnerComposite;
 
 
 abstract class BasePart

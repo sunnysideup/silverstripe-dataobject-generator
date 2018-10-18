@@ -1,7 +1,8 @@
 <?php
 
-namespace Sunnysideup\BuildDataObject\API\FormData;
+namespace Sunnysideup\BuildDataObject\Api\FormData\Parts;
 
+use Sunnysideup\BuildDataObject\Api\FormData\Parts\InterfaceForFormDataParts;
 
 class BasicFormData implements InterfaceForFormDataParts
 {

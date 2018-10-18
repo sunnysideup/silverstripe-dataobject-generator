@@ -1,10 +1,10 @@
 <?php
 
-namespace Sunnysideup\BuildDataObject\API\FormData;
+namespace Sunnysideup\BuildDataObject\Api\FormData\Parts;
 
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\View\ArrayData;
-use Sunnysideup\BuildDataObject\API\DBTypeConverter;
+use Sunnysideup\BuildDataObject\Api\DBTypeConverter;
 
 
 class KeyValueArrayFormData implements InterfaceForFormDataParts
@@ -33,9 +33,9 @@ class KeyValueArrayFormData implements InterfaceForFormDataParts
         $this->array[$index][self::VALUE] = $value;
     }
 
-    public function getArray(&$array)
+    public function getArray()
     {
-        $array = $this->array;
+        return $this->array;
     }
 
     public function toLiveObject()

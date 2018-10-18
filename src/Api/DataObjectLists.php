@@ -1,6 +1,6 @@
 <?php
 
-namespace Sunnysideup\BuildDataObject\API;
+namespace Sunnysideup\BuildDataObject\Api;
 
 use SilverStripe\Security\PermissionRoleCode;
 use SilverStripe\Security\LoginAttempt;
@@ -32,7 +32,7 @@ use SilverStripe\Dev\Deprecation;
 use SilverStripe\ORM\ArrayLib;
 use SilverStripe\ORM\FieldType\DBHTMLText;
 use SilverStripe\View\SSViewer;
-use  Sunnysideup\BuildDataObject\API\DBTypeConverter;
+use  Sunnysideup\BuildDataObject\Api\DBTypeConverter;
 
 class DataObjectLists
 {

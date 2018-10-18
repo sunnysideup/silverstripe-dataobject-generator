@@ -1,6 +1,6 @@
 <?php
 
-namespace Sunnysideup\BuildDataObject\API\FormBuilder\Parts;
+namespace Sunnysideup\BuildDataObject\Api\FormBuilder\Parts;
 
 use SilverStripe\Forms\CompositeField;
 use SilverStripe\Forms\DropdownField;

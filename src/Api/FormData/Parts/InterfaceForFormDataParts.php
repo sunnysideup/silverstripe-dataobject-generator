@@ -1,6 +1,6 @@
 <?php
 
-namespace Sunnysideup\BuildDataObject\API\FormData;
+namespace Sunnysideup\BuildDataObject\Api\FormData\Parts;
 
 
 interface InterfaceForFormDataParts

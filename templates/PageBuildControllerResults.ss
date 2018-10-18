@@ -20,15 +20,15 @@ class $Name extends $Extends.ShortName
     private static \$can_be_root = $can_be_root
     <% end_if %><% if $allowed_children %>
     private static \$allowed_children = [
-        <% loop $allowed_children %>'$Key'<% if $Last %><% else %>,
+        <% loop $allowed_children %>$Value.ShortName::class<% if $Last %><% else %>,
         <% end_if %><% end_loop %>
     ];
     <% end_if %><% if $default_child %>
-    private static \$default_child = '$default_child';
+    private static \$default_child = $default_child.ShortName::class;
     <% end_if %><% if $default_parent %>
-    private static \$default_parent = '$default_parent';
+    private static \$default_parent = $default_parent.ShortName::class;
     <% end_if %><% if $hide_ancestor %>
-    private static \$hide_ancestor = '$hide_ancestor';
+    private static \$hide_ancestor = $hide_ancestor.ShortName::class;
     <% end_if %>
 
 <% include DataObjectGeneratorBaseFields %>
@@ -47,8 +47,11 @@ class $Name extends $Extends.ShortName
 
 }
 
+/**
+ * The class below should be moved to its own file and folder (src/Control/).
+ */
 
-class {$Name}Controller extends {$Extends}Controller
+class {$Name}Controller extends {$Extends.ShortName}Controller
 {
 
     public function init()
