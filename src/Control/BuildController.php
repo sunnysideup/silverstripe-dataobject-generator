@@ -228,25 +228,27 @@ abstract class BuildController extends Controller implements InterfaceForFormCon
         foreach ($thingsToBuild as $static) {
             $varName = $static['Name'];
             $varValue = Config::inst()->get($className, $varName);
-            if ($this->isAssoc($varValue)) {
-                $count = 0;
-                foreach ($varValue as $varInnerKey => $varInnerValue) {
-                    if(is_array($varInnerValue)) {
-                        //we will ignore these values for now
-                    } else {
-                        $count++;
-                        $data[$varName.$keyIndex.$count] = $varInnerKey;
-                        $data[$varName.$valIndex.$count] = trim(preg_replace("/\([^)]+\)/", "", $varInnerValue));
+            if (is_array($varValue)) {
+                if ($this->isAssoc($varValue)) {
+                    $count = 0;
+                    foreach ($varValue as $varInnerKey => $varInnerValue) {
+                        if(is_array($varInnerValue)) {
+                            //we will ignore these values for now
+                        } else {
+                            $count++;
+                            $data[$varName.$keyIndex.$count] = $varInnerKey;
+                            $data[$varName.$valIndex.$count] = trim(preg_replace("/\([^)]+\)/", "", $varInnerValue));
+                        }
                     }
-                }
-            } elseif (is_array($varValue)) {
-                $count = 0;
-                foreach ($varValue as $varInnerKey => $varInnerValue) {
-                    if(is_array($varInnerValue)) {
-                        //we will ignore these values for now
-                    } else {
-                        $count++;
-                        $data[$varName.$listIndex.$count] = trim(preg_replace("/\([^)]+\)/", "", $varInnerValue));
+                } else {
+                    $count = 0;
+                    foreach ($varValue as $varInnerKey => $varInnerValue) {
+                        if(is_array($varInnerValue)) {
+                            //we will ignore these values for now
+                        } else {
+                            $count++;
+                            $data[$varName.$listIndex.$count] = trim(preg_replace("/\([^)]+\)/", "", $varInnerValue));
+                        }
                     }
                 }
             } else {
