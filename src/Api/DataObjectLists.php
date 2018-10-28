@@ -211,6 +211,8 @@ class DataObjectLists
         if ($includeBelongs) {
             $list += $this->retrieveDBFields('belongs_many_many');
         }
+        $list += $this->retrieveDBFields('cascade_deletes');
+
         foreach ($list as $key => $value) {
             $ar[$key.'.Count'] = $key.'.Count';
         }
@@ -266,6 +268,8 @@ class DataObjectLists
         if ($includeBelongs) {
             $list += $this->retrieveDBFields('belongs_many_many');
         }
+
+        $list += $this->retrieveDBFields('cascade_deletes');
 
         return $list;
     }

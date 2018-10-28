@@ -21,7 +21,8 @@ class PageBuildController extends BuildController
             ['has_one',             'text',                                     'possibleRelations',       true],
             ['has_many',            'text',                                     'possibleRelations',       true],
             ['many_many',           'text',                                     'possibleRelations',       true],
-            ['belongs_many_many',   'text',                                     'possibleRelations',       true]
+            ['belongs_many_many',   'text',                                     'possibleRelations',       true],
+            ['cascade_deletes',     'possibleRelations',                        '',                        true]
         ]);
     }
 
