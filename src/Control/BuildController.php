@@ -200,6 +200,7 @@ abstract class BuildController extends Controller implements InterfaceForFormCon
             $primaryData['Extends'] = $extends;
             $primaryData['singular_name'] = $obj->i18n_singular_name();
             $primaryData['plural_name'] = $obj->i18n_plural_name();
+            $primaryData['api_access'] = $obj->config()->get('api_access');
             $this->saveData('_PrimaryForm', $primaryData);
 
             $secondaryData = $this->turnStaticsIntoSessionData('secondaryThingsToBuild', $className);

@@ -20,6 +20,10 @@
     private static \$table_name = '$ShortClassNameForObject';
     <% end_if %>
 
+    <% if $api_access %>
+    private static \$api_access = $api_access;
+    <% end_if %>
+
     #######################
     ### Model Section
     #######################

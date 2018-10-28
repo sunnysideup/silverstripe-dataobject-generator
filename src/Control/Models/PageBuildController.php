@@ -14,6 +14,7 @@ class PageBuildController extends BuildController
         return $this->addKeysToThingsToBuild([
             ['singular_name',       'text',                                     '',                        false],
             ['plural_name',         'text',                                     '',                        false],
+            ['api_access',          'TrueOrFalseList',                          '',                        false],
             ['db',                  'text',                                     'dbFields',                true],
             ['belongs_to',          'text',                                     'possibleRelations',       true],
             ['has_one',             'text',                                     'possibleRelations',       true],
