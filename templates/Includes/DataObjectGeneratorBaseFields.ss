@@ -19,7 +19,9 @@
     <% end_if %><%if $ShortClassNameForObject %>
     private static \$table_name = '$ShortClassNameForObject';
     <% end_if %>
-
+    <% if $default_classname %>
+    private static \$default_classname = '$default_classname';
+    <% end_if %>
     <% if $api_access %>
     private static \$api_access = $api_access;
     <% end_if %>
