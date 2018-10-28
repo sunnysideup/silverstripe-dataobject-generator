@@ -62,19 +62,6 @@ abstract class BasePart
         return HeaderField::create($this->name.'_HEADER', $title);
     }
 
-    private function createAddRemoveField($position) : LiteralField
-    {
-        return LiteralField::create(
-            $this->name.'_ADD_'.$position,
-            '
-                <div class="CompositeField add-and-remove">
-                    <a href="#" class="add first-add"><i class="material-icons">add_circle_outline</i></a>
-                    <a href="#" class="remove"><i class="material-icons">remove_circle_outline</i></a>
-                </div>
-            '
-        );
-    }
-
     private function isMultiple(InnerComposite $innerComposite)
     {
         return isset($this->formFieldsWithMultiple[$innerComposite->getNameKey()]);
@@ -97,10 +84,6 @@ abstract class BasePart
         }
 
         if ($this->isMultiple) {
-            // TODO: add buttons dynamically in the front-end side rather than doing here
-            // e.g. jQuery(() => $('.OuterComposite.multiple').append(buttons));
-            //$addRemoveField = $this->createAddRemoveField($innerCount);
-            //$compositeField->push($addRemoveField);
             $compositeField->addExtraClass('multiple');
         }
         return $compositeField;
