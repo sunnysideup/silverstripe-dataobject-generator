@@ -23,14 +23,17 @@ class PrimaryFormBuilder extends BaseFormBuilder
         $possibleBasedOn = $possibleExtensions;
         unset($possibleBasedOn[DataObject::class]);
 
-        array_push($headerFields, LiteralField::create(
+        array_push(
+            $headerFields,
+            LiteralField::create(
             'Instructions',
             '<p>
                 Please complete fields as you see fit.
                 For more information on the Silverstripe Model
                 visit the <a href="https://docs.silverstripe.org/en/4/developer_guides/model/data_model_and_orm/">docs</a>
                 and the <a href="https://api.silverstripe.org/4/SilverStripe/ORM/DataObject.html">api</a>.
-            </p>')
+            </p>'
+        )
         );
         array_push($headerFields, HeaderField::create('BasedOnHeader', 'Based On ...'));
         array_push($headerFields, DropdownField::create('Template', '', $possibleBasedOn)->setEmptyString('--- PRELOAD VALUES FROM ---'));

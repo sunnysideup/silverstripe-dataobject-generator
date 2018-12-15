@@ -9,7 +9,6 @@ use Sunnysideup\BuildDataObject\View\ClassObject;
 
 class NewDataObject extends ArrayData
 {
-
     public function __construct($data)
     {
         parent::__construct($data);
@@ -60,17 +59,17 @@ class NewDataObject extends ArrayData
 
     protected function convertLongToShortClassName($arrayData)
     {
-        if($arrayData instanceof ArrayData) {
+        if ($arrayData instanceof ArrayData) {
             $map = $arrayData->toMap();
-            foreach($map as $key => $value) {
-                if(is_string($value)) {
-                    if($key !== 'NameSpace') {
-                        if($classObject = $this->addToListToUse($value)) {
+            foreach ($map as $key => $value) {
+                if (is_string($value)) {
+                    if ($key !== 'NameSpace') {
+                        if ($classObject = $this->addToListToUse($value)) {
                             $arrayData->setField($key, $classObject);
                         }
                     }
-                } elseif($value instanceof ArrayList){
-                    foreach($value as $innerArrayData) {
+                } elseif ($value instanceof ArrayList) {
+                    foreach ($value as $innerArrayData) {
                         $this->convertLongToShortClassName($innerArrayData);
                     }
                 }
@@ -90,7 +89,7 @@ class NewDataObject extends ArrayData
     protected function addToListToUse($suspectedClassName)
     {
         $object = ClassObject::create($suspectedClassName);
-        if($object->isClass()) {
+        if ($object->isClass()) {
             $this->listForUseStatements[$object->getFullName()] = true;
 
             return $object;
@@ -101,7 +100,7 @@ class NewDataObject extends ArrayData
     {
         $al = ArrayList::create();
         $array = $this->listForUseStatements;
-        foreach($array as $fullClassName => $trueIsTrue) {
+        foreach ($array as $fullClassName => $trueIsTrue) {
             //just in case ...
             $fullClassName = str_replace('\\\\', '\\', $fullClassName);
             $al->push(
@@ -112,6 +111,4 @@ class NewDataObject extends ArrayData
 
         return $al;
     }
-
-
 }

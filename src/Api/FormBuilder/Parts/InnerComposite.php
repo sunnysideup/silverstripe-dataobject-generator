@@ -7,10 +7,10 @@ use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\FormField;
 use SilverStripe\Forms\TextField;
 
-
 class InnerComposite
 {
-    private $keyField, $valueField;
+    private $keyField;
+    private $valueField;
 
     public function __construct($nameKey, $source1, $valueKey, $source2)
     {

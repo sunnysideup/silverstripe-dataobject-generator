@@ -36,7 +36,6 @@ use  Sunnysideup\BuildDataObject\Api\DBTypeConverter;
 
 class DataObjectLists
 {
-
     use Extensible;
     use Injectable;
     use Configurable;
@@ -488,5 +487,4 @@ class DataObjectLists
 
         return DBField::create_field('Varchar', $str);
     }
-
 }

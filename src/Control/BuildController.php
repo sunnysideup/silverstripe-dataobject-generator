@@ -91,7 +91,9 @@ abstract class BuildController extends Controller implements InterfaceForFormCon
     {
         if (self::$debug) {
             /// DEBUG DEBUG ///
-            echo '<!-- ';var_export($var); echo ' -->';
+            echo '<!-- ';
+            var_export($var);
+            echo ' -->';
         }
     }
 
@@ -99,7 +101,9 @@ abstract class BuildController extends Controller implements InterfaceForFormCon
     {
         if (self::$debug) {
             /// DEBUG DEBUG ///
-            echo '<!-- ';print_r($var); echo ' -->';
+            echo '<!-- ';
+            print_r($var);
+            echo ' -->';
         }
     }
 
@@ -234,7 +238,7 @@ abstract class BuildController extends Controller implements InterfaceForFormCon
                 if ($this->isAssoc($varValue)) {
                     $count = 0;
                     foreach ($varValue as $varInnerKey => $varInnerValue) {
-                        if(is_array($varInnerValue)) {
+                        if (is_array($varInnerValue)) {
                             //we will ignore these values for now
                         } else {
                             $count++;
@@ -245,7 +249,7 @@ abstract class BuildController extends Controller implements InterfaceForFormCon
                 } else {
                     $count = 0;
                     foreach ($varValue as $varInnerKey => $varInnerValue) {
-                        if(is_array($varInnerValue)) {
+                        if (is_array($varInnerValue)) {
                             //we will ignore these values for now
                         } else {
                             $count++;
@@ -263,7 +267,9 @@ abstract class BuildController extends Controller implements InterfaceForFormCon
 
     protected function isAssoc(array $arr)
     {
-        if (array() === $arr) return false;
+        if (array() === $arr) {
+            return false;
+        }
         return array_keys($arr) !== range(0, count($arr) - 1);
     }
     /**

@@ -2,7 +2,6 @@
 
 namespace Sunnysideup\BuildDataObject\Api\FormData\Parts;
 
-
 interface InterfaceForFormDataParts
 {
     public function setKeyAt($index, $key);

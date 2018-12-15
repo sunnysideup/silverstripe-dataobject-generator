@@ -28,7 +28,7 @@ class FormDataDecomposer
         foreach ($formData as $key => $value) {
             if ($key && $value) {
                 $parts = explode(self::EXP_CHAR, $key);
-                if(count($parts) === 3) {
+                if (count($parts) === 3) {
                     $element = $parts[0];
                     $type = $parts[1];
                     $index = $parts[2];
@@ -46,8 +46,7 @@ class FormDataDecomposer
                         } else {
                             $field->setValueAt($index, $value);
                         }
-                    }
-                    elseif ($isList) {
+                    } elseif ($isList) {
                         $parts = explode(self::EXP_CHAR, $key);
                         $element = $parts[0];
                         $index = $parts[2];
