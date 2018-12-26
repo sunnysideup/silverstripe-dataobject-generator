@@ -13,7 +13,7 @@ class FormDataDecomposerTest extends SapphireTest
         $input = [
             'Null' => null,
             'False?' => false,
-            'False!' => FALSE,
+            'False!' => false,
             'Zero' => 0,
             'EmptyString' => ''
         ];

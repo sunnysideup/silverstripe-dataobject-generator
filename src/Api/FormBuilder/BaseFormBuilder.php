@@ -17,7 +17,7 @@ abstract class BaseFormBuilder
     private $toBuild;
     private $headerFields;
 
-    protected abstract function onGetHeaderFields(InterfaceForFormController $owner, array &$headerFields);
+    abstract protected function onGetHeaderFields(InterfaceForFormController $owner, array &$headerFields);
 
     public function __construct(InterfaceForFormController $owner, array $toBuild)
     {

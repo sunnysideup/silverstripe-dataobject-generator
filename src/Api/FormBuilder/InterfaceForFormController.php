@@ -8,7 +8,6 @@ namespace Sunnysideup\BuildDataObject\Api\FormBuilder;
 
 interface InterfaceForFormController
 {
-
     public function getBaseClass() : string;
 
     public function getShortBaseClass() : string;
@@ -18,5 +17,4 @@ interface InterfaceForFormController
     public function getPossibleRelationsWithBaseClass();
 
     public function callAPIMethod($method, $defaultValueIfMethodIsNull);
-
 }

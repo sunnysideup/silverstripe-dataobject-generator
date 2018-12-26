@@ -6,7 +6,6 @@ use SilverStripe\ORM\ArrayList;
 use SilverStripe\View\ArrayData;
 use Sunnysideup\BuildDataObject\Api\DBTypeConverter;
 
-
 class KeyArrayFormData implements InterfaceForFormDataParts
 {
     private $array = array();
@@ -33,7 +32,7 @@ class KeyArrayFormData implements InterfaceForFormDataParts
     {
         $arrayList = ArrayList::create();
         foreach ($this->array as $index => $value) {
-            if($value) {
+            if ($value) {
                 $valueArray = null;
                 if ($value == 'true') {
                     $valueArray = [

@@ -36,7 +36,6 @@ use  Sunnysideup\BuildDataObject\Api\DBTypeConverter;
 
 class DataObjectLists
 {
-
     use Extensible;
     use Injectable;
     use Configurable;
@@ -177,7 +176,7 @@ class DataObjectLists
     public function MyDbFieldsFancyWithoutBelongs($includeBelongs = false)
     {
         $ar = [];
-        $list = $this->retrieveDBFields('db');
+        $list = $this->MyDbFieldsWithDefaults();
         foreach ($list as $key => $value) {
             $ar[$key] = $key;
             $shortValue = explode('(', $value);
@@ -488,5 +487,4 @@ class DataObjectLists
 
         return DBField::create_field('Varchar', $str);
     }
-
 }

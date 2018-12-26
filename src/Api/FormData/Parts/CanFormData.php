@@ -4,7 +4,6 @@ namespace Sunnysideup\BuildDataObject\Api\FormData\Parts;
 
 use SilverStripe\ORM\FieldType\DBField;
 
-
 class CanFormData implements InterfaceForFormDataParts
 {
     private $value;

@@ -7,7 +7,6 @@ use SilverStripe\Forms\HeaderField;
 use SilverStripe\Forms\LiteralField;
 use Sunnysideup\BuildDataObject\Api\FormBuilder\Parts\InnerComposite;
 
-
 abstract class BasePart
 {
     private $owner;
@@ -19,7 +18,7 @@ abstract class BasePart
     protected $source2;
     protected $isMultiple;
 
-    protected abstract function onGetInnerComposite(int $index) : InnerComposite;
+    abstract protected function onGetInnerComposite(int $index) : InnerComposite;
 
     public function __construct($owner, $name, $isMultiple, $sourceMethod1, $sourceMethod2)
     {
