@@ -305,7 +305,7 @@ abstract class BuildController extends Controller implements InterfaceForFormCon
     {
         $this->PrimaryForm();
         $this->prevLink = $this->Link('startover');
-        Config::modify()->set('SSViewer', 'source_file_comments', false);
+        Config::modify()->set(SSViewer::class, 'source_file_comments', false);
 
         return $this->renderWith('BuildControllerForm');
     }
@@ -330,7 +330,7 @@ abstract class BuildController extends Controller implements InterfaceForFormCon
         $this->step = 2;
         $this->SecondaryForm();
         $this->prevLink = $this->Link('primaryformstart');
-        Config::modify()->set('SSViewer', 'source_file_comments', false);
+        Config::modify()->set(SSViewer::class, 'source_file_comments', false);
 
         return $this->renderWith('BuildControllerForm');
     }
@@ -440,7 +440,7 @@ abstract class BuildController extends Controller implements InterfaceForFormCon
 
     public function results()
     {
-        Config::modify()->set('SSViewer', 'source_file_comments', false);
+        Config::modify()->set(SSViewer::class, 'source_file_comments', false);
 
         $this->processedFormData($this->retrieveData());
         $this->getFinalData()->CompileDataForRendering();
