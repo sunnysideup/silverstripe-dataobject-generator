@@ -16,8 +16,8 @@
     {
         return _t(self::class.'.PLURAL_NAME', '$plural_name');
     }
-    <% end_if %><%if $ShortClassNameForObject %>
-    private static \$table_name = '$ShortClassNameForObject';
+    <% end_if %><%if $Name %>
+    private static \$table_name = '$Name.ShortName';
     <% end_if %>
     <% if $default_classname %>
     private static \$default_classname = '$default_classname';
@@ -46,12 +46,12 @@
     ];
     <% end_if %><% if $has_many %>
     private static \$has_many = [
-        <% loop $has_many %>'$Key' => <% if $UnquotedValue.RAW %>$UnquotedValue.RAW<% else %>$Value.ShortName::class<% end_if %><% if $Last %><% else %>,
+        <% loop $has_many %>'$Key' => <% if $UnquotedValue.RAW %>$UnquotedValue.ShortName<% else %>$Value.ShortName::class<% end_if %><% if $Last %><% else %>,
         <% end_if %><% end_loop %>
     ];
     <% end_if %><% if $many_many %>
     private static \$many_many = [
-        <% loop $many_many %>'$Key' => <% if $UnquotedValue.RAW %>$UnquotedValue.RAW<% else %>$Value.ShortName::class<% end_if %><% if $Last %><% else %>,
+        <% loop $many_many %>'$Key' => <% if $UnquotedValue.RAW %>$UnquotedValue.ShortName<% else %>$Value.ShortName::class<% end_if %><% if $Last %><% else %>,
         <% end_if %><% end_loop %>
     ];
 

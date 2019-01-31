@@ -4,7 +4,7 @@
 
 <% include DataObjectGeneratorClassHeader %>
 
-class $Name extends $Extends.ShortName
+class $Name.ShortName extends $Extends.ShortName
 {
 
     #######################
