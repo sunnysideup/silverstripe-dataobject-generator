@@ -14,6 +14,7 @@ class PageBuildController extends BuildController
         return $this->addKeysToThingsToBuild([
             ['singular_name',       'text',                                     '',                        false],
             ['plural_name',         'text',                                     '',                        false],
+            ['description',         'text',                                     '',                        false],
             ['default_classname',   'text',                                     '',                        false],
             ['api_access',          'TrueOrFalseList',                          '',                        false],
             ['db',                  'text',                                     'dbFields',                true],
@@ -29,7 +30,6 @@ class PageBuildController extends BuildController
     protected function secondaryThingsToBuild()
     {
         return $this->addKeysToThingsToBuild([
-            ['description',         'text',                                      '',                       false],
             ['can_create',          'TrueOrFalseList',                           '',                       false],
             ['can_be_root',         'TrueOrFalseList',                           '',                       false],
             ['allowed_children',    'allowedChildrenOptions',                    '',                       true],
