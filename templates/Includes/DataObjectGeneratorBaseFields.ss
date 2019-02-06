@@ -17,7 +17,7 @@
         return _t(self::class.'.PLURAL_NAME', '$plural_name');
     }
     <% end_if %><%if $Name %>
-    private static \$table_name = '$Name.ShortName';
+    private static \$table_name = '$Name';
     <% end_if %>
     <% if $default_classname %>
     private static \$default_classname = '$default_classname';
