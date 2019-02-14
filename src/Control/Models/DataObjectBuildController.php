@@ -52,6 +52,7 @@ class DataObjectBuildController extends BuildController
             ['indexes',             'myDbFieldsAndIndexes',                     'indexOptions',           true],
             ['required_fields',     'myDbFieldsAndHasOnesWithIDs',              'requiredOptions',        true],
             ['owns',                'myPossibleRelations',                      '',                       true],
+            ['owned_by',            'myPossibleRelations',                      '',                       true],
             ['cascade_deletes',     'myPossibleRelations',                      '',                       true],
             ['cascade_duplicates',  'myPossibleRelations',                      '',                       true],
             ['field_labels',        'myAllFieldsWithoutBelongs',                'text',                   true],

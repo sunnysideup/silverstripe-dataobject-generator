@@ -69,7 +69,7 @@
 
     <% if $owns %>
     private static \$owns = [
-        <% loop $cascade_deletes %><% if $UnquotedValue.RAW %>$UnquotedValue.ShortName<% else %>$Value.ShortName::class<% end_if %><% if $Last %><% else %>,
+        <% loop $owns %><% if $UnquotedValue.RAW %>$UnquotedValue.ShortName<% else %>$Value.ShortName::class<% end_if %><% if $Last %><% else %>,
         <% end_if %><% end_loop %>
     ];
     <% end_if %>
@@ -82,7 +82,7 @@
     <% end_if %>
 
     <% if $cascade_duplicates %>
-    private static \$cascade_deletes = [
+    private static \$cascade_duplicates = [
         <% loop $cascade_deletes %><% if $UnquotedValue.RAW %>$UnquotedValue.ShortName<% else %>$Value.ShortName::class<% end_if %><% if $Last %><% else %>,
         <% end_if %><% end_loop %>
     ];
