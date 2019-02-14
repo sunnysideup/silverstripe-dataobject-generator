@@ -196,6 +196,7 @@ class DataObjectLists
         if ($includeBelongs) {
             $list += $this->retrieveDBFields('belongs_to');
         }
+        $list += $this->retrieveDBFields('belongs_to');
         $list += $this->retrieveDBFields('has_one');
         foreach ($list as $key => $value) {
             if ($value === Image::class || is_subclass_of($value, Image::class)) {
