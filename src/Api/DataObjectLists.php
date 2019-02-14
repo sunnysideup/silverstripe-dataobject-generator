@@ -196,8 +196,8 @@ class DataObjectLists
         if ($includeBelongs) {
             $list += $this->retrieveDBFields('belongs_to');
         }
-        $list += $this->retrieveDBFields('belongs_to');
         $list += $this->retrieveDBFields('has_one');
+        $list += $this->retrieveDBFields('casting');
         foreach ($list as $key => $value) {
             if ($value === Image::class || is_subclass_of($value, Image::class)) {
                 $ar[$key.'.CMSThumbnail'] = $key.'.CMSThumbnail';
