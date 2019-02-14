@@ -62,6 +62,18 @@
         <% end_if %><% end_loop %>
     ];
     <% end_if %>
+
+    #######################
+    ### Further DB Field Details
+    #######################
+
+    <% if $owns %>
+    private static \$owns = [
+        <% loop $cascade_deletes %><% if $UnquotedValue.RAW %>$UnquotedValue.ShortName<% else %>$Value.ShortName::class<% end_if %><% if $Last %><% else %>,
+        <% end_if %><% end_loop %>
+    ];
+    <% end_if %>
+
     <% if $cascade_deletes %>
     private static \$cascade_deletes = [
         <% loop $cascade_deletes %><% if $UnquotedValue.RAW %>$UnquotedValue.ShortName<% else %>$Value.ShortName::class<% end_if %><% if $Last %><% else %>,
@@ -69,9 +81,13 @@
     ];
     <% end_if %>
 
-    #######################
-    ### Further DB Field Details
-    #######################
+    <% if $cascade_duplicates %>
+    private static \$cascade_deletes = [
+        <% loop $cascade_deletes %><% if $UnquotedValue.RAW %>$UnquotedValue.ShortName<% else %>$Value.ShortName::class<% end_if %><% if $Last %><% else %>,
+        <% end_if %><% end_loop %>
+    ];
+    <% end_if %>
+
     <% if $indexes %>
     private static \$indexes = [
         <% loop $indexes %>'$Key' => <% if $UnquotedValue.RAW %>$UnquotedValue.RAW<% else %>'$Value.RAW'<% end_if %><% if $Last %><% else %>,

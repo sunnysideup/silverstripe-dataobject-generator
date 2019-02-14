@@ -204,19 +204,36 @@ class DataObjectLists
                 $ar[$key.'.Title'] = $key.'.Title';
             }
         }
+        //start again!
         $list =
             $this->retrieveDBFields('has_many') +
             $this->retrieveDBFields('many_many');
         if ($includeBelongs) {
             $list += $this->retrieveDBFields('belongs_many_many');
         }
-        $list += $this->retrieveDBFields('cascade_deletes');
 
         foreach ($list as $key => $value) {
             $ar[$key.'.Count'] = $key.'.Count';
         }
 
         return $ar;
+    }
+
+    public function myPossibleRelations($includeBelongs = false)
+    {
+        $list = [];
+        if ($includeBelongs) {
+            $list += $this->retrieveDBFields('belongs_to');
+        }
+        $list += $this->retrieveDBFields('has_one');
+        $list +=
+            $this->retrieveDBFields('has_many') +
+            $this->retrieveDBFields('many_many');
+        if ($includeBelongs) {
+            $list += $this->retrieveDBFields('belongs_many_many');
+        }
+
+        return $list;
     }
 
     public function MyDbFieldsAndHasOnes()
