@@ -26,7 +26,7 @@ class DBTypeConverter
     private static function fromAny(string $dbTypeName, array $prefixes)
     {
         // remove everything after '('
-        // e.g. 'Varchar(32)' => 'Varchar', 'Enum(array(...))' => 'Enum'
+        // e.g. 'Varchar' => 'Varchar(32)'
         $trimmedTypeName = trim(preg_replace('/\(.*$/', '', $dbTypeName));
         // look for known classes
         foreach ($prefixes as $prefix) {

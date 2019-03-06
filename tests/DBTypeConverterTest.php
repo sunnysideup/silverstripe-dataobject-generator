@@ -42,7 +42,7 @@ class DBTypeConverterTest extends SapphireTest
         $expected_classname_dbfield = array(
             'SilverStripe\\ORM\\FieldType\\DBInt' => 'Int',
             'SilverStripe\\ORM\\FieldType\\DBVarchar' => 'Varchar',
-            'SilverStripe\\ORM\\FieldType\\DBEnum' => 'Enum(array("foo", "bar", "baz"))',
+            'SilverStripe\\ORM\\FieldType\\DBEnum' => 'Enum("foo,bar,foo2,bar2", "bar2")',
             'SilverStripe\\ORM\\DataObject' => 'DataObject',
             'SilverStripe\\Assets\\Storage\\DBFile' => 'DBFile',
             'SilverStripe\\Assets\\Image' => 'SilverStripe\\\\Assets\\\\Image'
@@ -58,7 +58,7 @@ class DBTypeConverterTest extends SapphireTest
         $expected_dbfield_classname = array(
             'Int' => 'Int',
             'Varchar' => 'Varchar',
-            'Enum' => 'Enum(array("foo", "bar", "baz"))',
+            'Enum' => 'Enum("foo,bar,foo2,bar2", "bar2")',
             'DBFile' => 'DBFile',
             'DataObject' => 'DataObject',
             'Image' => 'SilverStripe\\\\Assets\\\\Image'
@@ -92,7 +92,7 @@ class DBTypeConverterTest extends SapphireTest
             'Varchar' => 'SilverStripe\\ORM\\FieldType\\DBVarchar',
             'Varchar(256)' => 'SilverStripe\\ORM\\FieldType\\DBVarchar',
             'Enum' => 'SilverStripe\\ORM\\FieldType\\DBEnum',
-            'Enum(array(\'baa\', \'boo\'))' => 'SilverStripe\\ORM\\FieldType\\DBEnum',
+            'Enum("foo,bar,foo2,bar2", "bar2")' => 'SilverStripe\\ORM\\FieldType\\DBEnum',
             'DataObject' => 'SilverStripe\\ORM\\DataObject',
             'DBFile' => 'SilverStripe\\Assets\\Storage\\DBFile',
             'SilverStripe\\Assets\\Image' => 'SilverStripe\\Assets\\Image'

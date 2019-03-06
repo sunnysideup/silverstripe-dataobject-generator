@@ -7,9 +7,9 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
-    <link rel="stylesheet" media="print" href="/resources/vendor/sunnysideup/dataobject-generator/client/css/lib/jquery-ui.min.css" />
-    <link rel="stylesheet" media="print" href="/resources/vendor/sunnysideup/dataobject-generator/client/css/dog.css" />
-    <link rel="stylesheet" media="print" href="/resources/vendor/sunnysideup/dataobject-generator/client/css/new.css" />
+    <link rel="stylesheet" href="/resources/vendor/sunnysideup/dataobject-generator/client/css/lib/jquery-ui.min.css" />
+    <link rel="stylesheet" href="/resources/vendor/sunnysideup/dataobject-generator/client/css/dog.css" />
+    <link rel="stylesheet" href="/resources/vendor/sunnysideup/dataobject-generator/client/css/new.css" />
 </head>
 <body>
     <header>
@@ -22,7 +22,7 @@
 
     <script src="/resources/vendor/sunnysideup/dataobject-generator/client/javascript/lib/jquery.slim.min.js"></script>
     <script src="/resources/vendor/sunnysideup/dataobject-generator/client/javascript/lib/jquery-ui.min.js"></script>
-    <script src="/resources/vendor/sunnysideup/dataobject-generator/client/dog.js"></script>
+    <script src="/resources/vendor/sunnysideup/dataobject-generator/client/javascript/dog.js"></script>
 
     <script>
         (function($){
