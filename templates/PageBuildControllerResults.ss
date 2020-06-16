@@ -38,11 +38,6 @@ class $Name extends $Extends.ShortName
     ### CMS Edit Section
     #######################
 
-    public function CMSAddLink()
-    {
-        return '/admin/pages/add/';
-    }
-
 <% include DataObjectGeneratorCMSFields %>
 
 }

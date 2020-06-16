@@ -9,28 +9,24 @@ class $Name.ShortName extends $Extends.ShortName
 <% include DataObjectGeneratorBaseFields %>
 
 
-    #######################
-    ### CMS Edit Section
-    #######################
-
-    <% if $ModelAdmin %>
-    public function CMSEditLink()
-    {
-        \$controller = Injector::inst(\$this->Config()->get('primary_model_admin_class'));
-
-        return \$controller->Link().\$this->ClassName."/EditForm/field/".\$this->ClassName."/item/".\$this->ID."/edit";
-    }
-
-    public function CMSAddLink()
-    {
-        \$controller = Injector::inst(\$this->Config()->get('primary_model_admin_class'));
-
-        return \$controller->Link().\$this->ClassName."/EditForm/field/".\$this->ClassName."/item/new";
-    }
-    <% end_if %>
-
 <% include DataObjectGeneratorCMSFields %>
 
+}
+
+/**
+ * The class below should be moved to its own file and folder and given its own namespace (src/Admin/).
+ */
+class MyModelAdmin extends ModelAdmin
+{
+    private static \$url_segment = 'mymodeladmin';
+
+    private static \$menu_title = 'My Model Admin';
+
+    private static \$menu_icon_class = 'font-icon-box';
+
+    private static \$$managed_models = [
+        namespace {$NameSpace}\\{$Name.ShortName},
+    ];
 }
 
 

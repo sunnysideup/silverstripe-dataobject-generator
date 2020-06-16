@@ -31,34 +31,34 @@
     #######################
     <% if $db %>
     private static \$db = [
-        <% loop $db %>'$Key' => <% if $UnquotedValue.RAW %>$UnquotedValue.RAW<% else %>'$Value.RAW'<% end_if %><% if $Last %><% else %>,
+        <% loop $db %>'$Key' => <% if $UnquotedValue.RAW %>$UnquotedValue.RAW<% else %>'$Value.RAW'<% end_if %><% if $Last %>,<% else %>,
         <% end_if %><% end_loop %>
     ];
     <% end_if %><% if $belongs_to %>
     private static \$belongs_to = [
-        <% loop $belongs_to %>'$Key' => <% if $UnquotedValue.RAW %>$UnquotedValue.ShortName<% else %>$Value.ShortName::class<% end_if %><% if $Last %><% else %>,
+        <% loop $belongs_to %>'$Key' => <% if $UnquotedValue.RAW %>$UnquotedValue.ShortName<% else %>$Value.ShortName::class<% end_if %><% if $Last %>,<% else %>,
         <% end_if %><% end_loop %>
     ];
     <% end_if %><% if $has_one %>
     private static \$has_one = [
-        <% loop $has_one %>'$Key' => <% if $UnquotedValue.RAW %>$UnquotedValue.ShortName<% else %>$Value.ShortName::class<% end_if %><% if $Last %><% else %>,
+        <% loop $has_one %>'$Key' => <% if $UnquotedValue.RAW %>$UnquotedValue.ShortName<% else %>$Value.ShortName::class<% end_if %><% if $Last %>,<% else %>,
         <% end_if %><% end_loop %>
     ];
     <% end_if %><% if $has_many %>
     private static \$has_many = [
-        <% loop $has_many %>'$Key' => <% if $UnquotedValue.RAW %>$UnquotedValue.ShortName<% else %>$Value.ShortName::class<% end_if %><% if $Last %><% else %>,
+        <% loop $has_many %>'$Key' => <% if $UnquotedValue.RAW %>$UnquotedValue.ShortName<% else %>$Value.ShortName::class<% end_if %><% if $Last %>,<% else %>,
         <% end_if %><% end_loop %>
     ];
     <% end_if %><% if $many_many %>
     private static \$many_many = [
-        <% loop $many_many %>'$Key' => <% if $UnquotedValue.RAW %>$UnquotedValue.ShortName<% else %>$Value.ShortName::class<% end_if %><% if $Last %><% else %>,
+        <% loop $many_many %>'$Key' => <% if $UnquotedValue.RAW %>$UnquotedValue.ShortName<% else %>$Value.ShortName::class<% end_if %><% if $Last %>,<% else %>,
         <% end_if %><% end_loop %>
     ];
 
     private static \$many_many_extraFields = [];
     <% end_if %><% if $belongs_many_many %>
     private static \$belongs_many_many = [
-        <% loop $belongs_many_many %>'$Key' => <% if $UnquotedValue.RAW %>$UnquotedValue.ShortName<% else %>$Value.ShortName::class<% end_if %><% if $Last %><% else %>,
+        <% loop $belongs_many_many %>'$Key' => <% if $UnquotedValue.RAW %>$UnquotedValue.ShortName<% else %>$Value.ShortName::class<% end_if %><% if $Last %>,<% else %>,
         <% end_if %><% end_loop %>
     ];
     <% end_if %>
@@ -69,48 +69,48 @@
 
     <% if $owns %>
     private static \$owns = [
-        <% loop $owns %><% if $UnquotedValue.RAW %>$UnquotedValue.ShortName<% else %>$Value.ShortName::class<% end_if %><% if $Last %><% else %>,
+        <% loop $owns %><% if $UnquotedValue.RAW %>$UnquotedValue.ShortName<% else %>$Value.ShortName::class<% end_if %><% if $Last %>,<% else %>,
         <% end_if %><% end_loop %>
     ];
     <% end_if %>
 
     <% if $cascade_deletes %>
     private static \$cascade_deletes = [
-        <% loop $cascade_deletes %><% if $UnquotedValue.RAW %>$UnquotedValue.ShortName<% else %>$Value.ShortName::class<% end_if %><% if $Last %><% else %>,
+        <% loop $cascade_deletes %><% if $UnquotedValue.RAW %>$UnquotedValue.ShortName<% else %>$Value.ShortName::class<% end_if %><% if $Last %>,<% else %>,
         <% end_if %><% end_loop %>
     ];
     <% end_if %>
 
     <% if $cascade_duplicates %>
     private static \$cascade_duplicates = [
-        <% loop $cascade_deletes %><% if $UnquotedValue.RAW %>$UnquotedValue.ShortName<% else %>$Value.ShortName::class<% end_if %><% if $Last %><% else %>,
+        <% loop $cascade_deletes %><% if $UnquotedValue.RAW %>$UnquotedValue.ShortName<% else %>$Value.ShortName::class<% end_if %><% if $Last %>,<% else %>,
         <% end_if %><% end_loop %>
     ];
     <% end_if %>
 
     <% if $indexes %>
     private static \$indexes = [
-        <% loop $indexes %>'$Key' => <% if $UnquotedValue.RAW %>$UnquotedValue.RAW<% else %>'$Value.RAW'<% end_if %><% if $Last %><% else %>,
+        <% loop $indexes %>'$Key' => <% if $UnquotedValue.RAW %>$UnquotedValue.RAW<% else %>'$Value.RAW'<% end_if %><% if $Last %>,<% else %>,
         <% end_if %><% end_loop %>
     ];
     <% end_if %><% if $defaults %>
     private static \$defaults = [
-        <% loop $defaults %>'$Key' => <% if $UnquotedValue.RAW %>$UnquotedValue.RAW<% else %>'$Value.RAW'<% end_if %><% if $Last %><% else %>,
+        <% loop $defaults %>'$Key' => <% if $UnquotedValue.RAW %>$UnquotedValue.RAW<% else %>'$Value.RAW'<% end_if %><% if $Last %>,<% else %>,
         <% end_if %><% end_loop %>
     ];
     <% end_if %><% if $default_sort %>
     private static \$default_sort = [
-        <% loop $default_sort %>'$Key' => <% if $UnquotedValue.RAW %>$UnquotedValue.RAW<% else %>'$Value.RAW'<% end_if %><% if $Last %><% else %>,
+        <% loop $default_sort %>'$Key' => <% if $UnquotedValue.RAW %>$UnquotedValue.RAW<% else %>'$Value.RAW'<% end_if %><% if $Last %>,<% else %>,
         <% end_if %><% end_loop %>
     ];
     <% end_if %><% if $required_fields %>
     private static \$required_fields = [
-        <% loop $required_fields %>'$Key'<% if $Last %><% else %>,
+        <% loop $required_fields %>'$Key'<% if $Last %>,<% else %>,
         <% end_if %><% end_loop %>
     ];
     <% end_if %><% if $searchable_fields %>
     private static \$searchable_fields = [
-        <% loop $searchable_fields %>'$Key' => <% if $UnquotedValue.RAW %>$UnquotedValue.ShortName<% else %>$Value.ShortName::class<% end_if %><% if $Last %><% else %>,
+        <% loop $searchable_fields %>'$Key' => <% if $UnquotedValue.RAW %>$UnquotedValue.ShortName<% else %>$Value.ShortName::class<% end_if %><% if $Last %>,<% else %>,
         <% end_if %><% end_loop %>
     ];
     <% end_if %>
@@ -120,17 +120,17 @@
     #######################
     <% if $field_labels %>
     private static \$field_labels = [
-        <% loop $field_labels %>'$Key' => <% if $UnquotedValue.RAW %>$UnquotedValue.RAW<% else %>'$Value.RAW'<% end_if %><% if $Last %><% else %>,
+        <% loop $field_labels %>'$Key' => <% if $UnquotedValue.RAW %>$UnquotedValue.RAW<% else %>'$Value.RAW'<% end_if %><% if $Last %>,<% else %>,
         <% end_if %><% end_loop %>
     ];
     <% end_if %><% if $field_labels_right %>
     private static \$field_labels_right = [
-        <% loop $field_labels_right %>'$Key' => <% if $UnquotedValue.RAW %>$UnquotedValue.RAW<% else %>'$Value.RAW'<% end_if %><% if $Last %><% else %>,
+        <% loop $field_labels_right %>'$Key' => <% if $UnquotedValue.RAW %>$UnquotedValue.RAW<% else %>'$Value.RAW'<% end_if %><% if $Last %>,<% else %>,
         <% end_if %><% end_loop %>
     ];
     <% end_if %><% if $summary_fields %>
     private static \$summary_fields = [
-        <% loop $summary_fields %>'$Key' => <% if $UnquotedValue.RAW %>$UnquotedValue.RAW<% else %>'$Value.RAW'<% end_if %><% if $Last %><% else %>,
+        <% loop $summary_fields %>'$Key' => <% if $UnquotedValue.RAW %>$UnquotedValue.RAW<% else %>'$Value.RAW'<% end_if %><% if $Last %>,<% else %>,
         <% end_if %><% end_loop %>
     ];
     <% end_if %>
@@ -140,7 +140,7 @@
     #######################
     <% if $casting %>
     private static \$casting = [
-        <% loop $casting %>'$Key' => <% if $UnquotedValue.RAW %>$UnquotedValue.RAW<% else %>'$Value.RAW'<% end_if %><% if $Last %><% else %>,
+        <% loop $casting %>'$Key' => <% if $UnquotedValue.RAW %>$UnquotedValue.RAW<% else %>'$Value.RAW'<% end_if %><% if $Last %>,<% else %>,
         <% end_if %><% end_loop %>
     ];
 <% loop $casting %>
@@ -185,8 +185,6 @@
     #######################
     ### write Section
     #######################
-
-
 
     <% if $required_fields %>
     public function validate()

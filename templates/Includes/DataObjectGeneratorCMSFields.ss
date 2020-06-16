@@ -2,7 +2,6 @@
     {
         \$fields = parent::getCMSFields();
 
-        //do first??
         \$rightFieldDescriptions = \$this->Config()->get('field_labels_right');
         if(is_array(\$rightFieldDescriptions) && count(\$rightFieldDescriptions)) {
             foreach(\$rightFieldDescriptions as \$field => \$desc) {
