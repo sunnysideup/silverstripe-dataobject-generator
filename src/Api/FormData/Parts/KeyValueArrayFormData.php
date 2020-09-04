@@ -34,11 +34,11 @@ class KeyValueArrayFormData implements InterfaceForFormDataParts
     public function toLiveObject()
     {
         $arrayList = ArrayList::create();
-        foreach ($this->array as $e => $pair) {
+        foreach ($this->array as $pair) {
             if (isset($pair[self::KEY]) && isset($pair[self::VALUE])) {
                 $key = $pair[self::KEY];
                 $value = $pair[self::VALUE];
-                $valurPairArray = null;
+                $valuePairArray = [];
                 if ($value === 'true') {
                     $valuePairArray = [
                         'Key' => $key,

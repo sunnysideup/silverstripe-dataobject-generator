@@ -56,7 +56,7 @@ class NewDataObject extends ArrayData
     {
         $al = ArrayList::create();
         $array = $this->listForUseStatements;
-        foreach ($array as $fullClassName => $trueIsTrue) {
+        foreach (array_keys($array) as $fullClassName) {
             //just in case ...
             $fullClassName = str_replace('\\\\', '\\', $fullClassName);
             $al->push(

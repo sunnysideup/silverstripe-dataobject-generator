@@ -374,7 +374,7 @@ abstract class BuildController extends Controller implements InterfaceForFormCon
         unset($data['url']);
         unset($data['SecurityID']);
         if (is_array($data)) {
-            foreach ($data as $key => $value) {
+            foreach (array_keys($data) as $key) {
                 if (strpos($key, 'action_') === 0) {
                     unset($data[$key]);
                 }

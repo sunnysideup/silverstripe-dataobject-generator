@@ -35,7 +35,7 @@ class FormDataDecomposerTest extends SapphireTest
         $decomposer->getResult($output);
 
         $this->assertCount(4, $output);
-        foreach ($input as $key => $_) {
+        foreach (array_keys($input) as $key) {
             $this->assertArrayHasKey($key, $output);
             $value = $output[$key];
             $this->assertInstanceOf(PlainFormData::class, $value);
@@ -54,7 +54,7 @@ class FormDataDecomposerTest extends SapphireTest
         $decomposer->getResult($output);
 
         $this->assertCount(4, $output);
-        foreach ($input as $key => $_) {
+        foreach (array_keys($input) as $key) {
             $this->assertArrayHasKey($key, $output);
             $value = $output[$key];
             $this->assertInstanceOf(CanFormData::class, $value);

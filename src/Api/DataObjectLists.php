@@ -70,7 +70,7 @@ class DataObjectLists
 
     private static $_my_singleton = [];
 
-    public static function inst($myBaseClass = DataObject::class, $data)
+    public static function inst($myBaseClass = DataObject::class, $data = null)
     {
         if (! isset(self::$_my_singleton[$myBaseClass])) {
             self::$_my_singleton[$myBaseClass] = Injector::inst()->get(self::class);
@@ -168,7 +168,7 @@ class DataObjectLists
             $list += $this->retrieveDBFields('belongs_many_many');
         }
 
-        foreach ($list as $key => $value) {
+        foreach (array_keys($list) as $key) {
             $ar[$key . '.Count'] = $key . '.Count';
         }
 
@@ -202,7 +202,7 @@ class DataObjectLists
     {
         $list = $this->retrieveDBFields('db');
         $hasOnes = $this->retrieveDBFields('has_one');
-        foreach ($hasOnes as $field => $type) {
+        foreach (array_keys($hasOnes) as $field) {
             $fieldWithID = $field . 'ID';
             $list[$fieldWithID] = $fieldWithID;
         }

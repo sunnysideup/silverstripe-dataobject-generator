@@ -31,7 +31,7 @@ class KeyArrayFormData implements InterfaceForFormDataParts
     public function toLiveObject()
     {
         $arrayList = ArrayList::create();
-        foreach ($this->array as $index => $value) {
+        foreach ($this->array as $value) {
             if ($value) {
                 $valueArray = null;
                 if ($value === 'true') {
