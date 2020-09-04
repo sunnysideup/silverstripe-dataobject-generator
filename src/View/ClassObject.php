@@ -11,6 +11,7 @@ class ClassObject extends ViewableData
 
     public function __construct($fullName)
     {
+        parent::__construct();
         $this->fullName = $fullName;
     }
 

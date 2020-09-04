@@ -15,6 +15,9 @@ use SilverStripe\Forms\CompositeField;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\FieldType\DBField;
 use SilverStripe\ORM\FieldType\DBLocale;
+use SilverStripe\ORM\FieldType\DBString;
+use SilverStripe\ORM\FieldType\DBPrimaryKey;
+use SilverStripe\ORM\FieldType\DBForeignKey;
 use SilverStripe\ORM\Filters\SearchFilter;
 use SilverStripe\Security\LoginAttempt;
 use SilverStripe\Security\MemberPassword;
@@ -284,6 +287,7 @@ class DataObjectLists
         } else {
             $rootClass = $this->rootBaseClass;
         }
+        $newList = [];
         if (! isset($this->_classesCache[$rootClass])) {
             $newList = $this->walkSubclasses(function ($type) {
                 $key = $type->toClass();

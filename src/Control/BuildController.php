@@ -129,7 +129,7 @@ abstract class BuildController extends Controller implements InterfaceForFormCon
 
     public function LongBaseClass()
     {
-        return $this->{$myBaseClass};
+        return $this->myBaseClass;
     }
 
     public function ShortThisClass()
@@ -339,6 +339,7 @@ abstract class BuildController extends Controller implements InterfaceForFormCon
 
     protected function createForm($formName, $actionTitle)
     {
+        $builder = null;
         if ($formName === 'PrimaryForm') {
             $builder = new PrimaryFormBuilder($this, $this->primaryThingsToBuild());
         } elseif ($formName === 'SecondaryForm') {
@@ -346,8 +347,10 @@ abstract class BuildController extends Controller implements InterfaceForFormCon
         } else {
             user_error('Set right form type: ' . $formName . ' is not valid');
         }
-
-        $finalFields = $builder->build();
+        $finalFields = FieldList::create();
+        if($bulder) {
+            $finalFields = $builder->build();
+        }
 
         $actions = FieldList::create(
             [FormAction::create('do' . strtolower($formName), $actionTitle)]
