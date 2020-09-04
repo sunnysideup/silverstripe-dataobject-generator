@@ -8,11 +8,11 @@ namespace Sunnysideup\BuildDataObject\Api\FormBuilder;
 
 interface InterfaceForFormController
 {
-    public function getBaseClass() : string;
+    public function getBaseClass(): string;
 
-    public function getShortBaseClass() : string;
+    public function getShortBaseClass(): string;
 
-    public function getAdditionalPrimaryFields() : array;
+    public function getAdditionalPrimaryFields(): array;
 
     public function getPossibleRelationsWithBaseClass();
 

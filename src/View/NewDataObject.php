@@ -2,13 +2,18 @@
 
 namespace Sunnysideup\BuildDataObject\View;
 
-use SilverStripe\View\ArrayData;
-use SilverStripe\ORM\ArrayList;
 use SilverStripe\Core\ClassInfo;
-use Sunnysideup\BuildDataObject\View\ClassObject;
+use SilverStripe\ORM\ArrayList;
+use SilverStripe\View\ArrayData;
 
 class NewDataObject extends ArrayData
 {
+    protected $listForUseStatements = [
+        'SilverStripe\ORM\DataObject' => true,
+        'SilverStripe\Security\Permission' => true,
+        'SilverStripe\ORM\FieldType\DBField' => true,
+    ];
+
     public function __construct($data)
     {
         parent::__construct($data);
@@ -34,14 +39,12 @@ class NewDataObject extends ArrayData
         return ClassInfo::shortName($this->myBaseClass);
     }
 
-
     public function getClassNameForObject()
     {
         if (isset($this->Name) && isset($this->NameSpace)) {
             return trim($this->NameSpace, '\\') . '\\' . trim($this->Name, '\\');
-        } else {
-            return 'self::class';
         }
+        return 'self::class';
     }
 
     public function getShortClassNameForObject()
@@ -49,9 +52,19 @@ class NewDataObject extends ArrayData
         return trim($this->Name, '\\');
     }
 
-
-
-
+    public function getFinalListToUse()
+    {
+        $al = ArrayList::create();
+        $array = $this->listForUseStatements;
+        foreach ($array as $fullClassName => $trueIsTrue) {
+            //just in case ...
+            $fullClassName = str_replace('\\\\', '\\', $fullClassName);
+            $al->push(
+                ArrayData::create(['FullClassName' => $fullClassName])
+            );
+        }
+        return $al->Sort('FullClassName');
+    }
 
     #################################
     # List to use for the use statements ...
@@ -75,16 +88,9 @@ class NewDataObject extends ArrayData
                 }
             }
         } else {
-            user_error('Data provided should be an array data '.print_r($arrayData, 1));
+            user_error('Data provided should be an array data ' . print_r($arrayData, 1));
         }
     }
-
-    protected $listForUseStatements = [
-        'SilverStripe\ORM\DataObject' => true,
-        'SilverStripe\Security\Permission' => true,
-        'SilverStripe\ORM\FieldType\DBField' => true
-    ];
-
 
     protected function addToListToUse($suspectedClassName)
     {
@@ -94,21 +100,5 @@ class NewDataObject extends ArrayData
 
             return $object;
         }
-    }
-
-    public function getFinalListToUse()
-    {
-        $al = ArrayList::create();
-        $array = $this->listForUseStatements;
-        foreach ($array as $fullClassName => $trueIsTrue) {
-            //just in case ...
-            $fullClassName = str_replace('\\\\', '\\', $fullClassName);
-            $al->push(
-                ArrayData::create(['FullClassName' => $fullClassName])
-            );
-        }
-        $al = $al->Sort('FullClassName');
-
-        return $al;
     }
 }

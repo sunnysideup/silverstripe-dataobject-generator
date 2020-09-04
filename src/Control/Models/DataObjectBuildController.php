@@ -1,12 +1,10 @@
 <?php
 
-
 namespace Sunnysideup\BuildDataObject\Control\Models;
 
-use SilverStripe\ORM\DataObject;
-use SilverStripe\Forms\HeaderField;
-use SilverStripe\Admin\ModelAdmin;
 use SilverStripe\Forms\DropdownField;
+use SilverStripe\Forms\HeaderField;
+use SilverStripe\ORM\DataObject;
 
 use Sunnysideup\BuildDataObject\Control\BuildController;
 
@@ -22,10 +20,9 @@ class DataObjectBuildController extends BuildController
                 'ModelAdmin',
                 '',
                 $this->myAPI()->modelAdminOptions()
-            )->setEmptyString('--- Please Select ---')
+            )->setEmptyString('--- Please Select ---'),
         ];
     }
-
 
     protected function primaryThingsToBuild()
     {
@@ -40,7 +37,7 @@ class DataObjectBuildController extends BuildController
             ['has_many',            'text',                                     'possibleRelations',       true],
             ['many_many',           'text',                                     'possibleRelations',       true],
             ['casting',             'text',                                     'dbFields',                true],
-            ['belongs_many_many',   'text',                                     'possibleRelations',       true]
+            ['belongs_many_many',   'text',                                     'possibleRelations',       true],
         ]);
     }
 
@@ -62,7 +59,7 @@ class DataObjectBuildController extends BuildController
             ['canCreate',           'canOptions',                               '',                       false],
             ['canView',             'canOptions',                               '',                       false],
             ['canEdit',             'canOptions',                               '',                       false],
-            ['canDelete',           'canOptions',                               '',                       false]
+            ['canDelete',           'canOptions',                               '',                       false],
         ]);
     }
 }

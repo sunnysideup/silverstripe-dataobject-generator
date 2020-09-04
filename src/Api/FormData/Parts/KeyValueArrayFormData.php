@@ -9,16 +9,10 @@ use Sunnysideup\BuildDataObject\Api\DBTypeConverter;
 class KeyValueArrayFormData implements InterfaceForFormDataParts
 {
     const KEY = 0;
+
     const VALUE = 1;
 
-    private $array = array();
-
-    private function initElementAt($index)
-    {
-        if (!isset($this->array[$index])) {
-            $this->array[$index] = [];
-        }
-    }
+    private $array = [];
 
     public function setKeyAt($index, $key)
     {
@@ -45,7 +39,7 @@ class KeyValueArrayFormData implements InterfaceForFormDataParts
                 $key = $pair[self::KEY];
                 $value = $pair[self::VALUE];
                 $valurPairArray = null;
-                if ($value == 'true') {
+                if ($value === 'true') {
                     $valuePairArray = [
                         'Key' => $key,
                         'UnquotedValue' => $value,
@@ -60,5 +54,12 @@ class KeyValueArrayFormData implements InterfaceForFormDataParts
             }
         }
         return $arrayList;
+    }
+
+    private function initElementAt($index)
+    {
+        if (! isset($this->array[$index])) {
+            $this->array[$index] = [];
+        }
     }
 }

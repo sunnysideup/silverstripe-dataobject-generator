@@ -1,10 +1,10 @@
 <?php
 
 use SilverStripe\Dev\SapphireTest;
-use Sunnysideup\BuildDataObject\Api\FormData\FormDataDecomposer;
-use Sunnysideup\BuildDataObject\Api\FormData\PlainFormData;
 use Sunnysideup\BuildDataObject\Api\FormData\CanFormData;
+use Sunnysideup\BuildDataObject\Api\FormData\FormDataDecomposer;
 use Sunnysideup\BuildDataObject\Api\FormData\KeyValueArrayFormData;
+use Sunnysideup\BuildDataObject\Api\FormData\PlainFormData;
 
 class FormDataDecomposerTest extends SapphireTest
 {
@@ -15,7 +15,7 @@ class FormDataDecomposerTest extends SapphireTest
             'False?' => false,
             'False!' => false,
             'Zero' => 0,
-            'EmptyString' => ''
+            'EmptyString' => '',
         ];
         $decomposer = new FormDataDecomposer($input);
         $decomposer->getResult($output);
@@ -67,14 +67,14 @@ class FormDataDecomposerTest extends SapphireTest
         $key = FormDataDecomposer::KEY_IDENTIFIER;
         $val = FormDataDecomposer::VALUE_IDENTIFIER;
         $input = [
-            'db'.$char.$key.$char.'1' => 'Name',
-            'db'.$char.$val.$char.'1' => 'Varchar',
-            'db'.$char.$key.$char.'2' => 'File',
-            'db'.$char.$val.$char.'2' => 'DBFile',
-            'db'.$char.$key.$char.'3' => 'ShowInSearch',
-            'db'.$char.$val.$char.'3' => 'Boolean',
-            'db'.$char.$key.$char.'4' => 'CanViewType',
-            'db'.$char.$val.$char.'4' => 'Enum',
+            'db' . $char . $key . $char . '1' => 'Name',
+            'db' . $char . $val . $char . '1' => 'Varchar',
+            'db' . $char . $key . $char . '2' => 'File',
+            'db' . $char . $val . $char . '2' => 'DBFile',
+            'db' . $char . $key . $char . '3' => 'ShowInSearch',
+            'db' . $char . $val . $char . '3' => 'Boolean',
+            'db' . $char . $key . $char . '4' => 'CanViewType',
+            'db' . $char . $val . $char . '4' => 'Enum',
         ];
         $decomposer = new FormDataDecomposer($input);
         $decomposer->getResult($output);
@@ -85,13 +85,13 @@ class FormDataDecomposerTest extends SapphireTest
         $this->assertInstanceOf(KeyValueArrayFormData::class, $element);
         $element->getArray($array);
         $this->assertCount(4, $array);
-        $this->assertEquals($array[1][KeyValueArrayFormData::KEY], 'Name');
-        $this->assertEquals($array[1][KeyValueArrayFormData::VALUE], 'Varchar');
-        $this->assertEquals($array[2][KeyValueArrayFormData::KEY], 'File');
-        $this->assertEquals($array[2][KeyValueArrayFormData::VALUE], 'DBFile');
-        $this->assertEquals($array[3][KeyValueArrayFormData::KEY], 'ShowInSearch');
-        $this->assertEquals($array[3][KeyValueArrayFormData::VALUE], 'Boolean');
-        $this->assertEquals($array[4][KeyValueArrayFormData::KEY], 'CanViewType');
-        $this->assertEquals($array[4][KeyValueArrayFormData::VALUE], 'Enum');
+        $this->assertSame($array[1][KeyValueArrayFormData::KEY], 'Name');
+        $this->assertSame($array[1][KeyValueArrayFormData::VALUE], 'Varchar');
+        $this->assertSame($array[2][KeyValueArrayFormData::KEY], 'File');
+        $this->assertSame($array[2][KeyValueArrayFormData::VALUE], 'DBFile');
+        $this->assertSame($array[3][KeyValueArrayFormData::KEY], 'ShowInSearch');
+        $this->assertSame($array[3][KeyValueArrayFormData::VALUE], 'Boolean');
+        $this->assertSame($array[4][KeyValueArrayFormData::KEY], 'CanViewType');
+        $this->assertSame($array[4][KeyValueArrayFormData::VALUE], 'Enum');
     }
 }

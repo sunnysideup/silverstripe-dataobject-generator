@@ -1,42 +1,61 @@
 <?php
 
-
 namespace Sunnysideup\BuildDataObject\Control;
 
-use SilverStripe\Core\Injector\Injector;
-use SilverStripe\Core\Config\Config;
-use SilverStripe\Core\ClassInfo;
-
-use SilverStripe\Control\Session;
-use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\Director;
+use SilverStripe\Control\HTTPRequest;
+
+use SilverStripe\Core\ClassInfo;
+use SilverStripe\Core\Config\Config;
+use SilverStripe\Core\Injector\Injector;
 
 use SilverStripe\Forms\FieldList;
-use SilverStripe\Forms\HeaderField;
-use SilverStripe\Forms\DropdownField;
-use SilverStripe\Forms\TextField;
-use SilverStripe\Forms\LiteralField;
-use SilverStripe\Forms\CompositeField;
-use SilverStripe\Forms\FormAction;
 use SilverStripe\Forms\Form;
+use SilverStripe\Forms\FormAction;
 
-use SilverStripe\ORM\DataObject;
 use SilverStripe\ORM\ArrayList;
-use SilverStripe\ORM\FieldType\DBField;
+use SilverStripe\ORM\DataObject;
 
 use SilverStripe\View\SSViewer;
-use SilverStripe\View\ArrayData;
+use Sunnysideup\BuildDataObject\Api\DataObjectLists;
 use Sunnysideup\BuildDataObject\Api\DBTypeConverter;
-use Sunnysideup\BuildDataObject\Api\FormData\FormDataDecomposer;
 use Sunnysideup\BuildDataObject\Api\FormBuilder\InterfaceForFormController;
 use Sunnysideup\BuildDataObject\Api\FormBuilder\PrimaryFormBuilder;
 use Sunnysideup\BuildDataObject\Api\FormBuilder\SecondaryFormBuilder;
 
-use Sunnysideup\BuildDataObject\Api\DataObjectLists;
+use Sunnysideup\BuildDataObject\Api\FormData\FormDataDecomposer;
 
 abstract class BuildController extends Controller implements InterfaceForFormController
 {
+    ######################
+    # ABSTRACT AND PROVIDERS
+    ######################
+
+    protected $myBaseClass = DataObject::class;
+
+    protected $apiProvider = DataObjectLists::class;
+
+    /**
+     * @var Form
+     */
+    protected $step = 1;
+
+    /**
+     * @var Form
+     */
+    protected $form = null;
+
+    /**
+     * @var Form
+     */
+    protected $prevLink = null;
+
+    /**
+     * @var ArrayList
+     */
+    protected $finalData = null;
+
     private static $form_data_session_variable = 'Sunnysideup\BuildDataObject\Control\Models\DataObjectBuildController';
 
     private static $url_segment = 'build';
@@ -51,35 +70,8 @@ abstract class BuildController extends Controller implements InterfaceForFormCon
         'results' => true,
         'startover' => true,
         'loadtemplate' => true,
-        'debug' => true
+        'debug' => true,
     ];
-
-
-
-
-
-
-
-    ######################
-    # ABSTRACT AND PROVIDERS
-    ######################
-
-    protected $myBaseClass = DataObject::class;
-
-    protected $apiProvider = DataObjectLists::class;
-
-    abstract protected function primaryThingsToBuild();
-
-    abstract protected function secondaryThingsToBuild();
-
-
-
-
-
-
-
-
-
 
     ######################
     # DEBUG STUFF
@@ -87,25 +79,7 @@ abstract class BuildController extends Controller implements InterfaceForFormCon
 
     private static $debug = true;
 
-    private static function var_export_debug(&$var)
-    {
-        if (self::$debug) {
-            /// DEBUG DEBUG ///
-            echo '<!-- ';
-            var_export($var);
-            echo ' -->';
-        }
-    }
-
-    private static function print_r_debug(&$var)
-    {
-        if (self::$debug) {
-            /// DEBUG DEBUG ///
-            echo '<!-- ';
-            print_r($var);
-            echo ' -->';
-        }
-    }
+    private $_data = null;
 
     public function debug()
     {
@@ -117,10 +91,6 @@ abstract class BuildController extends Controller implements InterfaceForFormCon
         die('<hr />');
     }
 
-
-
-
-
     ######################
     # STRING VARS
     ######################
@@ -130,57 +100,42 @@ abstract class BuildController extends Controller implements InterfaceForFormCon
         if ($action) {
             $action .= '/';
         }
-        return
-            Director::baseURL().$this->Config()->get('url_segment').
-            '/'.strtolower($this->ShortBaseClass()).
-            '/'.$action;
+        return Director::baseURL() . $this->Config()->get('url_segment') .
+            '/' . strtolower($this->ShortBaseClass()) .
+            '/' . $action;
     }
 
     public function LoadTemplateLink($className = '')
     {
-        return $this->Link('loadtemplate').'?classname='.$className;
+        return $this->Link('loadtemplate') . '?classname=' . $className;
     }
-
 
     // InterfaceForFormController implements
 
-    public function getBaseClass() : string
+    public function getBaseClass(): string
     {
         return $this->myBaseClass;
     }
 
-    public function getShortBaseClass() : string
+    public function getShortBaseClass(): string
     {
         return $this->ShortBaseClass();
     }
 
-
     public function Title()
     {
-        return 'Build a '.$this->ShortBaseClass().' - Step '.$this->step.' of 2';
+        return 'Build a ' . $this->ShortBaseClass() . ' - Step ' . $this->step . ' of 2';
     }
 
     public function LongBaseClass()
     {
-        return $this->$myBaseClass;
+        return $this->{$myBaseClass};
     }
 
     public function ShortThisClass()
     {
         return ClassInfo::shortName($this);
     }
-
-
-    protected function ShortBaseClass()
-    {
-        return ClassInfo::shortName($this->myBaseClass);
-    }
-
-
-
-
-
-
 
     ######################
     # ACTIONS AND FORMS
@@ -215,87 +170,6 @@ abstract class BuildController extends Controller implements InterfaceForFormCon
         }
     }
 
-    protected function turnStaticsIntoSessionData($method, $className)
-    {
-        $data = [];
-        $thingsToBuild = $this->$method();
-        $keyIndex =
-            FormDataDecomposer::EXP_CHAR.
-            FormDataDecomposer::KEY_IDENTIFIER.
-            FormDataDecomposer::EXP_CHAR;
-        $valIndex =
-            FormDataDecomposer::EXP_CHAR.
-            FormDataDecomposer::VALUE_IDENTIFIER.
-            FormDataDecomposer::EXP_CHAR;
-        $listIndex =
-            FormDataDecomposer::EXP_CHAR.
-            FormDataDecomposer::LIST_IDENTIFIER.
-            FormDataDecomposer::EXP_CHAR;
-        foreach ($thingsToBuild as $static) {
-            $varName = $static['Name'];
-            $varValue = Config::inst()->get($className, $varName);
-            if (is_array($varValue)) {
-                if ($this->isAssoc($varValue)) {
-                    $count = 0;
-                    foreach ($varValue as $varInnerKey => $varInnerValue) {
-                        if (is_array($varInnerValue)) {
-                            //we will ignore these values for now
-                        } else {
-                            $count++;
-                            $data[$varName.$keyIndex.$count] = $varInnerKey;
-                            $data[$varName.$valIndex.$count] = trim(preg_replace("/\([^)]+\)/", "", $varInnerValue));
-                        }
-                    }
-                } else {
-                    $count = 0;
-                    foreach ($varValue as $varInnerKey => $varInnerValue) {
-                        if (is_array($varInnerValue)) {
-                            //we will ignore these values for now
-                        } else {
-                            $count++;
-                            $data[$varName.$listIndex.$count] = trim(preg_replace("/\([^)]+\)/", "", $varInnerValue));
-                        }
-                    }
-                }
-            } else {
-                $data[$varName] = $varValue;
-            }
-        }
-
-        return $data;
-    }
-
-    protected function isAssoc(array $arr)
-    {
-        if (array() === $arr) {
-            return false;
-        }
-        return array_keys($arr) !== range(0, count($arr) - 1);
-    }
-    /**
-     *
-     * @var Form
-     */
-    protected $step = 1;
-
-    /**
-     *
-     * @var Form
-     */
-    protected $form = null;
-
-    /**
-     *
-     * @var Form
-     */
-    protected $prevLink = null;
-
-    /**
-     *
-     * @var ArrayList
-     */
-    protected $finalData = null;
-
     public function index()
     {
         return $this->redirect($this->Link('primaryformstart'));
@@ -324,7 +198,6 @@ abstract class BuildController extends Controller implements InterfaceForFormCon
         return $this->redirect($this->Link('secondaryformstart'));
     }
 
-
     public function secondaryformstart()
     {
         $this->step = 2;
@@ -342,14 +215,12 @@ abstract class BuildController extends Controller implements InterfaceForFormCon
         return $this->form;
     }
 
-
     public function dosecondaryform($data, $form)
     {
         $this->saveData('_SecondaryForm', $data);
 
         return $this->redirect($this->Link('results'));
     }
-
 
     public function Form()
     {
@@ -361,6 +232,110 @@ abstract class BuildController extends Controller implements InterfaceForFormCon
         return $this->prevLink;
     }
 
+    public function results()
+    {
+        Config::modify()->set(SSViewer::class, 'source_file_comments', false);
+
+        $this->processedFormData($this->retrieveData());
+        $this->getFinalData()->CompileDataForRendering();
+        return HTTPRequest::send_file(
+            $this->renderWith($this->resultsTemplateForBuilder()),
+            $this->getFinalData()->getShortClassNameForObject() . '.php'
+        );
+    }
+
+    public function getFinalData()
+    {
+        return $this->finalData;
+    }
+
+    public function getAdditionalPrimaryFields(): array
+    {
+        return $this->additionalPrimaryFields();
+    }
+
+    public function getPossibleRelationsWithBaseClass()
+    {
+        return $this->myAPI()->PossibleRelationsWithBaseClass($this->myBaseClass);
+    }
+
+    public function callAPIMethod($method, $defaultValueIfMethodIsNull)
+    {
+        if ($method) {
+            if ($this->myAPI()->hasMethod($method)) {
+                return $this->myAPI()->{$method}();
+            }
+            return null;
+        }
+        return $defaultValueIfMethodIsNull;
+    }
+
+    abstract protected function primaryThingsToBuild();
+
+    abstract protected function secondaryThingsToBuild();
+
+    protected function ShortBaseClass()
+    {
+        return ClassInfo::shortName($this->myBaseClass);
+    }
+
+    protected function turnStaticsIntoSessionData($method, $className)
+    {
+        $data = [];
+        $thingsToBuild = $this->{$method}();
+        $keyIndex =
+            FormDataDecomposer::EXP_CHAR .
+            FormDataDecomposer::KEY_IDENTIFIER .
+            FormDataDecomposer::EXP_CHAR;
+        $valIndex =
+            FormDataDecomposer::EXP_CHAR .
+            FormDataDecomposer::VALUE_IDENTIFIER .
+            FormDataDecomposer::EXP_CHAR;
+        $listIndex =
+            FormDataDecomposer::EXP_CHAR .
+            FormDataDecomposer::LIST_IDENTIFIER .
+            FormDataDecomposer::EXP_CHAR;
+        foreach ($thingsToBuild as $static) {
+            $varName = $static['Name'];
+            $varValue = Config::inst()->get($className, $varName);
+            if (is_array($varValue)) {
+                if ($this->isAssoc($varValue)) {
+                    $count = 0;
+                    foreach ($varValue as $varInnerKey => $varInnerValue) {
+                        if (is_array($varInnerValue)) {
+                            //we will ignore these values for now
+                        } else {
+                            $count++;
+                            $data[$varName . $keyIndex . $count] = $varInnerKey;
+                            $data[$varName . $valIndex . $count] = trim(preg_replace("/\([^)]+\)/", '', $varInnerValue));
+                        }
+                    }
+                } else {
+                    $count = 0;
+                    foreach ($varValue as $varInnerKey => $varInnerValue) {
+                        if (is_array($varInnerValue)) {
+                            //we will ignore these values for now
+                        } else {
+                            $count++;
+                            $data[$varName . $listIndex . $count] = trim(preg_replace("/\([^)]+\)/", '', $varInnerValue));
+                        }
+                    }
+                }
+            } else {
+                $data[$varName] = $varValue;
+            }
+        }
+
+        return $data;
+    }
+
+    protected function isAssoc(array $arr)
+    {
+        if ($arr === []) {
+            return false;
+        }
+        return array_keys($arr) !== range(0, count($arr) - 1);
+    }
 
     protected function createForm($formName, $actionTitle)
     {
@@ -369,13 +344,13 @@ abstract class BuildController extends Controller implements InterfaceForFormCon
         } elseif ($formName === 'SecondaryForm') {
             $builder = new SecondaryFormBuilder($this, $this->secondaryThingsToBuild());
         } else {
-            user_error('Set right form type: '.$formName.' is not valid');
+            user_error('Set right form type: ' . $formName . ' is not valid');
         }
 
         $finalFields = $builder->build();
 
         $actions = FieldList::create(
-            [FormAction::create('do'.strtolower($formName), $actionTitle)]
+            [FormAction::create('do' . strtolower($formName), $actionTitle)]
         );
 
         $form = Form::create($this, $formName, $finalFields, $actions);
@@ -406,26 +381,24 @@ abstract class BuildController extends Controller implements InterfaceForFormCon
             }
         }
         $var = $this->Config()->get('form_data_session_variable');
-        $varName = $var.$name;
+        $varName = $var . $name;
         $this->getRequest()->getSession()->clear($varName);
         $this->getRequest()->getSession()->set($varName, null);
         $this->getRequest()->getSession()->set($varName, $data);
         //$this->getRequest()->getSession()->save();
     }
 
-    private $_data = null;
-
     protected function retrieveData()
     {
         if (! $this->_data) {
             $var = $this->Config()->get('form_data_session_variable');
-            $retrieveDataPrimary = $this->getRequest()->getSession()->get($var.'_PrimaryForm');
+            $retrieveDataPrimary = $this->getRequest()->getSession()->get($var . '_PrimaryForm');
             if ($retrieveDataPrimary && (is_array($retrieveDataPrimary) || is_object($retrieveDataPrimary))) {
                 //do nothing
             } else {
                 $retrieveDataPrimary = [];
             }
-            $retrieveDataSecondary = $this->getRequest()->getSession()->get($var.'_SecondaryForm');
+            $retrieveDataSecondary = $this->getRequest()->getSession()->get($var . '_SecondaryForm');
             if ($retrieveDataSecondary && (is_array($retrieveDataSecondary) || is_object($retrieveDataSecondary))) {
                 //do nothing
             } else {
@@ -437,29 +410,9 @@ abstract class BuildController extends Controller implements InterfaceForFormCon
         return $this->_data;
     }
 
-
-    public function results()
-    {
-        Config::modify()->set(SSViewer::class, 'source_file_comments', false);
-
-        $this->processedFormData($this->retrieveData());
-        $this->getFinalData()->CompileDataForRendering();
-        return HTTPRequest::send_file(
-            $this->renderWith($this->resultsTemplateForBuilder()),
-            $this->getFinalData()->getShortClassNameForObject().'.php'
-        );
-    }
-
-
-
-
-
-
-
     #######################################
     # Process results
     #######################################
-
 
     protected function processedFormData($data = null)
     {
@@ -478,28 +431,14 @@ abstract class BuildController extends Controller implements InterfaceForFormCon
         return $this->finalData;
     }
 
-
-    public function getFinalData()
-    {
-        return $this->finalData;
-    }
-
-
     protected function resultsTemplateForBuilder()
     {
-        return $this->ShortThisClass().'Results';
+        return $this->ShortThisClass() . 'Results';
     }
-
-
-
-
-
-
 
     #######################################
     # INFO FROM API
     #######################################
-
 
     protected function myAPI()
     {
@@ -515,7 +454,7 @@ abstract class BuildController extends Controller implements InterfaceForFormCon
             'Name',
             'SourceMethod1',
             'SourceMethod2',
-            'IsMultiple'
+            'IsMultiple',
         ];
         foreach ($array as $arrayRowKey => $arrayRowValues) {
             $newArray[$arrayRowKey] = [];
@@ -527,25 +466,23 @@ abstract class BuildController extends Controller implements InterfaceForFormCon
         return $newArray;
     }
 
-
-    public function getAdditionalPrimaryFields() : array
+    private static function var_export_debug(&$var)
     {
-        return $this->additionalPrimaryFields();
-    }
-
-    public function getPossibleRelationsWithBaseClass()
-    {
-        return $this->myAPI()->PossibleRelationsWithBaseClass($this->myBaseClass);
-    }
-
-    public function callAPIMethod($method, $defaultValueIfMethodIsNull)
-    {
-        if ($method) {
-            if ($this->myAPI()->hasMethod($method)) {
-                return $this->myAPI()->$method();
-            }
-            return null;
+        if (self::$debug) {
+            /// DEBUG DEBUG ///
+            echo '<!-- ';
+            var_export($var);
+            echo ' -->';
         }
-        return $defaultValueIfMethodIsNull;
+    }
+
+    private static function print_r_debug(&$var)
+    {
+        if (self::$debug) {
+            /// DEBUG DEBUG ///
+            echo '<!-- ';
+            print_r($var);
+            echo ' -->';
+        }
     }
 }

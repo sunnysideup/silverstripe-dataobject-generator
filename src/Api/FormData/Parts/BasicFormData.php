@@ -2,8 +2,6 @@
 
 namespace Sunnysideup\BuildDataObject\Api\FormData\Parts;
 
-use Sunnysideup\BuildDataObject\Api\FormData\Parts\InterfaceForFormDataParts;
-
 class BasicFormData implements InterfaceForFormDataParts
 {
     private $value;

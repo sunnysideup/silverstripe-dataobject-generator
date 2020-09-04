@@ -2,11 +2,10 @@
 
 namespace Sunnysideup\BuildDataObject\Api\FormData;
 
-use Sunnysideup\BuildDataObject\Api\FormData\Parts\KeyValueArrayFormData;
-use Sunnysideup\BuildDataObject\Api\FormData\Parts\KeyArrayFormData;
-use Sunnysideup\BuildDataObject\Api\FormData\Parts\CanFormData;
 use Sunnysideup\BuildDataObject\Api\FormData\Parts\BasicFormData;
-use Sunnysideup\BuildDataObject\Api\FormData\Parts\InterfaceForFormDataParts;
+use Sunnysideup\BuildDataObject\Api\FormData\Parts\CanFormData;
+use Sunnysideup\BuildDataObject\Api\FormData\Parts\KeyArrayFormData;
+use Sunnysideup\BuildDataObject\Api\FormData\Parts\KeyValueArrayFormData;
 
 use Sunnysideup\BuildDataObject\View\NewDataObject;
 
@@ -37,7 +36,7 @@ class FormDataDecomposer
                     $isValue = $type === self::VALUE_IDENTIFIER ? true : false;
                     $isList = $type === self::LIST_IDENTIFIER ? true : false;
                     if ($isKey || $isValue) {
-                        if (!isset($array[$element])) {
+                        if (! isset($array[$element])) {
                             $array[$element] = new KeyValueArrayFormData();
                         }
                         $field = $array[$element];
@@ -50,13 +49,13 @@ class FormDataDecomposer
                         $parts = explode(self::EXP_CHAR, $key);
                         $element = $parts[0];
                         $index = $parts[2];
-                        if (!isset($array[$element])) {
+                        if (! isset($array[$element])) {
                             $array[$element] = new KeyArrayFormData();
                         }
                         $field = $array[$element];
                         $field->setValueAt($index, $value);
                     } else {
-                        user_error('Can not decode data --- '.$key.' --- '.$value.' ---');
+                        user_error('Can not decode data --- ' . $key . ' --- ' . $value . ' ---');
                     }
                 } elseif (substr($key, 0, 3) === 'can') {
                     //todo: make more solid
@@ -74,7 +73,7 @@ class FormDataDecomposer
         $array = $this->array;
     }
 
-    public function toArrayData() : NewDataObject
+    public function toArrayData(): NewDataObject
     {
         $newArray = [];
         foreach ($this->array as $field => $value) {

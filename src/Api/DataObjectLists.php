@@ -2,37 +2,25 @@
 
 namespace Sunnysideup\BuildDataObject\Api;
 
-use SilverStripe\Security\PermissionRoleCode;
-use SilverStripe\Security\LoginAttempt;
-use SilverStripe\Security\MemberPassword;
-use SilverStripe\SiteConfig\SiteConfig;
-use SilverStripe\ORM\FieldType\DBField;
-use SilverStripe\ORM\FieldType\DBLocale;
-use SilverStripe\Forms\CompositeField;
-use SilverStripe\ORM\DataObject;
-use SilverStripe\Core\Injector\Injector;
-use SilverStripe\Core\ClassInfo;
-use SilverStripe\ORM\DB;
-use SilverStripe\ORM\FieldType\DBEnum;
-use SilverStripe\Dev\TestOnly;
-use SilverStripe\Assets\Image;
-use SilverStripe\ORM\Filters\SearchFilter;
 use SilverStripe\Admin\ModelAdmin;
-use SilverStripe\Security\Permission;
+use SilverStripe\Assets\Image;
 use SilverStripe\CMS\Model\SiteTree;
-use SilverStripe\View\ViewableData;
-use SilverStripe\Core\Config\Config;
+use SilverStripe\Core\ClassInfo;
 use SilverStripe\Core\Config\Configurable;
-use SilverStripe\Core\Convert;
 use SilverStripe\Core\Extensible;
 use SilverStripe\Core\Injector\Injectable;
-use SilverStripe\Core\Manifest\ModuleResourceLoader;
-use SilverStripe\Dev\Debug;
-use SilverStripe\Dev\Deprecation;
-use SilverStripe\ORM\ArrayLib;
-use SilverStripe\ORM\FieldType\DBHTMLText;
-use SilverStripe\View\SSViewer;
-use  Sunnysideup\BuildDataObject\Api\DBTypeConverter;
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Dev\TestOnly;
+use SilverStripe\Forms\CompositeField;
+use SilverStripe\ORM\DataObject;
+use SilverStripe\ORM\FieldType\DBField;
+use SilverStripe\ORM\FieldType\DBLocale;
+use SilverStripe\ORM\Filters\SearchFilter;
+use SilverStripe\Security\LoginAttempt;
+use SilverStripe\Security\MemberPassword;
+use SilverStripe\Security\Permission;
+use SilverStripe\Security\PermissionRoleCode;
+use SilverStripe\SiteConfig\SiteConfig;
 
 class DataObjectLists
 {
@@ -40,12 +28,28 @@ class DataObjectLists
     use Injectable;
     use Configurable;
 
+    protected $rootBaseClass = DataObject::class;
+
+    protected $myBaseClass = '';
+
+    protected $_data = null;
+
+    protected $_dbfieldCache = null;
+
+    protected $_classesCache = [];
+
+    protected $_filtersCache = [];
+
+    protected $_modelAdmins = [];
+
+    protected $_canOptions = null;
+
     private static $excluded_data_objects = [
         PermissionRoleCode::class,
         LoginAttempt::class,
         MemberPassword::class,
         MemberPassword::class,
-        SiteConfig::class
+        SiteConfig::class,
     ];
 
     private static $excluded_db_fields_types = [
@@ -54,21 +58,15 @@ class DataObjectLists
         DBString::class,
         CompositeField::class,
         DBPrimaryKey::class,
-        DBForeignKey::class
+        DBForeignKey::class,
     ];
 
     private static $additional_db_fields = [
         'ID',
         'Created',
         'LastEdited',
-        'ClassName'
+        'ClassName',
     ];
-
-    protected $rootBaseClass = DataObject::class;
-
-    protected $myBaseClass = '';
-
-    protected $_data = null;
 
     private static $_my_singleton = [];
 
@@ -88,56 +86,13 @@ class DataObjectLists
         $this->myBaseClass = $myBaseClass;
     }
 
-
-    protected function retrieveDBFields($name)
-    {
-        $data = $this->_data;
-        $ar = [];
-        if (isset($data->$name)) {
-            foreach ($data->$name as $data) {
-                if ($data->Key && $data->Value) {
-                    $ar[$data->Key] = $data->Key;
-                }
-            }
-        }
-
-        return $ar;
-    }
-
-    private function isExcludedClass($fqClass, $fqRootClass) : bool
-    {
-        return $fqClass === $fqRootClass
-            || is_subclass_of($fqClass, TestOnly::class)
-            || in_array($fqClass, $this->Config()->get('excluded_db_fields_types'));
-    }
-
-    private function walkSubclasses(callable $callback, string $fqRootClass) : array
-    {
-        $array = [];
-        $fqChildren = ClassInfo::subclassesFor($fqRootClass);
-        foreach ($fqChildren as $fqChildClass) {
-            if ($this->isExcludedClass($fqChildClass, $fqRootClass)) {
-                //do nothing
-            } else {
-                $type = DBTypeConverter::fromClass($fqChildClass);
-                $result = call_user_func($callback, $type);
-                if (is_array($result)) {
-                    $array += $result;
-                }
-            }
-        }
-        return $array;
-    }
-
-    protected $_dbfieldCache = null;
-
     public function DbFields()
     {
-        if (!$this->_dbfieldCache) {
+        if (! $this->_dbfieldCache) {
             $newCache = $this->walkSubclasses(function ($type) {
                 $key = $type->toDropdown();
                 $val = $type->toDropdown();
-                return [ $key => $val ];
+                return [$key => $val];
             }, DBField::class);
 
             // add missing field types
@@ -186,10 +141,10 @@ class DataObjectLists
                 case 'DBHTMLTextField':
                 case 'DBHTMLVarchar':
                 case 'DBText':
-                    $ar[$key.'.LimitCharacters'] = $key.'.LimitCharacters';
+                    $ar[$key . '.LimitCharacters'] = $key . '.LimitCharacters';
                     break;
                 default:
-                    $ar[$key.'.Nice'] = $key.'.Nice';
+                    $ar[$key . '.Nice'] = $key . '.Nice';
             }
         }
         $list = [];
@@ -200,9 +155,9 @@ class DataObjectLists
         $list += $this->retrieveDBFields('casting');
         foreach ($list as $key => $value) {
             if ($value === Image::class || is_subclass_of($value, Image::class)) {
-                $ar[$key.'.CMSThumbnail'] = $key.'.CMSThumbnail';
+                $ar[$key . '.CMSThumbnail'] = $key . '.CMSThumbnail';
             } else {
-                $ar[$key.'.Title'] = $key.'.Title';
+                $ar[$key . '.Title'] = $key . '.Title';
             }
         }
         //start again!
@@ -214,7 +169,7 @@ class DataObjectLists
         }
 
         foreach ($list as $key => $value) {
-            $ar[$key.'.Count'] = $key.'.Count';
+            $ar[$key . '.Count'] = $key . '.Count';
         }
 
         return $ar;
@@ -239,8 +194,7 @@ class DataObjectLists
 
     public function MyDbFieldsAndHasOnes()
     {
-        return
-            $this->retrieveDBFields('db') +
+        return $this->retrieveDBFields('db') +
             $this->retrieveDBFields('has_one');
     }
 
@@ -258,8 +212,7 @@ class DataObjectLists
 
     public function MyDbFieldsAndIndexes()
     {
-        return
-            $this->MyDbFieldsWithDefaults() +
+        return $this->MyDbFieldsWithDefaults() +
             ['index1' => 'index1'] +
             ['index2' => 'index2'] +
             ['index3' => 'index3'] +
@@ -291,13 +244,12 @@ class DataObjectLists
         return $list;
     }
 
-
     public function IndexOptions()
     {
         return [
             'true' => 'true',
             'unique("<column-name>")' => 'unique',
-            '[\'type\' => \'<type>\', \'value\' => \'"<column-name>"\']' => 'other'
+            '[\'type\' => \'<type>\', \'value\' => \'"<column-name>"\']' => 'other',
         ];
     }
 
@@ -305,56 +257,48 @@ class DataObjectLists
     {
         return [
             'true' => 'true',
-            'unique' => 'unique'
+            'unique' => 'unique',
         ];
     }
-
 
     public function PossibleRelationsWithBaseClass($rootClass = '')
     {
         if ($rootClass) {
-            //
         } else {
             $rootClass = $this->rootBaseClass;
         }
         $list =
-            [ $rootClass => DBTypeConverter::fromClass($rootClass)->toDropdown() ] +
+            [$rootClass => DBTypeConverter::fromClass($rootClass)->toDropdown()] +
             $this->possibleRelations();
         asort($list);
 
         return $list;
     }
 
-    protected $_classesCache = [];
-
     /**
-     *
      * @return array
      */
     public function possibleRelations(string $rootClass = '')
     {
         if ($rootClass) {
-            //
         } else {
             $rootClass = $this->rootBaseClass;
         }
-        if (!isset($this->_classesCache[$rootClass])) {
+        if (! isset($this->_classesCache[$rootClass])) {
             $newList = $this->walkSubclasses(function ($type) {
                 $key = $type->toClass();
                 $val = $type->toDropdown();
                 $singular = Injector::inst()->get($key)->singular_name();
                 if ($singular !== $val) {
-                    $val .= ' ('.$singular.')';
+                    $val .= ' (' . $singular . ')';
                 }
-                return [ $key => $val ];
+                return [$key => $val];
             }, $rootClass);
             $this->_classesCache[$rootClass] = $newList;
         }
 
         return $this->_classesCache[$rootClass];
     }
-
-    protected $_filtersCache = [];
 
     public function PossibleSearchFilters()
     {
@@ -372,16 +316,13 @@ class DataObjectLists
         return $this->_filtersCache;
     }
 
-    protected $_modelAdmins = [];
-
     public function ModelAdminOptions()
     {
         if (count($this->_modelAdmins) === 0) {
             $list = ClassInfo::subclassesFor(ModelAdmin::class);
             $newList = [];
             foreach ($list as $class) {
-                if (
-                    $class == ModelAdmin::class ||
+                if ($class === ModelAdmin::class ||
                     is_subclass_of($class, TestOnly::class)
                 ) {
                     //do nothing
@@ -396,16 +337,13 @@ class DataObjectLists
         return $this->_modelAdmins;
     }
 
-
     public function SortOptions()
     {
         return [
             'ASC' => 'ASC',
-            'DESC' => 'DESC'
+            'DESC' => 'DESC',
         ];
     }
-
-    protected $_canOptions = null;
 
     public function CanOptions()
     {
@@ -418,7 +356,7 @@ class DataObjectLists
                 'parent' => 'use parent class',
             ];
             $permissions = Permission::get()->column('Code');
-            $ar = $ar + array_combine($permissions, $permissions);
+            $ar += array_combine($permissions, $permissions);
 
             $this->_canOptions = $ar;
         }
@@ -426,27 +364,23 @@ class DataObjectLists
         return $this->_canOptions;
     }
 
-
-
     /**
-     *
      * @return array
      */
     public function SiteTreeList($rootClass = SiteTree::class)
     {
         $list = ClassInfo::subclassesFor($rootClass);
         foreach ($list as $class) {
-            if (
-                $class == $rootClass ||
+            if ($class === $rootClass ||
                 is_subclass_of($class, TestOnly::class) ||
-                in_array($class, $this->Config()->get('excluded_data_objects'))
+                in_array($class, $this->Config()->get('excluded_data_objects'), true)
             ) {
                 //do nothing
             } else {
                 $newList[$class] = $class;
                 $name = Injector::inst()->get($class)->singular_name();
                 if ($name !== $class) {
-                    $newList[$class] .= ' ('.$name.')';
+                    $newList[$class] .= ' (' . $name . ')';
                 }
             }
         }
@@ -454,9 +388,7 @@ class DataObjectLists
         return $newList;
     }
 
-
     /**
-     *
      * @return array
      */
     public function AllowedChildrenOptions($rootClass = SiteTree::class)
@@ -465,29 +397,26 @@ class DataObjectLists
     }
 
     /**
-     *
      * @return array
      */
     public function TrueOrFalseListWithIgnore()
     {
         return [
-            '' => '-- ignore --'
+            '' => '-- ignore --',
         ] +
         $this->TrueOrFalseList();
     }
 
     /**
-     *
      * @return array
      */
     public function TrueOrFalseList()
     {
         return [
             'true' => 'YES',
-            'false' => 'NO'
+            'false' => 'NO',
         ];
     }
-
 
     public function MyCanMethodBuilder($type, $value)
     {
@@ -500,9 +429,49 @@ class DataObjectLists
         } elseif ($value === 'false') {
             $str = 'false;';
         } else {
-            $str = 'Permission::check(\''.$value.'\', \'any\', $member);';
+            $str = 'Permission::check(\'' . $value . '\', \'any\', $member);';
         }
 
         return DBField::create_field('Varchar', $str);
+    }
+
+    protected function retrieveDBFields($name)
+    {
+        $data = $this->_data;
+        $ar = [];
+        if (isset($data->{$name})) {
+            foreach ($data->{$name} as $data) {
+                if ($data->Key && $data->Value) {
+                    $ar[$data->Key] = $data->Key;
+                }
+            }
+        }
+
+        return $ar;
+    }
+
+    private function isExcludedClass($fqClass, $fqRootClass): bool
+    {
+        return $fqClass === $fqRootClass
+            || is_subclass_of($fqClass, TestOnly::class)
+            || in_array($fqClass, $this->Config()->get('excluded_db_fields_types'), true);
+    }
+
+    private function walkSubclasses(callable $callback, string $fqRootClass): array
+    {
+        $array = [];
+        $fqChildren = ClassInfo::subclassesFor($fqRootClass);
+        foreach ($fqChildren as $fqChildClass) {
+            if ($this->isExcludedClass($fqChildClass, $fqRootClass)) {
+                //do nothing
+            } else {
+                $type = DBTypeConverter::fromClass($fqChildClass);
+                $result = call_user_func($callback, $type);
+                if (is_array($result)) {
+                    $array += $result;
+                }
+            }
+        }
+        return $array;
     }
 }

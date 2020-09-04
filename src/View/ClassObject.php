@@ -2,8 +2,8 @@
 
 namespace Sunnysideup\BuildDataObject\View;
 
-use SilverStripe\View\ViewableData;
 use SilverStripe\Core\ClassInfo;
+use SilverStripe\View\ViewableData;
 
 class ClassObject extends ViewableData
 {
@@ -50,19 +50,18 @@ class ClassObject extends ViewableData
     {
         if (class_exists($this->fullName)) {
             return true;
-        } else {
-            if (class_exists('\\'.$this->fullName)) {
-                return true;
-            }
-            $array = explode('\\', $this->fullName);
-            if (count($array) > 1) {
-                return true;
-            }
+        }
+        if (class_exists('\\' . $this->fullName)) {
+            return true;
+        }
+        $array = explode('\\', $this->fullName);
+        if (count($array) > 1) {
+            return true;
         }
     }
 
     public function forTemplate()
     {
-        user_error('You need to add .ShortName or .FullName to variables with the following value: '.$this->fullName.'.');
+        user_error('You need to add .ShortName or .FullName to variables with the following value: ' . $this->fullName . '.');
     }
 }

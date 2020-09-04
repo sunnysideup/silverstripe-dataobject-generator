@@ -14,36 +14,20 @@ use Sunnysideup\BuildDataObject\Api\FormBuilder\Parts\PlainPart;
 abstract class BaseFormBuilder
 {
     private $owner;
-    private $toBuild;
-    private $headerFields;
 
-    abstract protected function onGetHeaderFields(InterfaceForFormController $owner, array &$headerFields);
+    private $toBuild;
+
+    private $headerFields;
 
     public function __construct(InterfaceForFormController $owner, array $toBuild)
     {
         $this->owner = $owner;
         $this->toBuild = $toBuild;
-        $this->headerFields = array();
+        $this->headerFields = [];
         $this->onGetHeaderFields($owner, $this->headerFields);
     }
 
-    private function createFormPartOnItem($item) : BasePart
-    {
-        $name = $item['Name'];
-        $isMultiple = $item['IsMultiple'];
-        $sourceMethod1 = $item['SourceMethod1'];
-        $sourceMethod2 = $item['SourceMethod2'];
-
-        //work out style
-        $hasKeyAndValue = $sourceMethod1 && $sourceMethod2;
-        if ($hasKeyAndValue) {
-            return new KeyValuePart($this->owner, $name, $isMultiple, $sourceMethod1, $sourceMethod2);
-        } else {
-            return new PlainPart($this->owner, $name, $isMultiple, $sourceMethod1, $sourceMethod2);
-        }
-    }
-
-    public function build() : FieldList
+    public function build(): FieldList
     {
         $finalFields = new FieldList($this->headerFields);
 
@@ -61,5 +45,22 @@ abstract class BaseFormBuilder
         }
 
         return $finalFields;
+    }
+
+    abstract protected function onGetHeaderFields(InterfaceForFormController $owner, array &$headerFields);
+
+    private function createFormPartOnItem($item): BasePart
+    {
+        $name = $item['Name'];
+        $isMultiple = $item['IsMultiple'];
+        $sourceMethod1 = $item['SourceMethod1'];
+        $sourceMethod2 = $item['SourceMethod2'];
+
+        //work out style
+        $hasKeyAndValue = $sourceMethod1 && $sourceMethod2;
+        if ($hasKeyAndValue) {
+            return new KeyValuePart($this->owner, $name, $isMultiple, $sourceMethod1, $sourceMethod2);
+        }
+        return new PlainPart($this->owner, $name, $isMultiple, $sourceMethod1, $sourceMethod2);
     }
 }

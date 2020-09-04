@@ -8,7 +8,7 @@ use Sunnysideup\BuildDataObject\Api\DBTypeConverter;
 
 class KeyArrayFormData implements InterfaceForFormDataParts
 {
-    private $array = array();
+    private $array = [];
 
     public function setKeyAt($index, $key)
     {
@@ -34,7 +34,7 @@ class KeyArrayFormData implements InterfaceForFormDataParts
         foreach ($this->array as $index => $value) {
             if ($value) {
                 $valueArray = null;
-                if ($value == 'true') {
+                if ($value === 'true') {
                     $valueArray = [
                         'UnquotedValue' => $value,
                     ];

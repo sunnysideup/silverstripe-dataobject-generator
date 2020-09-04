@@ -10,6 +10,7 @@ use SilverStripe\Forms\TextField;
 class InnerComposite
 {
     private $keyField;
+
     private $valueField;
 
     public function __construct($nameKey, $source1, $valueKey, $source2)
@@ -23,7 +24,27 @@ class InnerComposite
         }
     }
 
-    private static function createFormField($key, &$source, $additionalClass) : FormField
+    public function getNameKey(): string
+    {
+        return $this->keyField->getName();
+    }
+
+    public function toInnerFormField($position, $isMultiple): FormField
+    {
+        if ($this->valueField || $isMultiple) {
+            $subCompositeField = CompositeField::create();
+            $subCompositeField->addExtraClass('InnerComposite pos' . $position);
+
+            $subCompositeField->push($this->keyField);
+            if ($this->valueField) {
+                $subCompositeField->push($this->valueField);
+            }
+            return $subCompositeField;
+        }
+        return $this->keyField;
+    }
+
+    private static function createFormField($key, &$source, $additionalClass): FormField
     {
         if ($source) {
             asort($source);
@@ -32,26 +53,5 @@ class InnerComposite
             $field = TextField::create($key, '');
         }
         return $field->addExtraClass($additionalClass);
-    }
-
-    public function getNameKey() : string
-    {
-        return $this->keyField->getName();
-    }
-
-    public function toInnerFormField($position, $isMultiple) : FormField
-    {
-        if ($this->valueField || $isMultiple) {
-            $subCompositeField = CompositeField::create();
-            $subCompositeField->addExtraClass('InnerComposite pos'.$position);
-
-            $subCompositeField->push($this->keyField);
-            if ($this->valueField) {
-                $subCompositeField->push($this->valueField);
-            }
-            return $subCompositeField;
-        } else {
-            return $this->keyField;
-        }
     }
 }

@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Sunnysideup\BuildDataObject\Control\Models;
 
 use Sunnysideup\BuildDataObject\Control\BuildController;
@@ -23,7 +22,7 @@ class PageBuildController extends BuildController
             ['has_many',            'text',                                     'possibleRelations',       true],
             ['many_many',           'text',                                     'possibleRelations',       true],
             ['belongs_many_many',   'text',                                     'possibleRelations',       true],
-            ['casting',             'text',                                      'dbFields',               true]
+            ['casting',             'text',                                      'dbFields',               true],
         ]);
     }
 
@@ -51,7 +50,7 @@ class PageBuildController extends BuildController
             ['canCreate',           'canOptions',                                '',                       false],
             ['canView',             'canOptions',                                '',                       false],
             ['canEdit',             'canOptions',                                '',                       false],
-            ['canDelete',           'canOptions',                                '',                       false]
+            ['canDelete',           'canOptions',                                '',                       false],
         ]);
     }
 }
