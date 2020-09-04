@@ -27,5 +27,10 @@
         "expose": [
             "client"
         ]
+    },
+    "autoload": {
+        "psr-4": {
+            "Sunnysideup\\BuildDataObject\\": "src/"
+        }
     }
 }
