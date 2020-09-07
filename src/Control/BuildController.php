@@ -348,7 +348,7 @@ abstract class BuildController extends Controller implements InterfaceForFormCon
             user_error('Set right form type: ' . $formName . ' is not valid');
         }
         $finalFields = FieldList::create();
-        if($bulder) {
+        if($builder) {
             $finalFields = $builder->build();
         }
 

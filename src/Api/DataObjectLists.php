@@ -374,6 +374,7 @@ class DataObjectLists
     public function SiteTreeList($rootClass = SiteTree::class)
     {
         $list = ClassInfo::subclassesFor($rootClass);
+        $newList = [];
         foreach ($list as $class) {
             if ($class === $rootClass ||
                 is_subclass_of($class, TestOnly::class) ||
