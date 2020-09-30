@@ -3,10 +3,16 @@
 namespace Sunnysideup\BuildDataObject\View;
 
 use SilverStripe\Core\ClassInfo;
-use SilverStripe\View\ViewableData;
+use SilverStripe\Core\Config\Configurable;
+use SilverStripe\Core\Extensible;
+use SilverStripe\Core\Injector\Injectable;
 
-class ClassObject extends ViewableData
+class ClassObject
 {
+    use Configurable;
+    use Extensible;
+    use Injectable;
+
     protected $fullName = '';
 
     public function __construct($fullName)
