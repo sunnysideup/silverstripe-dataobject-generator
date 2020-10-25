@@ -6,18 +6,18 @@ use SilverStripe\Core\ClassInfo;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Extensible;
 use SilverStripe\Core\Injector\Injectable;
+use SilverStripe\View\ViewableData;
 
-class ClassObject
+class ClassObject Extends ViewableData
 {
-    use Configurable;
-    use Extensible;
-    use Injectable;
+    // use Configurable;
+    // use Extensible;
+    // use Injectable;
 
     protected $fullName = '';
 
     public function __construct($fullName)
     {
-        parent::__construct();
         $this->fullName = $fullName;
     }
 
@@ -69,6 +69,6 @@ class ClassObject
 
     public function forTemplate()
     {
-        user_error('You need to add .ShortName or .FullName to variables with the following value: ' . $this->fullName . '.');
+        return 'ERROR: You need to add .ShortName or .FullName in your template, for the value supplied ' . $this->fullName . '.';
     }
 }

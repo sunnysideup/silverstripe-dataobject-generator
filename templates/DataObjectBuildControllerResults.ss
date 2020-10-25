@@ -3,7 +3,7 @@
 
 <% include DataObjectGeneratorClassHeader %>
 
-class $Name.ShortName extends $Extends.ShortName
+class $Name extends $Extends.ShortName
 {
 
 <% include DataObjectGeneratorBaseFields %>
@@ -24,8 +24,8 @@ class MyModelAdmin extends ModelAdmin
 
     private static \$menu_icon_class = 'font-icon-box';
 
-    private static \$$managed_models = [
-        namespace {$NameSpace}\\{$Name.ShortName},
+    private static \$managed_models = [
+        {$Name.ShortName}::class,
     ];
 }
 

@@ -33,16 +33,15 @@ class KeyArrayFormData implements InterfaceForFormDataParts
         $arrayList = ArrayList::create();
         foreach ($this->array as $value) {
             if ($value) {
-                $valueArray = null;
-                if ($value === 'true') {
-                    $valueArray = [
-                        'UnquotedValue' => $value,
-                    ];
-                } else {
-                    $valueArray = [
-                        'Value' => DBTypeConverter::fromDropdown($value)->toDataObject(),
-                    ];
+                $useRawValue = false;
+                if ($value === 'true' || $value === true) {
+                    $useRawValue = true;
                 }
+                $valueArray = [
+                    'Value' => DBTypeConverter::fromDropdown($value)->toDataObject(),
+                    'RawValue' => $value,
+                    'UseRawValue' => $useRawValue,
+                ];
                 $arrayList->push(ArrayData::create($valueArray));
             }
         }

@@ -2,6 +2,8 @@
 
 namespace Sunnysideup\BuildDataObject\Control;
 
+use SilverStripe\Core\Manifest\ModuleResourceLoader;
+
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\Director;
 use SilverStripe\Control\HTTPRequest;
@@ -230,6 +232,16 @@ abstract class BuildController extends Controller implements InterfaceForFormCon
     public function PrevLink()
     {
         return $this->prevLink;
+    }
+
+    public function ResolveResource(string $pathFromModule)
+    {
+        return ModuleResourceLoader::singleton()->resolveURL(
+            self::join_links(
+                'vendor/sunnysideup/dataobject-generator',
+                $pathFromModule
+            )
+        );
     }
 
     public function results()

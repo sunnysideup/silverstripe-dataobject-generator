@@ -5,4 +5,4 @@
 composer require --dev sunnysideup/dataobject-generator
 ```
 
-2. browse to yoursite.foo.bar/build
+2. browse to `http://dev.yoursite.foo.bar/build/dataobject` or `http://dev.yoursite.foo.bar/build/page`

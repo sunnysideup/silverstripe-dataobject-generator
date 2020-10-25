@@ -27,8 +27,8 @@ class DataObjectBuildController extends BuildController
     protected function primaryThingsToBuild()
     {
         return $this->addKeysToThingsToBuild([
-            ['singular_name',       'text',                                      '',                       false],
-            ['plural_name',         'text',                                      '',                       false],
+            ['singular_name',       'text',                                     '',                        false],
+            ['plural_name',         'text',                                     '',                        false],
             ['default_classname',   'text',                                     '',                        false],
             ['api_access',          'TrueOrFalseList',                          '',                        false],
             ['db',                  'text',                                     'dbFields',                true],

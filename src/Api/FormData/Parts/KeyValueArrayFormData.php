@@ -39,17 +39,16 @@ class KeyValueArrayFormData implements InterfaceForFormDataParts
                 $key = $pair[self::KEY];
                 $value = $pair[self::VALUE];
                 $valuePairArray = [];
-                if ($value === 'true') {
-                    $valuePairArray = [
-                        'Key' => $key,
-                        'UnquotedValue' => $value,
-                    ];
-                } else {
-                    $valuePairArray = [
-                        'Key' => $key,
-                        'Value' => DBTypeConverter::fromDropdown($value)->toDataObject(),
-                    ];
+                $useRawValue = false;
+                if ($value === 'true' || $value === true) {
+                    $useRawValue = true;
                 }
+                $valuePairArray = [
+                    'Key' => $key,
+                    'Value' => DBTypeConverter::fromDropdown($value)->toDataObject(),
+                    'RawValue' => $value,
+                    'UseRawValue' => $useRawValue,
+                ];
                 $arrayList->push(ArrayData::create($valuePairArray));
             }
         }
