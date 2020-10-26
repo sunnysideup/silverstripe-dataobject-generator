@@ -69,6 +69,6 @@ class ClassObject Extends ViewableData
 
     public function forTemplate()
     {
-        return 'ERROR: You need to add .ShortName or .FullName in your template, for the value supplied ' . $this->fullName . '.';
+        return $this->fullName;
     }
 }
