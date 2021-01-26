@@ -8,7 +8,7 @@ use SilverStripe\Core\Extensible;
 use SilverStripe\Core\Injector\Injectable;
 use SilverStripe\View\ViewableData;
 
-class ClassObject Extends ViewableData
+class ClassObject extends ViewableData
 {
     // use Configurable;
     // use Extensible;

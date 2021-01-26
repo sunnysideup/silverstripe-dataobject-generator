@@ -2,15 +2,15 @@
 
 namespace Sunnysideup\BuildDataObject\Control;
 
-use SilverStripe\Core\Manifest\ModuleResourceLoader;
-
 use SilverStripe\Control\Controller;
+
 use SilverStripe\Control\Director;
 use SilverStripe\Control\HTTPRequest;
-
 use SilverStripe\Core\ClassInfo;
+
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Core\Manifest\ModuleResourceLoader;
 
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\Form;
