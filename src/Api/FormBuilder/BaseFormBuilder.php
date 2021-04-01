@@ -34,12 +34,12 @@ abstract class BaseFormBuilder
         $parts = [];
         foreach ($this->toBuild as $item) {
             $part = $this->createFormPartOnItem($item);
-            array_push($parts, $part);
+            $parts[] = $part;
         }
 
         $outerCount = 0;
         foreach ($parts as $part) {
-            $outerCount++;
+            ++$outerCount;
             $compositeField = $part->toCompositeField($outerCount);
             $finalFields->push($compositeField);
         }

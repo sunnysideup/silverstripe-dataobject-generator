@@ -6,13 +6,19 @@ use SilverStripe\Core\ClassInfo;
 
 class DBTypeConverter
 {
-    const PREFIXES_OF_KNOWN_DB_TYPES = [
+    /**
+     * @var string[]
+     */
+    public const PREFIXES_OF_KNOWN_DB_TYPES = [
         'SilverStripe\\ORM\\FieldType\\DB', // trim 'DB' from built-in types (e.g. 'DBInt' => 'Int')
         // 'SilverStripe\\ORM\\',              // for DataObject
         'SilverStripe\\Assets\\Storage\\',   // preserve 'DB' for composite objects (e.g. 'DBFile' => 'DBFile')
     ];
 
-    const PREFIXES_OF_KNOWN_COMPOSITED_TYPES = [
+    /**
+     * @var string[]
+     */
+    public const PREFIXES_OF_KNOWN_COMPOSITED_TYPES = [
         'SilverStripe\\Assets\\',            // keep fully qualified name
     ];
 
@@ -77,7 +83,7 @@ class DBTypeConverter
     {
         // remove everything after '('
         // e.g. 'Varchar' => 'Varchar(32)'
-        $trimmedTypeName = trim(preg_replace('/\(.*$/', '', $dbTypeName));
+        $trimmedTypeName = trim(preg_replace('#\(.*$#', '', $dbTypeName));
         // look for known classes
         foreach ($prefixes as $prefix) {
             // convert to fully qualified name and test it

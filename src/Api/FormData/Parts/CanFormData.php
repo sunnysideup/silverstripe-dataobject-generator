@@ -38,7 +38,7 @@ class CanFormData implements InterfaceForFormDataParts
         } elseif ($value === 'basedonmodeladmin') {
             $str = 'Permission::check(\'CMS_ACCESS_\'.$this->Config()->get(\'primary_model_admin_class\'), \'any\', $member);';
         } else {
-            $str = 'Permission::check(\'' . $value . '\', \'any\', $member);';
+            $str = "Permission::check('" . $value . '\', \'any\', $member);';
         }
 
         return DBField::create_field('Varchar', $str);

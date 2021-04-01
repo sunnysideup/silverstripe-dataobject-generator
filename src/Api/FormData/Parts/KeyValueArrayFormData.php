@@ -8,9 +8,15 @@ use Sunnysideup\BuildDataObject\Api\DBTypeConverter;
 
 class KeyValueArrayFormData implements InterfaceForFormDataParts
 {
-    const KEY = 0;
+    /**
+     * @var int
+     */
+    public const KEY = 0;
 
-    const VALUE = 1;
+    /**
+     * @var int
+     */
+    public const VALUE = 1;
 
     private $array = [];
 

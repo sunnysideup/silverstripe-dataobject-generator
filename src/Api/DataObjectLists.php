@@ -1,6 +1,6 @@
 <?php
 
-namespace Sunnysideup\BuildDataObject\Api;
+namespace Sunnysideup\BuildDataObject\API;
 
 use SilverStripe\Admin\ModelAdmin;
 use SilverStripe\Assets\Image;
@@ -35,9 +35,9 @@ class DataObjectLists
 
     protected $myBaseClass = '';
 
-    protected $_data = null;
+    protected $_data;
 
-    protected $_dbfieldCache = null;
+    protected $_dbfieldCache;
 
     protected $_classesCache = [];
 
@@ -45,7 +45,7 @@ class DataObjectLists
 
     protected $_modelAdmins = [];
 
-    protected $_canOptions = null;
+    protected $_canOptions;
 
     private static $excluded_data_objects = [
         PermissionRoleCode::class,
@@ -73,7 +73,7 @@ class DataObjectLists
 
     private static $_my_singleton = [];
 
-    public static function inst($myBaseClass = DataObject::class, $data = null)
+    public static function inst($myBaseClass = DataObject::class, $data)
     {
         if (! isset(self::$_my_singleton[$myBaseClass])) {
             self::$_my_singleton[$myBaseClass] = Injector::inst()->get(self::class);
@@ -134,7 +134,7 @@ class DataObjectLists
     public function MyDbFieldsFancyWithoutBelongs($includeBelongs = false)
     {
         $ar = [];
-        $list = $this->MyDbFieldsWithDefaults();
+        $list = $this->retrieveDBFields('db');
         foreach ($list as $key => $value) {
             $ar[$key] = $key;
             $shortValue = explode('(', $value);
@@ -155,7 +155,6 @@ class DataObjectLists
             $list += $this->retrieveDBFields('belongs_to');
         }
         $list += $this->retrieveDBFields('has_one');
-        $list += $this->retrieveDBFields('casting');
         foreach ($list as $key => $value) {
             if ($value === Image::class || is_subclass_of($value, Image::class)) {
                 $ar[$key . '.CMSThumbnail'] = $key . '.CMSThumbnail';
@@ -163,36 +162,17 @@ class DataObjectLists
                 $ar[$key . '.Title'] = $key . '.Title';
             }
         }
-        //start again!
         $list =
             $this->retrieveDBFields('has_many') +
             $this->retrieveDBFields('many_many');
         if ($includeBelongs) {
             $list += $this->retrieveDBFields('belongs_many_many');
         }
-
         foreach (array_keys($list) as $key) {
             $ar[$key . '.Count'] = $key . '.Count';
         }
 
         return $ar;
-    }
-
-    public function myPossibleRelations($includeBelongs = false)
-    {
-        $list = [];
-        if ($includeBelongs) {
-            $list += $this->retrieveDBFields('belongs_to');
-        }
-        $list += $this->retrieveDBFields('has_one');
-        $list +=
-            $this->retrieveDBFields('has_many') +
-            $this->retrieveDBFields('many_many');
-        if ($includeBelongs) {
-            $list += $this->retrieveDBFields('belongs_many_many');
-        }
-
-        return $list;
     }
 
     public function MyDbFieldsAndHasOnes()
@@ -242,8 +222,6 @@ class DataObjectLists
             $list += $this->retrieveDBFields('belongs_many_many');
         }
 
-        $list += $this->retrieveDBFields('cascade_deletes');
-
         return $list;
     }
 
@@ -267,11 +245,12 @@ class DataObjectLists
     public function PossibleRelationsWithBaseClass($rootClass = '')
     {
         if ($rootClass) {
+            //
         } else {
             $rootClass = $this->rootBaseClass;
         }
         $list =
-            [$rootClass => DBTypeConverter::fromClass($rootClass)->toDropdown()] +
+            [$rootClass => \Sunnysideup\BuildDataObject\Api\DBTypeConverter::fromClass($rootClass)->toDropdown()] +
             $this->possibleRelations();
         asort($list);
 
@@ -284,10 +263,10 @@ class DataObjectLists
     public function possibleRelations(string $rootClass = '')
     {
         if ($rootClass) {
+            //
         } else {
             $rootClass = $this->rootBaseClass;
         }
-        $newList = [];
         if (! isset($this->_classesCache[$rootClass])) {
             $newList = $this->walkSubclasses(function ($type) {
                 $key = $type->toClass();
@@ -326,7 +305,8 @@ class DataObjectLists
             $list = ClassInfo::subclassesFor(ModelAdmin::class);
             $newList = [];
             foreach ($list as $class) {
-                if ($class === ModelAdmin::class ||
+                if (
+                    $class === ModelAdmin::class ||
                     is_subclass_of($class, TestOnly::class)
                 ) {
                     //do nothing
@@ -368,15 +348,13 @@ class DataObjectLists
         return $this->_canOptions;
     }
 
-    /**
-     * @return array
-     */
-    public function SiteTreeList($rootClass = SiteTree::class)
+    public function SiteTreeList($rootClass = SiteTree::class): array
     {
         $list = ClassInfo::subclassesFor($rootClass);
         $newList = [];
         foreach ($list as $class) {
-            if ($class === $rootClass ||
+            if (
+                $class === $rootClass ||
                 is_subclass_of($class, TestOnly::class) ||
                 in_array($class, $this->Config()->get('excluded_data_objects'), true)
             ) {
@@ -434,7 +412,7 @@ class DataObjectLists
         } elseif ($value === 'false') {
             $str = 'false;';
         } else {
-            $str = 'Permission::check(\'' . $value . '\', \'any\', $member);';
+            $str = "Permission::check('" . $value . '\', \'any\', $member);';
         }
 
         return DBField::create_field('Varchar', $str);
@@ -470,7 +448,7 @@ class DataObjectLists
             if ($this->isExcludedClass($fqChildClass, $fqRootClass)) {
                 //do nothing
             } else {
-                $type = DBTypeConverter::fromClass($fqChildClass);
+                $type = \Sunnysideup\BuildDataObject\Api\DBTypeConverter::fromClass($fqChildClass);
                 $result = call_user_func($callback, $type);
                 if (is_array($result)) {
                     $array += $result;

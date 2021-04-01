@@ -29,11 +29,7 @@ abstract class BasePart
         $this->name = $name;
         $this->isMultiple = $isMultiple;
 
-        if ($isMultiple) {
-            $this->maxChildren = 24;
-        } else {
-            $this->maxChildren = 1;
-        }
+        $this->maxChildren = $isMultiple ? 24 : 1;
 
         //work out sources
         $this->source1 = $owner->callAPIMethod($sourceMethod1, null);
@@ -56,7 +52,7 @@ abstract class BasePart
 
         $innerCount = 0;
         foreach ($this->innerComposites as $innerCount => $innerComposite) {
-            $innerCount++;
+            ++$innerCount;
             $isMultiple = $this->isMultiple($innerComposite);
             $innerField = $innerComposite->toInnerFormField($innerCount, $isMultiple);
             $compositeField->push($innerField);
@@ -72,9 +68,9 @@ abstract class BasePart
 
     private function workOutFields()
     {
-        for ($i = 1; $i <= $this->maxChildren; $i++) {
+        for ($i = 1; $i <= $this->maxChildren; ++$i) {
             $innerComposite = $this->onGetInnerComposite($i);
-            array_push($this->innerComposites, $innerComposite);
+            $this->innerComposites[] = $innerComposite;
             if ($this->isMultiple) {
                 $name = $innerComposite->getNameKey();
                 $this->formFieldsWithMultiple[$name] = true;

@@ -41,7 +41,7 @@ class NewDataObject extends ArrayData
 
     public function getClassNameForObject()
     {
-        if (isset($this->Name) && isset($this->NameSpace)) {
+        if (property_exists($this, 'Name') && $this->Name !== null && (property_exists($this, 'NameSpace') && $this->NameSpace !== null)) {
             return trim($this->NameSpace, '\\') . '\\' . trim($this->Name, '\\');
         }
         return 'self::class';

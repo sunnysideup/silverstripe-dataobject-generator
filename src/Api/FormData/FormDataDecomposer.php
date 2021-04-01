@@ -11,13 +11,25 @@ use Sunnysideup\BuildDataObject\View\NewDataObject;
 
 class FormDataDecomposer
 {
-    const EXP_CHAR = '____';
+    /**
+     * @var string
+     */
+    public const EXP_CHAR = '____';
 
-    const LIST_IDENTIFIER = 'LIST';
+    /**
+     * @var string
+     */
+    public const LIST_IDENTIFIER = 'LIST';
 
-    const KEY_IDENTIFIER = 'KEY';
+    /**
+     * @var string
+     */
+    public const KEY_IDENTIFIER = 'KEY';
 
-    const VALUE_IDENTIFIER = 'VALUE';
+    /**
+     * @var string
+     */
+    public const VALUE_IDENTIFIER = 'VALUE';
 
     private $array;
 
@@ -32,9 +44,9 @@ class FormDataDecomposer
                     $type = $parts[1];
                     $index = $parts[2];
 
-                    $isKey = $type === self::KEY_IDENTIFIER ? true : false;
-                    $isValue = $type === self::VALUE_IDENTIFIER ? true : false;
-                    $isList = $type === self::LIST_IDENTIFIER ? true : false;
+                    $isKey = $type === self::KEY_IDENTIFIER;
+                    $isValue = $type === self::VALUE_IDENTIFIER;
+                    $isList = $type === self::LIST_IDENTIFIER;
                     if ($isKey || $isValue) {
                         if (! isset($array[$element])) {
                             $array[$element] = new KeyValueArrayFormData();
