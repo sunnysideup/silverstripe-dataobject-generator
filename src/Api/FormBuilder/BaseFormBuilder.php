@@ -8,9 +8,8 @@ use Sunnysideup\BuildDataObject\Api\FormBuilder\Parts\KeyValuePart;
 use Sunnysideup\BuildDataObject\Api\FormBuilder\Parts\PlainPart;
 
 /**
- * abstract concept of how to build a form
+ * abstract concept of how to build a form.
  */
-
 abstract class BaseFormBuilder
 {
     private $owner;
@@ -61,6 +60,7 @@ abstract class BaseFormBuilder
         if ($hasKeyAndValue) {
             return new KeyValuePart($this->owner, $name, $isMultiple, $sourceMethod1, $sourceMethod2);
         }
+
         return new PlainPart($this->owner, $name, $isMultiple, $sourceMethod1, $sourceMethod2);
     }
 }

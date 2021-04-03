@@ -5,7 +5,6 @@ namespace Sunnysideup\BuildDataObject\Control\Models;
 use SilverStripe\Forms\DropdownField;
 use SilverStripe\Forms\HeaderField;
 use SilverStripe\ORM\DataObject;
-
 use Sunnysideup\BuildDataObject\Control\BuildController;
 
 class DataObjectBuildController extends BuildController

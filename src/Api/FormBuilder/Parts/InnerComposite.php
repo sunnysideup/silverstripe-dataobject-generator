@@ -39,8 +39,10 @@ class InnerComposite
             if ($this->valueField) {
                 $subCompositeField->push($this->valueField);
             }
+
             return $subCompositeField;
         }
+
         return $this->keyField;
     }
 
@@ -52,6 +54,7 @@ class InnerComposite
         } else {
             $field = TextField::create($key, '');
         }
+
         return $field->addExtraClass($additionalClass);
     }
 }

@@ -37,6 +37,7 @@ class DBTypeConverter
     public static function fromDataObject(string $dbTypeName): DBTypeConverter
     {
         $inst = self::fromAny($dbTypeName, self::PREFIXES_OF_KNOWN_DB_TYPES);
+
         return $inst ?: new DBTypeConverter($dbTypeName);
     }
 
@@ -46,6 +47,7 @@ class DBTypeConverter
         if (! $inst) {
             $inst = self::fromAny($ddName, self::PREFIXES_OF_KNOWN_COMPOSITED_TYPES);
         }
+
         return $inst ?: new DBTypeConverter($ddName);
     }
 
@@ -59,9 +61,11 @@ class DBTypeConverter
         $dbFieldName = $this->dbFieldNameFromKnownClassName();
         if ($dbFieldName) {
             return $dbFieldName;
-        } elseif (class_exists($this->fullQualClassName)) {
+        }
+        if (class_exists($this->fullQualClassName)) {
             return ClassInfo::shortName($this->fullQualClassName);
         }
+
         return $this->fullQualClassName;
     }
 
@@ -70,12 +74,13 @@ class DBTypeConverter
         $dbFieldName = $this->dbFieldNameFromKnownClassName();
         if ($dbFieldName) {
             // add placeholder for Enum and MultiEnum
-            if ($dbFieldName === 'Enum' || $dbFieldName === 'MultiEnum') {
+            if ('Enum' === $dbFieldName || 'MultiEnum' === $dbFieldName) {
                 $dbFieldName .= '(array("foo", "bar", "baz"))';
             }
         } else {
             $dbFieldName = $this->fullQualClassName;
         }
+
         return str_replace('\\', '\\\\', $dbFieldName);
     }
 
@@ -92,16 +97,18 @@ class DBTypeConverter
                 return new DBTypeConverter($fullyQualifiedName);
             }
         }
+
         return null;
     }
 
     private function dbFieldNameFromKnownClassName()
     {
         foreach (self::PREFIXES_OF_KNOWN_DB_TYPES as $prefix) {
-            if (strpos($this->fullQualClassName, $prefix) === 0) {
+            if (0 === strpos($this->fullQualClassName, $prefix)) {
                 return substr($this->fullQualClassName, strlen($prefix), strlen($this->fullQualClassName));
             }
         }
+
         return null;
     }
 }

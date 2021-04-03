@@ -22,6 +22,7 @@ class KeyValuePart extends BasePart
             $nameKey .= $index;
             $nameValue .= $index;
         }
+
         return new InnerComposite($nameKey, $this->source1, $nameValue, $this->source2);
     }
 }

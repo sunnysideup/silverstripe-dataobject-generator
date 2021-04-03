@@ -3,6 +3,10 @@
 use SilverStripe\Dev\SapphireTest;
 use Sunnysideup\BuildDataObject\Api\DBTypeConverter;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class DBTypeConverterTest extends SapphireTest
 {
     public function testClassToClass()

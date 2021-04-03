@@ -61,6 +61,7 @@ abstract class BasePart
         if ($this->isMultiple) {
             $compositeField->addExtraClass('multiple');
         }
+
         return $compositeField;
     }
 
@@ -81,6 +82,7 @@ abstract class BasePart
     private function createHeaderField(): HeaderField
     {
         $title = str_replace('_', ' ', $this->name);
+
         return HeaderField::create($this->name . '_HEADER', $title);
     }
 

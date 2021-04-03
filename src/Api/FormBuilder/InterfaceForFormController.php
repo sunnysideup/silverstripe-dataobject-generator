@@ -5,7 +5,6 @@ namespace Sunnysideup\BuildDataObject\Api\FormBuilder;
 /**
  * What do we need in the form controller?
  */
-
 interface InterfaceForFormController
 {
     public function getBaseClass(): string;

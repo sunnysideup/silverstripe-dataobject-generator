@@ -95,6 +95,7 @@ class DataObjectLists
             $newCache = $this->walkSubclasses(function ($type) {
                 $key = $type->toDropdown();
                 $val = $type->toDropdown();
+
                 return [$key => $val];
             }, DBField::class);
 
@@ -104,6 +105,7 @@ class DataObjectLists
             $this->_dbfieldCache = $newCache;
             //echo '<!--'; print_r($this->_dbfieldCache); echo '-->';
         }
+
         return $this->_dbfieldCache;
     }
 
@@ -145,6 +147,7 @@ class DataObjectLists
                 case 'DBHTMLVarchar':
                 case 'DBText':
                     $ar[$key . '.LimitCharacters'] = $key . '.LimitCharacters';
+
                     break;
                 default:
                     $ar[$key . '.Nice'] = $key . '.Nice';
@@ -156,7 +159,7 @@ class DataObjectLists
         }
         $list += $this->retrieveDBFields('has_one');
         foreach ($list as $key => $value) {
-            if ($value === Image::class || is_subclass_of($value, Image::class)) {
+            if (Image::class === $value || is_subclass_of($value, Image::class)) {
                 $ar[$key . '.CMSThumbnail'] = $key . '.CMSThumbnail';
             } else {
                 $ar[$key . '.Title'] = $key . '.Title';
@@ -245,7 +248,6 @@ class DataObjectLists
     public function PossibleRelationsWithBaseClass($rootClass = '')
     {
         if ($rootClass) {
-            //
         } else {
             $rootClass = $this->rootBaseClass;
         }
@@ -263,7 +265,6 @@ class DataObjectLists
     public function possibleRelations(string $rootClass = '')
     {
         if ($rootClass) {
-            //
         } else {
             $rootClass = $this->rootBaseClass;
         }
@@ -275,6 +276,7 @@ class DataObjectLists
                 if ($singular !== $val) {
                     $val .= ' (' . $singular . ')';
                 }
+
                 return [$key => $val];
             }, $rootClass);
             $this->_classesCache[$rootClass] = $newList;
@@ -285,11 +287,11 @@ class DataObjectLists
 
     public function PossibleSearchFilters()
     {
-        if (count($this->_filtersCache) === 0) {
+        if (0 === count($this->_filtersCache)) {
             $list = ClassInfo::subclassesFor(SearchFilter::class);
             $newList = [];
             foreach ($list as $class) {
-                if ($class !== SearchFilter::class) {
+                if (SearchFilter::class !== $class) {
                     $newList[$class] = $class;
                 }
             }
@@ -301,12 +303,12 @@ class DataObjectLists
 
     public function ModelAdminOptions()
     {
-        if (count($this->_modelAdmins) === 0) {
+        if (0 === count($this->_modelAdmins)) {
             $list = ClassInfo::subclassesFor(ModelAdmin::class);
             $newList = [];
             foreach ($list as $class) {
                 if (
-                    $class === ModelAdmin::class ||
+                    ModelAdmin::class === $class ||
                     is_subclass_of($class, TestOnly::class)
                 ) {
                     //do nothing
@@ -372,6 +374,8 @@ class DataObjectLists
     }
 
     /**
+     * @param mixed $rootClass
+     *
      * @return array
      */
     public function AllowedChildrenOptions($rootClass = SiteTree::class)
@@ -403,13 +407,14 @@ class DataObjectLists
 
     public function MyCanMethodBuilder($type, $value)
     {
-        if ($value === 'parent') {
+        if ('parent' === $value) {
             return null;
-        } elseif ($value === 'one') {
+        }
+        if ('one' === $value) {
             $str = 'DataObject::get_one($this->class) ? false : true;';
-        } elseif ($value === 'true') {
+        } elseif ('true' === $value) {
             $str = 'true;';
-        } elseif ($value === 'false') {
+        } elseif ('false' === $value) {
             $str = 'false;';
         } else {
             $str = "Permission::check('" . $value . '\', \'any\', $member);';
@@ -455,6 +460,7 @@ class DataObjectLists
                 }
             }
         }
+
         return $array;
     }
 }

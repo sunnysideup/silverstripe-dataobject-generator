@@ -6,6 +6,10 @@ use Sunnysideup\BuildDataObject\Api\FormData\FormDataDecomposer;
 use Sunnysideup\BuildDataObject\Api\FormData\KeyValueArrayFormData;
 use Sunnysideup\BuildDataObject\Api\FormData\PlainFormData;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class FormDataDecomposerTest extends SapphireTest
 {
     public function testEmptyFields()

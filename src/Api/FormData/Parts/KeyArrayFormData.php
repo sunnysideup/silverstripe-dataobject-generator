@@ -34,7 +34,7 @@ class KeyArrayFormData implements InterfaceForFormDataParts
         foreach ($this->array as $value) {
             if ($value) {
                 $useRawValue = false;
-                if ($value === 'true' || $value === true) {
+                if ('true' === $value || true === $value) {
                     $useRawValue = true;
                 }
                 $valueArray = [
@@ -45,6 +45,7 @@ class KeyArrayFormData implements InterfaceForFormDataParts
                 $arrayList->push(ArrayData::create($valueArray));
             }
         }
+
         return $arrayList;
     }
 }

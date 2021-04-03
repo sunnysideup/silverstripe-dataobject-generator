@@ -41,12 +41,12 @@ class KeyValueArrayFormData implements InterfaceForFormDataParts
     {
         $arrayList = ArrayList::create();
         foreach ($this->array as $pair) {
-            if (isset($pair[self::KEY]) && isset($pair[self::VALUE])) {
+            if (isset($pair[self::KEY], $pair[self::VALUE])) {
                 $key = $pair[self::KEY];
                 $value = $pair[self::VALUE];
                 $valuePairArray = [];
                 $useRawValue = false;
-                if ($value === 'true' || $value === true) {
+                if ('true' === $value || true === $value) {
                     $useRawValue = true;
                 }
                 $valuePairArray = [
@@ -58,6 +58,7 @@ class KeyValueArrayFormData implements InterfaceForFormDataParts
                 $arrayList->push(ArrayData::create($valuePairArray));
             }
         }
+
         return $arrayList;
     }
 

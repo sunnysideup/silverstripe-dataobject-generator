@@ -24,18 +24,18 @@ class CanFormData implements InterfaceForFormDataParts
     public function toLiveObject()
     {
         $value = $this->value;
-        if ($value === 'parent') {
+        if ('parent' === $value) {
             return null;
         }
 
         $str = '';
-        if ($value === 'one') {
+        if ('one' === $value) {
             $str = 'DataObject::get_one($this->class) ? false : true;';
-        } elseif ($value === 'true') {
+        } elseif ('true' === $value) {
             $str = 'true;';
-        } elseif ($value === 'false') {
+        } elseif ('false' === $value) {
             $str = 'false;';
-        } elseif ($value === 'basedonmodeladmin') {
+        } elseif ('basedonmodeladmin' === $value) {
             $str = 'Permission::check(\'CMS_ACCESS_\'.$this->Config()->get(\'primary_model_admin_class\'), \'any\', $member);';
         } else {
             $str = "Permission::check('" . $value . '\', \'any\', $member);';

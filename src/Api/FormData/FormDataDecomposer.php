@@ -6,7 +6,6 @@ use Sunnysideup\BuildDataObject\Api\FormData\Parts\BasicFormData;
 use Sunnysideup\BuildDataObject\Api\FormData\Parts\CanFormData;
 use Sunnysideup\BuildDataObject\Api\FormData\Parts\KeyArrayFormData;
 use Sunnysideup\BuildDataObject\Api\FormData\Parts\KeyValueArrayFormData;
-
 use Sunnysideup\BuildDataObject\View\NewDataObject;
 
 class FormDataDecomposer
@@ -39,14 +38,14 @@ class FormDataDecomposer
         foreach ($formData as $key => $value) {
             if ($key && $value) {
                 $parts = explode(self::EXP_CHAR, $key);
-                if (count($parts) === 3) {
+                if (3 === count($parts)) {
                     $element = $parts[0];
                     $type = $parts[1];
                     $index = $parts[2];
 
-                    $isKey = $type === self::KEY_IDENTIFIER;
-                    $isValue = $type === self::VALUE_IDENTIFIER;
-                    $isList = $type === self::LIST_IDENTIFIER;
+                    $isKey = self::KEY_IDENTIFIER === $type;
+                    $isValue = self::VALUE_IDENTIFIER === $type;
+                    $isList = self::LIST_IDENTIFIER === $type;
                     if ($isKey || $isValue) {
                         if (! isset($array[$element])) {
                             $array[$element] = new KeyValueArrayFormData();
@@ -69,7 +68,7 @@ class FormDataDecomposer
                     } else {
                         user_error('Can not decode data --- ' . $key . ' --- ' . $value . ' ---');
                     }
-                } elseif (substr($key, 0, 3) === 'can') {
+                } elseif ('can' === substr($key, 0, 3)) {
                     //todo: make more solid
                     $array[$key] = new CanFormData($value);
                 } else {
@@ -91,6 +90,7 @@ class FormDataDecomposer
         foreach ($this->array as $field => $value) {
             $newArray[$field] = $value->toLiveObject();
         }
+
         return NewDataObject::create($newArray);
     }
 }

@@ -41,9 +41,10 @@ class NewDataObject extends ArrayData
 
     public function getClassNameForObject()
     {
-        if (property_exists($this, 'Name') && $this->Name !== null && (property_exists($this, 'NameSpace') && $this->NameSpace !== null)) {
+        if (property_exists($this, 'Name') && null !== $this->Name && (property_exists($this, 'NameSpace') && null !== $this->NameSpace)) {
             return trim($this->NameSpace, '\\') . '\\' . trim($this->Name, '\\');
         }
+
         return 'self::class';
     }
 
@@ -63,12 +64,13 @@ class NewDataObject extends ArrayData
                 ArrayData::create(['FullClassName' => $fullClassName])
             );
         }
+
         return $al->Sort('FullClassName');
     }
 
-    #################################
-    # List to use for the use statements ...
-    #################################
+    //################################
+    // List to use for the use statements ...
+    //################################
 
     protected function convertLongToShortClassName($arrayData)
     {
@@ -76,7 +78,7 @@ class NewDataObject extends ArrayData
             $map = $arrayData->toMap();
             foreach ($map as $key => $value) {
                 if (is_string($value)) {
-                    if ($key !== 'NameSpace') {
+                    if ('NameSpace' !== $key) {
                         if ($classObject = $this->addToListToUse($value)) {
                             $arrayData->setField($key, $classObject);
                         }

@@ -50,6 +50,7 @@ class ClassObject extends ViewableData
         if ($shortName) {
             return $shortName;
         }
+
         return $this->fullName;
     }
 

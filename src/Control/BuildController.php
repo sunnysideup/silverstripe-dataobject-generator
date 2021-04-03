@@ -5,25 +5,21 @@ namespace Sunnysideup\BuildDataObject\Control;
 use SilverStripe\Control\Controller;
 use SilverStripe\Control\Director;
 use SilverStripe\Control\HTTPRequest;
-
 use SilverStripe\Core\ClassInfo;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\Injector\Injector;
-
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\Form;
 use SilverStripe\Forms\FormAction;
-
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\DataObject;
-
 use Sunnysideup\BuildDataObject\Api\FormBuilder\InterfaceForFormController;
 
 abstract class BuildController extends Controller implements \Sunnysideup\BuildDataObject\Api\FormBuilder\InterfaceForFormController
 {
-    ######################
-    # ABSTRACT AND PROVIDERS
-    ######################
+    //#####################
+    // ABSTRACT AND PROVIDERS
+    //#####################
 
     protected $myBaseClass = DataObject::class;
 
@@ -66,9 +62,9 @@ abstract class BuildController extends Controller implements \Sunnysideup\BuildD
         'debug' => true,
     ];
 
-    ######################
-    # DEBUG STUFF
-    ######################
+    //#####################
+    // DEBUG STUFF
+    //#####################
 
     private static $debug = true;
 
@@ -82,15 +78,16 @@ abstract class BuildController extends Controller implements \Sunnysideup\BuildD
         die('-----------------------------');
     }
 
-    ######################
-    # STRING VARS
-    ######################
+    //#####################
+    // STRING VARS
+    //#####################
 
     public function Link($action = null)
     {
         if ($action) {
             $action .= '/';
         }
+
         return Director::baseURL() . $this->Config()->get('url_segment') .
             '/' . strtolower($this->ShortBaseClass()) .
             '/' . $action;
@@ -128,14 +125,15 @@ abstract class BuildController extends Controller implements \Sunnysideup\BuildD
         return ClassInfo::shortName($this);
     }
 
-    ######################
-    # ACTIONS AND FORMS
-    ######################
+    //#####################
+    // ACTIONS AND FORMS
+    //#####################
 
     public function startover()
     {
         $this->saveData('_PrimaryForm', null);
         $this->saveData('_SecondaryForm', null);
+
         return $this->redirect($this->link('primaryformstart'));
     }
 
@@ -227,6 +225,7 @@ abstract class BuildController extends Controller implements \Sunnysideup\BuildD
 
         $this->processedFormData($this->retrieveData());
         $this->getFinalData()->CompileDataForRendering();
+
         return HTTPRequest::send_file(
             $this->renderWith($this->resultsTemplateForBuilder()),
             $this->getFinalData()->getShortClassNameForObject() . '.php'
@@ -254,8 +253,10 @@ abstract class BuildController extends Controller implements \Sunnysideup\BuildD
             if ($this->myAPI()->hasMethod($method)) {
                 return $this->myAPI()->{$method}();
             }
+
             return null;
         }
+
         return $defaultValueIfMethodIsNull;
     }
 
@@ -292,12 +293,13 @@ abstract class BuildController extends Controller implements \Sunnysideup\BuildD
 
     protected function createForm(string $formName, string $actionTitle): ?Form
     {
-        if ($formName === 'PrimaryForm') {
+        if ('PrimaryForm' === $formName) {
             $builder = new \Sunnysideup\BuildDataObject\Api\FormBuilder\PrimaryFormBuilder($this, $this->primaryThingsToBuild());
-        } elseif ($formName === 'SecondaryForm') {
+        } elseif ('SecondaryForm' === $formName) {
             $builder = new \Sunnysideup\BuildDataObject\Api\FormBuilder\SecondaryFormBuilder($this, $this->secondaryThingsToBuild());
         } else {
             user_error('Set right form type: ' . $formName . ' is not valid');
+
             return null;
         }
 
@@ -315,7 +317,8 @@ abstract class BuildController extends Controller implements \Sunnysideup\BuildD
     }
 
     /**
-     * returns an array of fields
+     * returns an array of fields.
+     *
      * @return array
      */
     protected function additionalPrimaryFields()
@@ -325,11 +328,11 @@ abstract class BuildController extends Controller implements \Sunnysideup\BuildD
 
     protected function saveData($name, $data)
     {
-        unset($data['url']);
-        unset($data['SecurityID']);
+        unset($data['url'], $data['SecurityID']);
+
         if (is_array($data)) {
             foreach (array_keys($data) as $key) {
-                if (strpos($key, 'action_') === 0) {
+                if (0 === strpos($key, 'action_')) {
                     unset($data[$key]);
                 }
             }
@@ -360,9 +363,9 @@ abstract class BuildController extends Controller implements \Sunnysideup\BuildD
         return $this->_data;
     }
 
-    #######################################
-    # Process results
-    #######################################
+    //######################################
+    // Process results
+    //######################################
 
     protected function processedFormData($data = null)
     {
@@ -386,9 +389,9 @@ abstract class BuildController extends Controller implements \Sunnysideup\BuildD
         return $this->ShortThisClass() . 'Results';
     }
 
-    #######################################
-    # INFO FROM API
-    #######################################
+    //######################################
+    // INFO FROM API
+    //######################################
 
     protected function myAPI()
     {

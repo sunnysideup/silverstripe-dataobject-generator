@@ -11,7 +11,6 @@ use SilverStripe\ORM\DataObject;
 /**
  * What is in the first of two forms for the builder?
  */
-
 class PrimaryFormBuilder extends BaseFormBuilder
 {
     protected function onGetHeaderFields(InterfaceForFormController $owner, array &$headerFields)
