@@ -7,9 +7,9 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
-    <link rel="stylesheet" href="$ResolveResource(client/css/lib/jquery-ui.min.css)" />
-    <link rel="stylesheet" href="$ResolveResource(client/css/dog.css)" />
-    <link rel="stylesheet" href="$ResolveResource(client/css/new.css)" />
+    <% require themedCSS("client/css/lib/jquery-ui.min") %>
+    <% require themedCSS("client/css/dog") %>
+    <% require themedCSS("client/css/new.css") %>
 </head>
 <body>
     <header>
@@ -19,10 +19,9 @@
     </header>
     $Form
     <footer><p>This tool has been provided by <a href="http://www.Sunnysideup.co.nz">sunny side up</a>. Feedback welcome.</p></footer>
-
-    <script src="$ResolveResource(client/javascript/lib/jquery.slim.min.js)"></script>
-    <script src="$ResolveResource(client/javascript/lib/jquery-ui.min.js)"></script>
-    <script src="$ResolveResource(client/javascript/dog.js)"></script>
+    <% require themedJavascript("client/javascript/lib/jquery.slim.min.js") %>
+    <% require themedJavascript("client/javascript/lib/jquery-ui.min.js") %>
+    <% require themedJavascript("client/javascript/dog.js") %>
 
     <script>
 (
