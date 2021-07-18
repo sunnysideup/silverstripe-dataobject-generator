@@ -15,6 +15,8 @@ use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\DataObject;
 use Sunnysideup\BuildDataObject\Api\FormBuilder\InterfaceForFormController;
 
+use Sunnysideup\BuildDataObject\View\NewDataObject;
+
 abstract class BuildController extends Controller implements \Sunnysideup\BuildDataObject\Api\FormBuilder\InterfaceForFormController
 {
     //#####################
@@ -26,7 +28,7 @@ abstract class BuildController extends Controller implements \Sunnysideup\BuildD
     protected $apiProvider = \Sunnysideup\BuildDataObject\API\DataObjectLists::class;
 
     /**
-     * @var Form
+     * @var int
      */
     protected $step = 1;
 
@@ -36,12 +38,12 @@ abstract class BuildController extends Controller implements \Sunnysideup\BuildD
     protected $form;
 
     /**
-     * @var Form
+     * @var string
      */
     protected $prevLink;
 
     /**
-     * @var ArrayList
+     * @var NewDataObject
      */
     protected $finalData;
 
