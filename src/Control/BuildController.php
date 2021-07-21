@@ -11,10 +11,8 @@ use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Forms\FieldList;
 use SilverStripe\Forms\Form;
 use SilverStripe\Forms\FormAction;
-use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\DataObject;
 use Sunnysideup\BuildDataObject\Api\FormBuilder\InterfaceForFormController;
-
 use Sunnysideup\BuildDataObject\View\NewDataObject;
 
 abstract class BuildController extends Controller implements \Sunnysideup\BuildDataObject\Api\FormBuilder\InterfaceForFormController
