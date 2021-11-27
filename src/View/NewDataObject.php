@@ -79,7 +79,8 @@ class NewDataObject extends ArrayData
             foreach ($map as $key => $value) {
                 if (is_string($value)) {
                     if ('NameSpace' !== $key) {
-                        if ($classObject = $this->addToListToUse($value)) {
+                        $classObject = $this->addToListToUse($value);
+                        if ($classObject) {
                             $arrayData->setField($key, $classObject);
                         }
                     }
