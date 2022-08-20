@@ -50,6 +50,7 @@ class FormDataDecomposer
                         if (! isset($array[$element])) {
                             $array[$element] = new KeyValueArrayFormData();
                         }
+
                         $field = $array[$element];
                         if ($isKey) {
                             $field->setKeyAt($index, $value);
@@ -63,6 +64,7 @@ class FormDataDecomposer
                         if (! isset($array[$element])) {
                             $array[$element] = new KeyArrayFormData();
                         }
+
                         $field = $array[$element];
                         $field->setValueAt($index, $value);
                     } else {
@@ -76,6 +78,7 @@ class FormDataDecomposer
                 }
             }
         }
+
         $this->array = $array;
     }
 

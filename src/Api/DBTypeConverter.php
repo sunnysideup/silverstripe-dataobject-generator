@@ -62,6 +62,7 @@ class DBTypeConverter
         if ($dbFieldName) {
             return $dbFieldName;
         }
+
         if (class_exists($this->fullQualClassName)) {
             return ClassInfo::shortName($this->fullQualClassName);
         }

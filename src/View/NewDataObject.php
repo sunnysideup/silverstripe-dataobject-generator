@@ -9,9 +9,9 @@ use SilverStripe\View\ArrayData;
 class NewDataObject extends ArrayData
 {
     protected $listForUseStatements = [
-        'SilverStripe\ORM\DataObject' => true,
-        'SilverStripe\Security\Permission' => true,
-        'SilverStripe\ORM\FieldType\DBField' => true,
+        \SilverStripe\ORM\DataObject::class => true,
+        \SilverStripe\Security\Permission::class => true,
+        \SilverStripe\ORM\FieldType\DBField::class => true,
     ];
 
     public function __construct($data)

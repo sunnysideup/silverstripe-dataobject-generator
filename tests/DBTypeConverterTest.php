@@ -12,11 +12,11 @@ class DBTypeConverterTest extends SapphireTest
     public function testClassToClass()
     {
         $expected_classname = [
-            'SilverStripe\\ORM\\FieldType\\DBInt',
-            'SilverStripe\\ORM\\FieldType\\DBVarchar',
-            'SilverStripe\\ORM\\FieldType\\DBEnum',
-            'SilverStripe\\Assets\\Storage\\DBFile',
-            'SilverStripe\\Assets\\Image',
+            \SilverStripe\ORM\FieldType\DBInt::class,
+            \SilverStripe\ORM\FieldType\DBVarchar::class,
+            \SilverStripe\ORM\FieldType\DBEnum::class,
+            \SilverStripe\Assets\Storage\DBFile::class,
+            \SilverStripe\Assets\Image::class,
         ];
         // in & out are the same
         foreach ($expected_classname as $inout) {
@@ -28,12 +28,12 @@ class DBTypeConverterTest extends SapphireTest
     public function testClassToDropdown()
     {
         $expected_classname_dropdown = [
-            'SilverStripe\\ORM\\FieldType\\DBInt' => 'Int',
-            'SilverStripe\\ORM\\FieldType\\DBVarchar' => 'Varchar',
-            'SilverStripe\\ORM\\FieldType\\DBEnum' => 'Enum',
-            'SilverStripe\\ORM\\DataObject' => 'DataObject',
-            'SilverStripe\\Assets\\Storage\\DBFile' => 'DBFile',
-            'SilverStripe\\Assets\\Image' => 'Image',
+            \SilverStripe\ORM\FieldType\DBInt::class => 'Int',
+            \SilverStripe\ORM\FieldType\DBVarchar::class => 'Varchar',
+            \SilverStripe\ORM\FieldType\DBEnum::class => 'Enum',
+            \SilverStripe\ORM\DataObject::class => 'DataObject',
+            \SilverStripe\Assets\Storage\DBFile::class => 'DBFile',
+            \SilverStripe\Assets\Image::class => 'Image',
         ];
         foreach ($expected_classname_dropdown as $input => $expected) {
             $result = DBTypeConverter::fromClass($input)->toDropdown();
@@ -44,12 +44,12 @@ class DBTypeConverterTest extends SapphireTest
     public function testClassToDataObject()
     {
         $expected_classname_dbfield = [
-            'SilverStripe\\ORM\\FieldType\\DBInt' => 'Int',
-            'SilverStripe\\ORM\\FieldType\\DBVarchar' => 'Varchar',
-            'SilverStripe\\ORM\\FieldType\\DBEnum' => 'Enum("foo,bar,foo2,bar2", "bar2")',
-            'SilverStripe\\ORM\\DataObject' => 'DataObject',
-            'SilverStripe\\Assets\\Storage\\DBFile' => 'DBFile',
-            'SilverStripe\\Assets\\Image' => 'SilverStripe\\\\Assets\\\\Image',
+            \SilverStripe\ORM\FieldType\DBInt::class => 'Int',
+            \SilverStripe\ORM\FieldType\DBVarchar::class => 'Varchar',
+            \SilverStripe\ORM\FieldType\DBEnum::class => 'Enum("foo,bar,foo2,bar2", "bar2")',
+            \SilverStripe\ORM\DataObject::class => 'DataObject',
+            \SilverStripe\Assets\Storage\DBFile::class => 'DBFile',
+            \SilverStripe\Assets\Image::class => 'SilverStripe\\\\Assets\\\\Image',
         ];
         foreach ($expected_classname_dbfield as $input => $expected) {
             $result = DBTypeConverter::fromClass($input)->toDataObject();
@@ -76,12 +76,12 @@ class DBTypeConverterTest extends SapphireTest
     public function testDropdownToClass()
     {
         $expected_dbfield_classname = [
-            'Int' => 'SilverStripe\\ORM\\FieldType\\DBInt',
-            'Varchar' => 'SilverStripe\\ORM\\FieldType\\DBVarchar',
-            'Enum' => 'SilverStripe\\ORM\\FieldType\\DBEnum',
-            'DBFile' => 'SilverStripe\\Assets\\Storage\\DBFile',
-            'DataObject' => 'SilverStripe\\ORM\\DataObject',
-            'Image' => 'SilverStripe\\Assets\\Image',
+            'Int' => \SilverStripe\ORM\FieldType\DBInt::class,
+            'Varchar' => \SilverStripe\ORM\FieldType\DBVarchar::class,
+            'Enum' => \SilverStripe\ORM\FieldType\DBEnum::class,
+            'DBFile' => \SilverStripe\Assets\Storage\DBFile::class,
+            'DataObject' => \SilverStripe\ORM\DataObject::class,
+            'Image' => \SilverStripe\Assets\Image::class,
         ];
         foreach ($expected_dbfield_classname as $input => $expected) {
             $result = DBTypeConverter::fromDropdown($input)->toClass();
@@ -92,14 +92,14 @@ class DBTypeConverterTest extends SapphireTest
     public function testDataObjectToClass()
     {
         $expected_dbfield_classname = [
-            'Int' => 'SilverStripe\\ORM\\FieldType\\DBInt',
-            'Varchar' => 'SilverStripe\\ORM\\FieldType\\DBVarchar',
-            'Varchar(256)' => 'SilverStripe\\ORM\\FieldType\\DBVarchar',
-            'Enum' => 'SilverStripe\\ORM\\FieldType\\DBEnum',
-            'Enum("foo,bar,foo2,bar2", "bar2")' => 'SilverStripe\\ORM\\FieldType\\DBEnum',
-            'DataObject' => 'SilverStripe\\ORM\\DataObject',
-            'DBFile' => 'SilverStripe\\Assets\\Storage\\DBFile',
-            'SilverStripe\\Assets\\Image' => 'SilverStripe\\Assets\\Image',
+            'Int' => \SilverStripe\ORM\FieldType\DBInt::class,
+            'Varchar' => \SilverStripe\ORM\FieldType\DBVarchar::class,
+            'Varchar(256)' => \SilverStripe\ORM\FieldType\DBVarchar::class,
+            'Enum' => \SilverStripe\ORM\FieldType\DBEnum::class,
+            'Enum("foo,bar,foo2,bar2", "bar2")' => \SilverStripe\ORM\FieldType\DBEnum::class,
+            'DataObject' => \SilverStripe\ORM\DataObject::class,
+            'DBFile' => \SilverStripe\Assets\Storage\DBFile::class,
+            \SilverStripe\Assets\Image::class => \SilverStripe\Assets\Image::class,
         ];
         foreach ($expected_dbfield_classname as $input => $expected) {
             $result = DBTypeConverter::fromDataObject($input)->toClass();

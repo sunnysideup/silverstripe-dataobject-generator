@@ -31,7 +31,7 @@ class FormDataDecomposerTest extends SapphireTest
     {
         $input = [
             'Name' => 'File',
-            'Extends' => 'SilverStripe\\ORM\\DataObject',
+            'Extends' => \SilverStripe\ORM\DataObject::class,
             'singular_name' => 'File',
             'plural_name' => 'Files',
         ];

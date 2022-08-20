@@ -6,7 +6,7 @@ use Sunnysideup\BuildDataObject\Control\BuildController;
 
 class PageBuildController extends BuildController
 {
-    protected $myBaseClass = 'Page';
+    protected $myBaseClass = \Page::class;
 
     protected function primaryThingsToBuild()
     {

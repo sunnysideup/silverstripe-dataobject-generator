@@ -78,6 +78,7 @@ class DataObjectLists
         if (! isset(self::$_my_singleton[$myBaseClass])) {
             self::$_my_singleton[$myBaseClass] = Injector::inst()->get(self::class);
         }
+
         self::$_my_singleton[$myBaseClass]->_data = $data;
         self::$_my_singleton[$myBaseClass]->setBaseClass($myBaseClass);
 
@@ -153,10 +154,12 @@ class DataObjectLists
                     $ar[$key . '.Nice'] = $key . '.Nice';
             }
         }
+
         $list = [];
         if ($includeBelongs) {
             $list += $this->retrieveDBFields('belongs_to');
         }
+
         $list += $this->retrieveDBFields('has_one');
         foreach ($list as $key => $value) {
             if (Image::class === $value || is_subclass_of($value, Image::class)) {
@@ -165,12 +168,14 @@ class DataObjectLists
                 $ar[$key . '.Title'] = $key . '.Title';
             }
         }
+
         $list =
             $this->retrieveDBFields('has_many') +
             $this->retrieveDBFields('many_many');
         if ($includeBelongs) {
             $list += $this->retrieveDBFields('belongs_many_many');
         }
+
         foreach (array_keys($list) as $key) {
             $ar[$key . '.Count'] = $key . '.Count';
         }
@@ -217,6 +222,7 @@ class DataObjectLists
         if ($includeBelongs) {
             $list += $this->retrieveDBFields('belongs_to');
         }
+
         $list +=
             $this->retrieveDBFields('has_one') +
             $this->retrieveDBFields('has_many') +
@@ -251,6 +257,7 @@ class DataObjectLists
         } else {
             $rootClass = $this->rootBaseClass;
         }
+
         $list =
             [$rootClass => \Sunnysideup\BuildDataObject\Api\DBTypeConverter::fromClass($rootClass)->toDropdown()] +
             $this->possibleRelations();
@@ -268,6 +275,7 @@ class DataObjectLists
         } else {
             $rootClass = $this->rootBaseClass;
         }
+
         if (! isset($this->_classesCache[$rootClass])) {
             $newList = $this->walkSubclasses(function ($type) {
                 $key = $type->toClass();
@@ -295,6 +303,7 @@ class DataObjectLists
                     $newList[$class] = $class;
                 }
             }
+
             $this->_filtersCache = $newList;
         }
 
@@ -316,6 +325,7 @@ class DataObjectLists
                     $newList[$class] = $class;
                 }
             }
+
             $newList['tba'] = 'tba';
             $this->_modelAdmins = $newList;
         }
@@ -410,6 +420,7 @@ class DataObjectLists
         if ('parent' === $value) {
             return null;
         }
+
         if ('one' === $value) {
             $str = 'DataObject::get_one($this->class) ? false : true;';
         } elseif ('true' === $value) {

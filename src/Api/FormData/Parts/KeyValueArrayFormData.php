@@ -49,6 +49,7 @@ class KeyValueArrayFormData implements InterfaceForFormDataParts
                 if ('true' === $value || true === $value) {
                     $useRawValue = true;
                 }
+
                 $valuePairArray = [
                     'Key' => $key,
                     'Value' => DBTypeConverter::fromDropdown($value)->toDataObject(),

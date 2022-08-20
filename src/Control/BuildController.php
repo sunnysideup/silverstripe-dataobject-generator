@@ -45,7 +45,7 @@ abstract class BuildController extends Controller implements \Sunnysideup\BuildD
      */
     protected $finalData;
 
-    private static $form_data_session_variable = 'Sunnysideup\BuildDataObject\Control\Models\DataObjectBuildController';
+    private static $form_data_session_variable = \Sunnysideup\BuildDataObject\Control\Models\DataObjectBuildController::class;
 
     private static $url_segment = 'build';
 
@@ -337,6 +337,7 @@ abstract class BuildController extends Controller implements \Sunnysideup\BuildD
                 }
             }
         }
+
         $var = $this->Config()->get('form_data_session_variable');
         $varName = $var . $name;
         $this->getRequest()->getSession()->clear($varName);
@@ -353,10 +354,12 @@ abstract class BuildController extends Controller implements \Sunnysideup\BuildD
             if (! is_array($retrieveDataPrimary)) {
                 $retrieveDataPrimary = [];
             }
+
             $retrieveDataSecondary = $this->getRequest()->getSession()->get($var . '_SecondaryForm');
             if (! is_array($retrieveDataSecondary)) {
                 $retrieveDataSecondary = [];
             }
+
             $this->_data = $retrieveDataPrimary + $retrieveDataSecondary;
         }
 
@@ -373,6 +376,7 @@ abstract class BuildController extends Controller implements \Sunnysideup\BuildD
             if (! $data) {
                 $data = $this->retrieveData();
             }
+
             $decomposer = new \Sunnysideup\BuildDataObject\Api\FormData\FormDataDecomposer($data);
             $this->finalData = $decomposer->toArrayData();
             $this->finalData->setBaseClassName($this->baseClass);

@@ -47,6 +47,7 @@ class ClassObject extends ViewableData
                 $shortName = end($array);
             }
         }
+
         if ($shortName) {
             return $shortName;
         }
@@ -59,9 +60,11 @@ class ClassObject extends ViewableData
         if (class_exists($this->fullName)) {
             return true;
         }
+
         if (class_exists('\\' . $this->fullName)) {
             return true;
         }
+
         $array = explode('\\', $this->fullName);
         if (count($array) > 1) {
             return true;
