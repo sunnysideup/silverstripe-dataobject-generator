@@ -1,6 +1,6 @@
 <?php
 
-namespace Sunnysideup\BuildDataObject\API;
+namespace Sunnysideup\BuildDataObject\Api;
 
 use SilverStripe\Admin\ModelAdmin;
 use SilverStripe\Assets\Image;
@@ -73,7 +73,7 @@ class DataObjectLists
 
     private static $_my_singleton = [];
 
-    public static function inst($myBaseClass = DataObject::class, $data)
+    public static function inst(string $myBaseClass, $data)
     {
         if (! isset(self::$_my_singleton[$myBaseClass])) {
             self::$_my_singleton[$myBaseClass] = Injector::inst()->get(self::class);
