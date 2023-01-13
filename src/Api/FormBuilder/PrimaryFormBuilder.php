@@ -32,13 +32,13 @@ class PrimaryFormBuilder extends BaseFormBuilder
             </p>'
         );
         $headerFields[] = HeaderField::create('BasedOnHeader', 'Based On ...');
-        $headerFields[] = DropdownField::create('Template', '', (string) $possibleBasedOn)->setEmptyString('--- PRELOAD VALUES FROM ---');
+        $headerFields[] = DropdownField::create('Template', '', $possibleBasedOn)->setEmptyString('--- PRELOAD VALUES FROM ---');
         $headerFields[] = HeaderField::create('NameSpaceHeader', 'Namespace your ' . $owner->getShortBaseClass());
         $headerFields[] = TextField::create('NameSpace', '')->setAttribute('placeholder', 'e.g. MyCompany\\MyProject\\Model');
         $headerFields[] = HeaderField::create('NameHeader', 'Name your ' . $owner->getShortBaseClass())->setDescription('e.g. MyPage or MyDataObject (do not include namespace)');
         $headerFields[] = TextField::create('Name', '');
         $headerFields[] = HeaderField::create('ExtendsHeader', 'Extends');
-        $headerFields[] = DropdownField::create('Extends', '', (string) $possibleExtensions)->setValue($owner->getBaseClass());
+        $headerFields[] = DropdownField::create('Extends', '', $possibleExtensions)->setValue($owner->getBaseClass());
 
         $additionalFields = $owner->getAdditionalPrimaryFields();
         foreach ($additionalFields as $additionalField) {
