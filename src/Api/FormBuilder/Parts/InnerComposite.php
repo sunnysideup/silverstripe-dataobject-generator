@@ -50,7 +50,7 @@ class InnerComposite
     {
         if ($source) {
             asort($source);
-            $field = DropdownField::create($key, '', $source)->setEmptyString('--- Please Select ---');
+            $field = DropdownField::create($key, '', (string) $source)->setEmptyString('--- Please Select ---');
         } else {
             $field = TextField::create($key, '');
         }

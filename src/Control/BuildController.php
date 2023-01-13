@@ -282,7 +282,7 @@ abstract class BuildController extends Controller implements \Sunnysideup\BuildD
                 foreach ($varValue as $varInnerKey => $varInnerValue) {
                     ++$count;
                     $data[$varName . '__KEY__' . $count] = $varInnerKey;
-                    $data[$varName . '__VALUE__' . $count] = trim(preg_replace('#\\([^)]+\\)#', '', $varInnerValue));
+                    $data[$varName . '__VALUE__' . $count] = trim(preg_replace('#\\([^)]+\\)#', '', (string) $varInnerValue));
                 }
             } else {
                 $data[$varName] = $varValue;

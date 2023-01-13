@@ -89,7 +89,7 @@ class DBTypeConverter
     {
         // remove everything after '('
         // e.g. 'Varchar' => 'Varchar(32)'
-        $trimmedTypeName = trim(preg_replace('#\(.*$#', '', $dbTypeName));
+        $trimmedTypeName = trim(preg_replace('#\(.*$#', '', (string) $dbTypeName));
         // look for known classes
         foreach ($prefixes as $prefix) {
             // convert to fully qualified name and test it
