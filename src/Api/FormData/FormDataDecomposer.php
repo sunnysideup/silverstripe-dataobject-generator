@@ -70,7 +70,7 @@ class FormDataDecomposer
                     } else {
                         user_error('Can not decode data --- ' . $key . ' --- ' . $value . ' ---');
                     }
-                } elseif ('can' === substr($key, 0, 3)) {
+                } elseif ('can' === substr((string) $key, 0, 3)) {
                     //todo: make more solid
                     $array[$key] = new CanFormData($value);
                 } else {

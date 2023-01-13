@@ -106,7 +106,7 @@ class DBTypeConverter
     {
         foreach (self::PREFIXES_OF_KNOWN_DB_TYPES as $prefix) {
             if (0 === strpos($this->fullQualClassName, $prefix)) {
-                return substr($this->fullQualClassName, strlen($prefix), strlen($this->fullQualClassName));
+                return substr((string) $this->fullQualClassName, strlen($prefix), strlen($this->fullQualClassName));
             }
         }
 
