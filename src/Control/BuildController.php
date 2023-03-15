@@ -344,20 +344,20 @@ abstract class BuildController extends Controller implements \Sunnysideup\BuildD
         $this->getRequest()->getSession()->clear($varName);
         $this->getRequest()->getSession()->set($varName, null);
         $this->getRequest()->getSession()->set($varName, $data);
-        //$this->getRequest()->getSession()->save();
+        //$this->getRequest()->getSession()->save($this->getRequest());
     }
 
     protected function retrieveData()
     {
-        if (! $this->_data) {
+        if (!$this->_data) {
             $var = $this->Config()->get('form_data_session_variable');
             $retrieveDataPrimary = $this->getRequest()->getSession()->get($var . '_PrimaryForm');
-            if (! is_array($retrieveDataPrimary)) {
+            if (!is_array($retrieveDataPrimary)) {
                 $retrieveDataPrimary = [];
             }
 
             $retrieveDataSecondary = $this->getRequest()->getSession()->get($var . '_SecondaryForm');
-            if (! is_array($retrieveDataSecondary)) {
+            if (!is_array($retrieveDataSecondary)) {
                 $retrieveDataSecondary = [];
             }
 
@@ -373,8 +373,8 @@ abstract class BuildController extends Controller implements \Sunnysideup\BuildD
 
     protected function processedFormData($data = null)
     {
-        if (! $this->finalData) {
-            if (! $data) {
+        if (!$this->finalData) {
+            if (!$data) {
                 $data = $this->retrieveData();
             }
 
