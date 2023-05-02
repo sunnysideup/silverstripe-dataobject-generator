@@ -16,7 +16,11 @@ use Sunnysideup\BuildDataObject\Api\DataObjectLists;
 use Sunnysideup\BuildDataObject\Api\FormBuilder\InterfaceForFormController;
 use Sunnysideup\BuildDataObject\View\NewDataObject;
 
-abstract class BuildController extends Controller implements \Sunnysideup\BuildDataObject\Api\FormBuilder\InterfaceForFormController
+abstract /**
+ * Class \Sunnysideup\BuildDataObject\Control\BuildController
+ *
+ */
+class BuildController extends Controller implements \Sunnysideup\BuildDataObject\Api\FormBuilder\InterfaceForFormController
 {
     //#####################
     // ABSTRACT AND PROVIDERS

@@ -7,6 +7,10 @@ use SilverStripe\Forms\HeaderField;
 use SilverStripe\ORM\DataObject;
 use Sunnysideup\BuildDataObject\Control\BuildController;
 
+/**
+ * Class \Sunnysideup\BuildDataObject\Control\Models\DataObjectBuildController
+ *
+ */
 class DataObjectBuildController extends BuildController
 {
     protected $myBaseClass = DataObject::class;
