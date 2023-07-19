@@ -65,7 +65,7 @@ class NewDataObject extends ArrayData
             );
         }
 
-        return $al->Sort('FullClassName');
+        return $al->Sort(['FullClassName' => 'ASC']);
     }
 
     //################################
