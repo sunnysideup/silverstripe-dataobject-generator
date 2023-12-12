@@ -81,7 +81,7 @@ abstract class BasePart
 
     private function createHeaderField(): HeaderField
     {
-        $title = str_replace('_', ' ', $this->name);
+        $title = str_replace('_', ' ', (string) $this->name);
 
         return HeaderField::create($this->name . '_HEADER', $title);
     }

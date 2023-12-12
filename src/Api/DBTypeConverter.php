@@ -44,7 +44,7 @@ class DBTypeConverter
     public static function fromDropdown(string $ddName): DBTypeConverter
     {
         $inst = self::fromAny($ddName, self::PREFIXES_OF_KNOWN_DB_TYPES);
-        if (! $inst) {
+        if (!$inst) {
             $inst = self::fromAny($ddName, self::PREFIXES_OF_KNOWN_COMPOSITED_TYPES);
         }
 
@@ -82,7 +82,7 @@ class DBTypeConverter
             $dbFieldName = $this->fullQualClassName;
         }
 
-        return str_replace('\\', '\\\\', $dbFieldName);
+        return str_replace('\\', '\\\\', (string) $dbFieldName);
     }
 
     private static function fromAny(string $dbTypeName, array $prefixes)
@@ -106,7 +106,7 @@ class DBTypeConverter
     {
         foreach (self::PREFIXES_OF_KNOWN_DB_TYPES as $prefix) {
             if (0 === strpos($this->fullQualClassName, $prefix)) {
-                return substr((string) $this->fullQualClassName, strlen( (string) $prefix), strlen( (string) $this->fullQualClassName));
+                return substr((string) $this->fullQualClassName, strlen((string) $prefix), strlen((string) $this->fullQualClassName));
             }
         }
 
