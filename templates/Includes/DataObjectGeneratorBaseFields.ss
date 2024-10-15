@@ -239,7 +239,7 @@
         //...
     }
 
-    public function onAfterWrite()
+    protected function onAfterWrite()
     {
         parent::onAfterWrite();
         //...
