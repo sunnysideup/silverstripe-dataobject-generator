@@ -20,7 +20,7 @@ class $Name extends $Extends.ShortName
     private static \$can_be_root = $can_be_root
     <% end_if %><% if $allowed_children %>
     private static \$allowed_children = [
-        <% loop $allowed_children %>$Value.ShortName::class<% if $Last %><% else %>,
+        <% loop $allowed_children %>$Value.ShortName::class<% if $IsLast %><% else %>,
         <% end_if %><% end_loop %>
     ];
     <% end_if %><% if $default_child %>
