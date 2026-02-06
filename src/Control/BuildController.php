@@ -160,6 +160,7 @@ class BuildController extends Controller implements \Sunnysideup\BuildDataObject
 
             return $this->redirect($this->link('primaryformstart'));
         }
+        return null;
     }
 
     public function index()

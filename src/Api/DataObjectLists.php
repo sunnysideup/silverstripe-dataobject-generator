@@ -253,8 +253,7 @@ class DataObjectLists
 
     public function PossibleRelationsWithBaseClass($rootClass = '')
     {
-        if ($rootClass) {
-        } else {
+        if (!$rootClass) {
             $rootClass = $this->rootBaseClass;
         }
 
@@ -271,8 +270,7 @@ class DataObjectLists
      */
     public function possibleRelations(string $rootClass = '')
     {
-        if ($rootClass) {
-        } else {
+        if ($rootClass === '' || $rootClass === '0') {
             $rootClass = $this->rootBaseClass;
         }
 

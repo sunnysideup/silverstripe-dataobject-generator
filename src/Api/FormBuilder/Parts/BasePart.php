@@ -15,17 +15,14 @@ abstract class BasePart
 
     protected $isMultiple;
 
-    private $owner;
-
     private $maxChildren;
 
-    private $innerComposites;
+    private $innerComposites = [];
 
-    private $formFieldsWithMultiple;
+    private $formFieldsWithMultiple = [];
 
     public function __construct($owner, $name, $isMultiple, $sourceMethod1, $sourceMethod2)
     {
-        $this->owner = $owner;
         $this->name = $name;
         $this->isMultiple = $isMultiple;
 
@@ -34,9 +31,6 @@ abstract class BasePart
         //work out sources
         $this->source1 = $owner->callAPIMethod($sourceMethod1, null);
         $this->source2 = $owner->callAPIMethod($sourceMethod2, 'ignore');
-
-        $this->innerComposites = [];
-        $this->formFieldsWithMultiple = [];
 
         //work out field names
         $this->workOutFields();

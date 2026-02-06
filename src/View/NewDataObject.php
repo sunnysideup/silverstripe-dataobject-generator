@@ -14,11 +14,6 @@ class NewDataObject extends ArrayData
         \SilverStripe\ORM\FieldType\DBField::class => true,
     ];
 
-    public function __construct($data)
-    {
-        parent::__construct($data);
-    }
-
     public function CompileDataForRendering()
     {
         $this->convertLongToShortClassName($this);

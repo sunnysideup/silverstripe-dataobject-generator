@@ -16,13 +16,12 @@ abstract class BaseFormBuilder
 
     private $toBuild;
 
-    private $headerFields;
+    private $headerFields = [];
 
     public function __construct(InterfaceForFormController $owner, array $toBuild)
     {
         $this->owner = $owner;
         $this->toBuild = $toBuild;
-        $this->headerFields = [];
         $this->onGetHeaderFields($owner, $this->headerFields);
     }
 

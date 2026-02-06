@@ -69,6 +69,7 @@ class ClassObject extends ViewableData
         if (count($array) > 1) {
             return true;
         }
+        return null;
     }
 
     public function forTemplate()

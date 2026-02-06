@@ -16,11 +16,11 @@ class InnerComposite
     public function __construct($nameKey, $source1, $valueKey, $source2)
     {
         //key field
-        $this->keyField = self::createFormField($nameKey, $source1, 'mykey');
+        $this->keyField = $this->createFormField($nameKey, $source1, 'mykey');
 
         if ($valueKey) {
             //value field
-            $this->valueField = self::createFormField($valueKey, $source2, 'myvalue');
+            $this->valueField = $this->createFormField($valueKey, $source2, 'myvalue');
         }
     }
 
@@ -46,7 +46,7 @@ class InnerComposite
         return $this->keyField;
     }
 
-    private static function createFormField($key, &$source, $additionalClass): FormField
+    private function createFormField($key, &$source, $additionalClass): FormField
     {
         if ($source) {
             asort($source);
