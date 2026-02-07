@@ -9,7 +9,6 @@ use Sunnysideup\BuildDataObject\Control\BuildController;
 
 /**
  * Class \Sunnysideup\BuildDataObject\Control\Models\DataObjectBuildController
- *
  */
 class DataObjectBuildController extends BuildController
 {

@@ -18,7 +18,6 @@ use Sunnysideup\BuildDataObject\View\NewDataObject;
 
 abstract /**
  * Class \Sunnysideup\BuildDataObject\Control\BuildController
- *
  */
 class BuildController extends Controller implements \Sunnysideup\BuildDataObject\Api\FormBuilder\InterfaceForFormController
 {
@@ -354,15 +353,15 @@ class BuildController extends Controller implements \Sunnysideup\BuildDataObject
 
     protected function retrieveData()
     {
-        if (!$this->_data) {
+        if (! $this->_data) {
             $var = $this->Config()->get('form_data_session_variable');
             $retrieveDataPrimary = $this->getRequest()->getSession()->get($var . '_PrimaryForm');
-            if (!is_array($retrieveDataPrimary)) {
+            if (! is_array($retrieveDataPrimary)) {
                 $retrieveDataPrimary = [];
             }
 
             $retrieveDataSecondary = $this->getRequest()->getSession()->get($var . '_SecondaryForm');
-            if (!is_array($retrieveDataSecondary)) {
+            if (! is_array($retrieveDataSecondary)) {
                 $retrieveDataSecondary = [];
             }
 
@@ -378,8 +377,8 @@ class BuildController extends Controller implements \Sunnysideup\BuildDataObject
 
     protected function processedFormData($data = null)
     {
-        if (!$this->finalData) {
-            if (!$data) {
+        if (! $this->finalData) {
+            if (! $data) {
                 $data = $this->retrieveData();
             }
 

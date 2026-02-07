@@ -44,7 +44,7 @@ class DBTypeConverter
     public static function fromDropdown(string $ddName): DBTypeConverter
     {
         $inst = self::fromAny($ddName, self::PREFIXES_OF_KNOWN_DB_TYPES);
-        if (!$inst) {
+        if (! $inst) {
             $inst = self::fromAny($ddName, self::PREFIXES_OF_KNOWN_COMPOSITED_TYPES);
         }
 

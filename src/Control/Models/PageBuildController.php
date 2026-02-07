@@ -6,7 +6,6 @@ use Sunnysideup\BuildDataObject\Control\BuildController;
 
 /**
  * Class \Sunnysideup\BuildDataObject\Control\Models\PageBuildController
- *
  */
 class PageBuildController extends BuildController
 {
